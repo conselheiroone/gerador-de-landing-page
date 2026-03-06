@@ -1,0 +1,18 @@
+-- Seed: criar usuario admin para primeiro acesso
+-- Email: admin@landinggen.com / Senha: admin123456
+--
+-- NOTA: Este seed cria o usuario via auth.users.
+-- Apos o `supabase start`, o trigger handle_new_user()
+-- cria automaticamente o profile.
+-- Depois promovemos para admin.
+
+-- O Supabase local aceita criacao direta no auth.users
+-- Mas a forma recomendada e usar o Dashboard (Studio) ou a API.
+--
+-- Para criar o admin manualmente apos `supabase start`:
+--
+-- 1. Acesse o Studio: http://localhost:54323
+-- 2. Va em Authentication > Users > Add User
+-- 3. Email: admin@landinggen.com | Password: admin123456
+-- 4. Va em SQL Editor e execute:
+--    UPDATE profiles SET role = 'admin' WHERE email = 'admin@landinggen.com';

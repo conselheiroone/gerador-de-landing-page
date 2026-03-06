@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirme seu cadastro</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f4f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f5;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="460" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color: #1a1a2e; padding: 28px 40px; text-align: center;">
+              <span style="color: #ffffff; font-size: 16px; font-weight: 600; letter-spacing: 0.5px;">Acesso Seguro</span>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding: 40px 40px 20px 40px; text-align: center;">
+              <h1 style="margin: 0 0 12px 0; font-size: 22px; font-weight: 700; color: #1a1a2e;">
+                Confirme seu cadastro
+              </h1>
+              <p style="margin: 0 0 28px 0; font-size: 15px; color: #6b7280; line-height: 1.5;">
+                Use o codigo abaixo para confirmar seu cadastro. Ele expira em
+                <strong style="color: #1a1a2e;">60 minutos</strong>.
+              </p>
+            </td>
+          </tr>
+
+          <!-- OTP Code -->
+          <tr>
+            <td style="padding: 0 40px 28px 40px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background-color: #1a1a2e; border-radius: 10px; padding: 24px; text-align: center;">
+                    <span style="font-size: 36px; font-weight: 700; color: #ffffff; letter-spacing: 12px; font-family: 'Courier New', Courier, monospace;">
+                      {{ .Token }}
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Confirmation Link Alternative -->
+          <tr>
+            <td style="padding: 0 40px 28px 40px; text-align: center;">
+              <p style="margin: 0 0 12px 0; font-size: 13px; color: #9ca3af;">
+                Ou clique no link abaixo para confirmar diretamente:
+              </p>
+              <a href="{{ .ConfirmationURL }}" target="_blank" style="display: inline-block; background-color: #10b981; color: #ffffff; text-decoration: none; padding: 12px 32px; border-radius: 8px; font-size: 14px; font-weight: 600;">
+                Confirmar cadastro
+              </a>
+            </td>
+          </tr>
+
+          <!-- Security Tip -->
+          <tr>
+            <td style="padding: 0 40px 32px 40px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background-color: #f0fdf4; border-radius: 8px; padding: 14px 18px; border-left: 4px solid #10b981;">
+                    <table role="presentation" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="vertical-align: top; padding-right: 10px;">
+                          <span style="font-size: 18px;">&#9989;</span>
+                        </td>
+                        <td>
+                          <p style="margin: 0; font-size: 13px; color: #374151; line-height: 1.5;">
+                            <strong>Dica de seguranca:</strong> Nunca compartilhe este codigo com ninguem. Nossa equipe nunca solicitara seu codigo por telefone ou mensagem.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 0 40px 32px 40px; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 24px;">
+              <p style="margin: 0 0 8px 0; font-size: 12px; color: #9ca3af; line-height: 1.5;">
+                Se voce nao solicitou este cadastro, ignore este e-mail.
+              </p>
+              <p style="margin: 0; font-size: 12px; color: #d1d5db;">
+                &copy; 2026 Todos os direitos reservados.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

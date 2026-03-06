@@ -1,0 +1,586 @@
+================================================================================
+  DOCUMENTACAO — GERADOR DE LANDING PAGE PARA ESCRITORIOS DE CONTABILIDADE
+================================================================================
+
+Data: 2026-02-27
+Versao: 3.1 (atualizada com funcionalidades dos projetos de referencia)
+Status: Reconstruido e expandido com base nas specs, prints, requisitos admin
+        e funcionalidades reaproveitadas dos projetos existentes
+Fontes: design-system.md, especificacao_tecnica.md, Screenshot_1.png,
+        Templates.png, comeceDoZero.png, PRD-GeradorLandingPage.md v3.1
+Referencia: diagnosticopro, cclasstrib-web-1, cclasstrib-api
+
+================================================================================
+  1. O QUE E O PRODUTO
+================================================================================
+
+Plataforma web (SaaS) para criacao de landing pages personalizada para
+escritorios de contabilidade, com DUAS CAMADAS DISTINTAS:
+
+CAMADA ADMIN (Backoffice Interno):
+  - Equipe interna cria, importa e edita templates/layouts
+  - Editor avancado com Puck (MIT) para construcao visual de templates
+  - Controle granular de quais propriedades o cliente final pode editar
+  - Gestao da biblioteca de componentes
+  - Operacoes: criar novo, importar layout, editar existente,
+    "Salvar Novo" ou "Salvar Alteracoes"
+
+CAMADA CLIENTE (Usuarios Finais):
+  - Contadores e escritorios criam paginas profissionais sem conhecimento tecnico
+  - Dois caminhos: editor visual com drag-and-drop OU templates prontos
+  - Edita apenas propriedades permitidas pelo admin (textos, imagens, cores)
+  - Exporta como HTML + CSS + JS para hospedagem propria
+
+Diferencial: templates e componentes feitos especificamente para o nicho
+contabil (servicos contabeis, equipe, captacao de leads, WhatsApp, FAQ, etc.)
+
+
+================================================================================
+  2. PUBLICO-ALVO
+================================================================================
+
+Interno (Admin):
+  - Equipe da plataforma (designers, desenvolvedores)
+  - Necessidade: criar e gerenciar templates sem deploy de codigo
+
+Externo (Clientes):
+  - Escritorios de contabilidade (1 a 20 funcionarios)
+  - Contadores autonomos que precisam de presenca digital
+  - Consultorias e franquias contabeis
+  - Empresas de abertura de CNPJ/MEI
+
+
+================================================================================
+  3. SISTEMA DE PAPEIS
+================================================================================
+
+ADMIN (role = 'admin'):
+  - Acesso: /admin/* + todas as rotas de cliente
+  - Pode: criar/editar/importar templates, gerenciar componentes
+  - Pode: definir quais props o cliente pode editar (flag editavel_cliente)
+
+CLIENTE (role = 'cliente'):
+  - Acesso: rotas de cliente apenas
+  - Pode: usar templates, editar propriedades permitidas, exportar landing pages
+  - Nao pode: acessar /admin/*, modificar props bloqueadas
+
+Implementacao:
+  - Coluna role em profiles (admin | cliente)
+  - Funcao PostgreSQL is_admin() para RLS
+  - Sync role -> JWT custom claims via trigger
+  - AdminGuard para rotas /admin/*
+
+
+================================================================================
+  4. FLUXOS PRINCIPAIS
+================================================================================
+
+FLUXO A — TELA INICIAL DO CLIENTE (Screenshot_1.png)
+-----------------------------------------------------
+O usuario logado (cliente) ve duas opcoes:
+
+  +-----------------------------------+
+  |  +  Comece do zero                |
+  |     Projete seu site do zero.     |
+  +-----------------------------------+
+  +-----------------------------------+
+  |  *  Comece com um modelo          |
+  |     Use modelos feitos por        |
+  |     designers.                    |
+  +-----------------------------------+1111
+
+- "Comece do zero" -> abre o Editor Visual (Fluxo C)
+- "Comece com um modelo" -> abre a Galeria de Templates (Fluxo B)
+
+
+FLUXO B — GALERIA DE TEMPLATES (Templates.png)
+-----------------------------------------------
+Tela com:
+- Sidebar esquerda com filtros por categoria:
+  * Todos, Negocios, Cartoes Digitais, Eventos, Sem fins lucrativos, Em breve
+- Area principal com:
+  * Titulo: "Selecione qualquer um dos nossos modelos de site e torne o seu"
+  * Campo de busca
+  * Grid de cards de templates (3 colunas) com thumbnail e nome
+  * Botao "Explorar componentes" no rodape
+
+Acao: clicar num template faz SNAPSHOT (clone completo do JSONB) para o editor.
+O projeto clonado e independente — nao sofre atualizacoes do template original.
+Cliente edita apenas props marcadas como editavel_cliente = true pelo admin.
+
+
+FLUXO C — EDITOR VISUAL / COMECE DO ZERO (comeceDoZero.png)
+------------------------------------------------------------
+Tela dividida em:
+
+SIDEBAR ESQUERDA — "Componentes"
+  Categorias de componentes arrastaveis:
+  - Cabecalho (headers/hero sections)
+  - Depoimentos (testimonials)
+  - Digital (midias, embed de video)
+  - Textos (secoes de texto livre)
+  - Botoes (CTAs, botoes de acao)
+  - Politica de Privacidade (texto legal)
+  - Chamada para acao (banners CTA)
+  - Blocos (secoes de features, cards)
+  - Formularios (contato, newsletter)
+  - Footer (rodape)
+  - Botao "Exportar Modelos" no rodape da sidebar
+
+AREA PRINCIPAL — Grid de componentes da categoria selecionada
+  - Instrucao descritiva por categoria
+  - Grid de variantes visuais (thumbnails) para cada componente
+  - Botao "Explorar Modelos" para ir a galeria de templates
+
+CANVAS CENTRAL (inferido)
+  - Area onde os componentes sao empilhados na ordem escolhida
+  - Suporta reordenacao por drag-and-drop (dnd-kit)
+  - Clicar num componente abre painel de propriedades
+  - Se veio de template: mostra apenas props editaveis
+  - Se criado do zero: todas as props sao editaveis
+
+TOOLBAR SUPERIOR (inferido)
+  - Botoes: Salvar, Preview, Exportar, Toggle responsivo (desktop/tablet/mobile)
+
+
+FLUXO D — ADMIN: TEMPLATE BUILDER (Puck)
+-----------------------------------------
+Tela do admin para criacao de templates:
+
+EDITOR PUCK
+  - Drag-and-drop de componentes da biblioteca para o canvas
+  - Painel de propriedades com toggle "Editavel pelo cliente" por prop
+  - Preview responsivo (desktop/tablet/mobile)
+  - Salvar como JSONB com flags editavel_cliente
+  - Operacoes: "Salvar Novo" (cria template) ou "Salvar Alteracoes" (atualiza)
+
+GESTAO DE TEMPLATES
+  - Listagem com thumbnail, nome, categoria, status, data
+  - CRUD: criar, editar, duplicar, ativar/desativar, excluir
+  - Metadados: nome, descricao, categoria, thumbnail
+
+IMPORTACAO DE LAYOUTS
+  - Upload de HTML como base para novo template
+  - Parser HTML -> JSONB com mapeamento de secoes
+  - Interface de revisao obrigatoria pos-importacao
+  - Importacao de assets para Supabase Storage
+
+
+================================================================================
+  5. FUNCIONALIDADES CORE
+================================================================================
+
+5.1 EDITOR VISUAL — CLIENTE (Drag-and-Drop com dnd-kit)
+  - Arrastar componentes da sidebar para o canvas
+  - Reordenar secoes no canvas
+  - Editar propriedades permitidas via painel lateral
+  - Preview responsivo (3 breakpoints: mobile, tablet, desktop)
+  - Undo/Redo (Ctrl+Z / Ctrl+Shift+Z)
+  - Auto-save + save manual
+
+5.2 TEMPLATE BUILDER — ADMIN (Puck editor)
+  - Construcao visual de templates completos
+  - Controle granular de editabilidade por prop (editavel_cliente)
+  - Registro de componentes da biblioteca no Puck
+  - Importacao de layouts externos (HTML -> JSONB)
+  - Versionamento basico de templates
+
+5.3 GALERIA DE TEMPLATES
+  - Templates prontos criados pelo admin
+  - Filtro por categoria + busca
+  - Preview antes de selecionar
+  - SNAPSHOT: clone do template gera projeto editavel independente
+
+5.4 BIBLIOTECA DE COMPONENTES (10 categorias)
+  - Cabecalho: hero com imagem, video bg, minimalista, com formulario
+  - Depoimentos: carousel, grid com foto
+  - Digital: embed video, galeria de imagens, midias sociais
+  - Textos: texto livre, titulo+subtitulo, 2 colunas
+  - Botoes: primario, secundario, outline, CTA full-width
+  - Politica de Privacidade: secao legal, banner cookies
+  - Chamada para acao: banner com botao, CTA com imagem lateral
+  - Blocos: grid 3 colunas, cards informativos, secao com icones
+  - Formularios: contato, newsletter
+  - Footer: colunas com links, contato, redes sociais
+
+5.5 COMPONENTES ESPECIFICOS PARA CONTABILIDADE
+  - Secao "Nossos Servicos" (fiscal, trabalhista, societario, BPO, IRPF)
+  - Secao "Equipe" (foto, nome, cargo, CRC)
+  - Banner "Agende uma Consulta" com WhatsApp
+  - Secao "Numeros do Escritorio" (clientes, anos, empresas abertas)
+  - FAQ pre-preenchido para contabilidade
+  - Secao de localizacao com mapa
+
+5.6 CAPTACAO DE LEADS
+  - Formulario de contato com validacao
+  - Botao WhatsApp flutuante (numero e mensagem configuravel)
+  - Armazenamento de leads por projeto
+  - Notificacao por email ao receber lead
+  - Dashboard de leads (visualizar, filtrar, exportar CSV)
+  - Anti-spam (honeypot + rate limiting)
+
+5.7 EXPORTACAO
+  - Preview completo em nova aba
+  - Download como HTML + CSS + JS (zip)
+  - Codigo limpo, semantico e responsivo
+  - Meta tags SEO configuraveis (title, description, OG tags)
+
+5.8 DASHBOARD DO CLIENTE
+  - Grid de projetos com thumbnail, nome, data, status
+  - Criar, duplicar, excluir projetos
+  - Busca e filtro
+  - Sidebar de navegacao (dark theme, 240px)
+
+5.9 DASHBOARD DO ADMIN
+  - Metricas (total templates, total usuarios, total projetos, leads)
+  - Gestao de templates (CRUD)
+  - Gestao da biblioteca de componentes (ativar/desativar, categorizar)
+  - Importacao de layouts
+
+5.10 AUTENTICACAO
+  - Login com email/senha
+  - Registro com confirmacao de email (role default = 'cliente')
+  - Login com Google (OAuth)
+  - Recuperacao de senha
+  - Perfil do usuario (nome, empresa, logo)
+  - Protecao de rotas (AuthGuard + AdminGuard)
+
+5.11 APRENDIZADO (inspirado no diagnosticopro)
+  - Central de aprendizado com modulos e aulas em video
+  - Admin cria/edita modulos (titulo, descricao, thumbnail, ordem)
+  - Aulas com video YouTube, anexos (PDF, imagens)
+  - Tracking de progresso por aula e por modulo
+  - Comentarios por aula (com moderacao admin)
+  - Avaliacao por estrelas (1-5)
+  - Certificado de conclusao (geracao PDF)
+  - Conteudos planejados: como criar landing pages, usar o editor,
+    SEO para contadores, capturar leads, WhatsApp Business
+
+5.12 DICAS DE AJUDA CONTEXTUAL (inspirado no diagnosticopro)
+  - Botao (?) contextual ao lado de labels e secoes da interface
+  - Modal com video + texto explicativo
+  - Admin configura dicas por pagina/secao
+  - Auto-registro de anchor points
+  - Dicas para: editor, galeria, dashboard, exportacao, SEO, formularios
+
+5.13 COMUNICADOS E NOTIFICACOES (inspirado no diagnosticopro)
+  - Admin cria comunicados: info, warning, maintenance, update
+  - Rich text editor (TipTap) para conteudo
+  - Banner no topo (dismissivel)
+  - NotificationBell no header com badge de nao-lidos
+  - Popover com ultimas 5 notificacoes
+  - Pagina de notificacoes com busca, filtros e paginacao
+  - Marcar como lido
+
+5.14 ONBOARDING E SUPORTE
+  - Modal de boas-vindas no primeiro acesso (video)
+  - Botao WhatsApp flutuante (SupportFab) com numero e horario configuravel
+  - Admin configura: video URL, numero WhatsApp, horario de atendimento
+  - Tabela admin_settings centralizada (key-value)
+
+5.15 PAGINAS LEGAIS E CONFORMIDADE (LGPD)
+  - Termos de Uso, Politica de Privacidade, LGPD
+  - Admin edita com rich text + versionamento automatico
+  - Modal de aceitacao obrigatoria no primeiro login
+  - Requer nova aceitacao quando versao atualiza
+  - Paginas publicas acessiveis por URL (/termos/:slug)
+  - Audit trail (quem editou, quando)
+
+
+================================================================================
+  6. STACK TECNICA
+================================================================================
+
+Frontend:
+  - React 18 + Vite + TypeScript 5 (strict mode)
+  - Tailwind CSS (utility-first, sem CSS-in-JS)
+  - shadcn/ui + CVA para variantes de componentes
+  - Framer Motion para animacoes
+  - Zod para validacao de formularios
+  - Arquitetura: Bulletproof React (feature-based)
+  - Estado: useState + useReducer + Context API (sem Redux/Zustand)
+
+Admin Builder:
+  - Puck (MIT, React, JSON output) para construcao de templates
+  - Tailwind v4 compativel
+
+Cliente DnD:
+  - dnd-kit para drag-and-drop no editor do cliente
+
+Componentes Landing Page (todos MIT):
+  - shadcn/ui blocks — componentes base (headers, features, footers)
+  - Aceternity UI — efeitos visuais (parallax, spotlight, glow)
+  - Magic UI — animacoes avancadas (marquee, particles, blur)
+  - BLOQUEADO: Tailwind UI (licenca proibe uso em page builders)
+
+Backend:
+  - Supabase Auth (email/senha + OAuth)
+  - Supabase Database (PostgreSQL com RLS obrigatorio)
+  - Supabase Storage (imagens, thumbnails, logos)
+  - Supabase Edge Functions (Deno) para logica sensivel
+
+Seguranca:
+  - RLS (Row Level Security) obrigatorio em TODAS as tabelas
+  - is_admin() funcao PostgreSQL para policies de admin
+  - Zod obrigatorio em TODAS as Edge Functions
+  - Erros no formato RFC 7807 Problem Details
+  - Nunca expor segredos no client (VITE_ prefix = publico, sem prefix = privado)
+  - Logging com prefixo [nome-funcao][request-id]
+  - CORS sem wildcard em producao
+  - LGPD: PII apenas via views mascaradas
+
+
+================================================================================
+  7. DESIGN SYSTEM (Resumo)
+================================================================================
+
+Cores:
+  - Brand Green: #10B981 (primaria)
+  - Brand Green Dark: #059669 (hover)
+  - Brand Green Light: #D1FAE5 (backgrounds sutis)
+  - Dark/Black: #1A1A1A (sidebar, botoes secundarios)
+  - Gray 50: #F9FAFB (background da app)
+  - Gray 200: #E5E7EB (bordas)
+  - WhatsApp: #25D366
+
+Tipografia:
+  - System UI sans-serif
+  - Display: 72px/700 (hero)
+  - H1: 48px/700 | H2: 30px/700 | H3: 24px/600
+  - Body: 16px/400 | Small: 14px | Caption: 12px
+
+Espacamento: sistema baseado em 8px
+Border Radius: sm=6px | md=8px | lg=12px | xl=16px | 2xl=24px | full=9999px
+
+Layout:
+  - Sidebar: 240px expandida / 72px colapsada, bg #1A1A1A
+  - Header: 64px, bg white, border-bottom #E5E7EB
+  - Content: max-width 1280px, bg #F9FAFB, padding 24-32px
+  - Grid: 12 colunas, gap 24px
+
+Componentes UI:
+  - Botoes: Primary (green), Secondary (dark), Outline, Ghost, CTA
+  - Cards: Stat, Feature, Pricing, Module, Action Item
+  - Inputs: text com icone, search
+  - Badges: primary, secondary, warning, orange
+  - Skeleton loading para todos os estados async
+
+Animacoes (Framer Motion):
+  - fadeIn, slideUp, slideDown, scaleIn
+  - staggerContainer + staggerItem para listas
+  - cardAnimation para cards
+  - pageTransition para rotas
+  - Max 0.5s, respeitar prefers-reduced-motion
+
+Breakpoints:
+  - Mobile: < 640px (single column)
+  - Tablet: 640-1024px (adaptado)
+  - Desktop: > 1024px (full com sidebar)
+  - Large: > 1280px (extended)
+
+
+================================================================================
+  8. TEMPLATES PLANEJADOS PARA CONTABILIDADE
+================================================================================
+
+1. "Escritorio de Contabilidade Moderno"
+   Secoes: Hero + Servicos + Equipe + Depoimentos + Contato + Footer
+   Publico: Escritorios estabelecidos
+
+2. "Contador Autonomo"
+   Secoes: Hero pessoal + Sobre + Servicos + Depoimentos + CTA WhatsApp
+   Publico: Profissionais independentes
+
+3. "Abertura de Empresa"
+   Secoes: Hero + Passo-a-passo + FAQ + Formulario + CTA
+   Publico: Servicos de abertura MEI/CNPJ
+
+4. "Consultoria Fiscal"
+   Secoes: Hero + Servicos detalhados + Numeros + Depoimentos + Contato
+   Publico: Consultorias tributarias especializadas
+
+Categorias de filtro: Contabilidade | Consultoria | MEI/Abertura | Geral
+
+
+================================================================================
+  9. BANCO DE DADOS (Tabelas Principais)
+================================================================================
+
+CORE:
+  profiles              -> Dados do usuario (nome, empresa, logo, ROLE)
+  templates             -> Modelos criados pelo admin (JSONB com editavel_cliente)
+  componentes_biblioteca -> Registro de componentes disponiveis
+  projetos              -> Landing pages criadas pelo cliente (SNAPSHOT em JSONB)
+  leads                 -> Leads capturados via formularios
+
+PLATAFORMA (da Fase 4):
+  admin_settings        -> Configuracoes da plataforma (key-value)
+  comunicados           -> Anuncios e comunicados (info, warning, maintenance, update)
+  comunicados_lidos     -> Tracking de leitura por usuario
+  modulos_aprendizado   -> Modulos de aprendizado
+  aulas                 -> Aulas dos modulos (video, anexos)
+  aulas_anexos          -> Anexos das aulas
+  progresso_aprendizado -> Progresso do usuario por aula
+  comentarios_aulas     -> Comentarios (com moderacao)
+  avaliacoes_aulas      -> Notas de 1 a 5
+  dicas_ajuda           -> Dicas contextuais por pagina/secao
+  paginas_legais        -> Termos, privacidade, LGPD (com versionamento)
+  paginas_legais_versoes -> Historico de versoes
+  aceites_termos        -> Aceitacao por usuario
+  visualizacoes_onboarding -> Tracking de onboarding visto
+
+Total: 19 tabelas
+
+Todas as tabelas com RLS + FORCE ROW LEVEL SECURITY.
+Templates, componentes e modulos publicados sao publicos para leitura.
+Admins tem full access em tabelas administrativas.
+Demais tabelas sao restritas por user_id.
+Funcao is_admin() usada em policies de admin.
+
+
+================================================================================
+  10. ESTRUTURA DO PROJETO (Bulletproof React)
+================================================================================
+
+src/
+  app/                -> Rotas, App.tsx, providers, router (com guards)
+  features/
+    auth/             -> Login, registro, sessao, perfil, ROLES
+    admin/            -> Backoffice completo
+      components/
+        layout/       -> AdminSidebar, AdminHeader, AdminLayout
+        template-builder/ -> Integracao Puck
+        importador/   -> Import de layouts
+        componentes/  -> Gestao da biblioteca
+        usuarios/     -> Gestao de usuarios
+        comunicados/  -> Gestao de comunicados
+        aprendizado/  -> Gestao de modulos e aulas
+        ajuda/        -> Gestao de dicas de ajuda
+        suporte/      -> Configuracao de suporte
+        onboarding/   -> Configuracao de onboarding
+        paginas-legais/ -> Termos, privacidade, LGPD
+        configuracoes/ -> Configuracoes gerais (admin_settings)
+    landing-builder/  -> Tela inicial + Editor visual DnD (cliente)
+    templates/        -> Galeria + templates contabeis (cliente)
+    componentes-lp/   -> Biblioteca de componentes (compartilhada admin+cliente)
+      components/     -> Componentes reais (HeroComImagem, etc.)
+      registry/       -> Registro para Puck (admin) e dnd-kit (cliente)
+    leads/            -> Formularios + gestao de leads
+    dashboard/        -> Gestao de projetos (cliente)
+    exportacao/       -> Export HTML/CSS/JS + preview + SEO
+    aprendizado/      -> Central de aprendizado (cliente)
+    notificacoes/     -> Comunicados e notificacoes (cliente)
+    legal/            -> Paginas legais publicas
+  components/
+    ui/               -> shadcn/ui (Button, Card, Input, Skeleton, etc.)
+    layout/           -> Sidebar, Header, MainLayout (cliente)
+    shared/           -> HelpTipButton, HelpTipDialog, SupportFab,
+                         AnnouncementBanner, NotificationBell,
+                         OnboardingVideoModal, TermsAcceptanceModal,
+                         RichTextEditor, EmptyState, motion wrappers
+  hooks/              -> useTheme, useMediaQuery, useDebounce
+  lib/                -> cn(), motion-variants.ts, formatters
+  types/              -> Tipos globais (incluindo UserRole)
+  config/             -> Variaveis de ambiente tipadas
+  integrations/
+    supabase/         -> Client + types gerados
+  utils/              -> Helpers compartilhados
+
+
+================================================================================
+  11. EPICOS E ROADMAP (Resumo)
+================================================================================
+
+FASE 1 — FUNDACAO + ADMIN (Semanas 1-14)
+  EP-01: Setup e Infraestrutura
+  EP-02: Autenticacao com Papeis (admin/cliente)
+  EP-13: Admin Backoffice Core
+  EP-14: Admin Template Builder (Puck)
+  EP-15: Admin Importacao de Layouts
+  EP-16: Admin Gestao da Biblioteca
+  -> ADMIN MVP
+
+FASE 2 — MVP CLIENTE (Semanas 15-26)
+  EP-03: Tela Inicial
+  EP-04: Galeria de Templates (com SNAPSHOT)
+  EP-05: Editor Visual (dnd-kit)
+  EP-06: Biblioteca de Componentes Base
+  EP-10: Dashboard e Gestao de Projetos
+  EP-11: Exportacao e Preview
+  -> MVP CLIENTE
+
+FASE 3 — NICHO + LEADS + SEO (Semanas 27-34)
+  EP-07: Templates Especializados para Contabilidade
+  EP-08: Componentes do Nicho Contabil
+  EP-09: Sistema de Leads
+  EP-12: SEO e Meta Tags
+  -> PRODUTO V1
+
+FASE 4 — PLATAFORMA COMPLETA (Semanas 35-42)
+  EP-17: Sistema de Aprendizado (modulos, aulas, progresso)
+  EP-18: Ajuda Contextual e Dicas (Help Tips)
+  EP-19: Comunicados e Notificacoes (Announcements)
+  EP-20: Onboarding, Suporte e Configuracoes
+  EP-21: Paginas Legais e Conformidade (Termos, LGPD)
+  -> PLATAFORMA COMPLETA V1.1
+
+Total: 21 epicos, ~42 semanas, 4 fases
+
+Detalhamento completo: docs/prd/PRD-GeradorLandingPage.md v3.0
+
+
+================================================================================
+  12. ARQUIVOS DE REFERENCIA DO PROJETO
+================================================================================
+
+Documentacao:
+  - docs/especificacao_tecnica.md    -> Padroes de dev, seguranca, arquitetura
+  - docs/design-system.md            -> Design system completo (cores, typo, componentes)
+  - docs/prd/PRD-GeradorLandingPage.md -> PRD v3.0 com arquitetura Admin + Cliente
+  - CLAUDE.md                        -> Instrucoes do projeto para o Claude
+
+Prints de Referencia:
+  - Screenshot_1.png                 -> Tela inicial (Comece do zero / Comece com modelo)
+  - Templates.png                    -> Galeria de templates com filtros
+  - comeceDoZero.png                 -> Editor visual com biblioteca de componentes
+
+Este arquivo:
+  - DocumentacaoGeradorLandingPage.txt -> Este documento (visao consolidada do produto)
+
+
+================================================================================
+  13. PROJETOS DE REFERENCIA (Funcionalidades Reaproveitadas)
+================================================================================
+
+diagnosticopro (Vite + React + Supabase):
+  - Admin layout com header horizontal + sidebar config
+  - Sistema de aprendizado completo (modulos, aulas, video, progresso)
+  - Help tips contextuais (HelpTipButton + HelpTipDialog)
+  - Sistema de comunicados com NotificationBell e banner
+  - Onboarding com video de boas-vindas
+  - Paginas legais com versionamento e aceitacao obrigatoria
+  - SupportFab (botao WhatsApp flutuante)
+  - Admin settings (key-value store)
+  - Rich text editor (TipTap)
+  - 25 UI components (Radix + Tailwind)
+  - Motion wrappers (Framer Motion)
+
+cclasstrib-web-1 (Next.js + GraphQL):
+  - Admin panel com navegacao por areas
+  - Gestao de usuarios com roles
+  - Sistema de aprendizado com comentarios
+  - Gestao de legal pages
+
+cclasstrib-api (NestJS + GraphQL + Prisma):
+  - Autenticacao JWT + OTP
+  - Gestao de usuarios com roles e guards
+  - API completa de aprendizado (modulos, aulas, progresso, comentarios)
+  - Sistema de termos com versionamento
+  - Email service multi-provider (Mailhog, Mailtrap, Resend)
+  - Storage service (MinIO/S3)
+  - Activity logging (audit trail)
+  - Sistema de pagamentos Stripe (referencia futura)
+
+================================================================================
+  FIM DO DOCUMENTO
+================================================================================
