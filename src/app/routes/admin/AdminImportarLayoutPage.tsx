@@ -15,11 +15,11 @@ import type { FetchHtmlResponse } from '@/features/importar-layout/types/importa
 
 const urlSchema = z
   .string()
-  .min(1, 'URL obrigatoria')
-  .url('URL invalida')
+  .min(1, 'URL obrigatória')
+  .url('URL inválida')
   .refine(
     (url) => url.startsWith('http://') || url.startsWith('https://'),
-    'URL deve comecar com http:// ou https://',
+    'URL deve começar com http:// ou https://',
   )
 
 type Step = 'input' | 'loading' | 'preview' | 'saving' | 'success' | 'error'

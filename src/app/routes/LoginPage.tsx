@@ -61,7 +61,7 @@ export function LoginPage() {
     if (verifyError) {
       setIsLoading(false)
       verifyingRef.current = false
-      setError('Codigo invalido ou expirado. Tente novamente.')
+      setError('Código inválido ou expirado. Tente novamente.')
       setOtpCode('')
       return
     }

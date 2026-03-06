@@ -153,7 +153,7 @@ export function IdentidadeVisualStep({ perfil, userId, onSave, onBack, isSaving 
                 className="h-10 w-10 cursor-pointer rounded border-0 bg-transparent"
               />
               <div>
-                <p className="text-sm font-medium text-gray-900">Cor Primaria</p>
+                <p className="text-sm font-medium text-gray-900">Cor Primária</p>
                 <p className="text-xs text-gray-500 uppercase">{corPrimaria}</p>
               </div>
             </div>
@@ -165,7 +165,7 @@ export function IdentidadeVisualStep({ perfil, userId, onSave, onBack, isSaving 
                 className="h-10 w-10 cursor-pointer rounded border-0 bg-transparent"
               />
               <div>
-                <p className="text-sm font-medium text-gray-900">Cor Secundaria</p>
+                <p className="text-sm font-medium text-gray-900">Cor Secundária</p>
                 <p className="text-xs text-gray-500 uppercase">{corSecundaria}</p>
               </div>
             </div>
@@ -175,7 +175,7 @@ export function IdentidadeVisualStep({ perfil, userId, onSave, onBack, isSaving 
         {/* Imagem de Fundo do Hero */}
         <div className="rounded-lg border border-gray-200 p-4">
           <label className="mb-3 block text-sm font-medium text-gray-700">
-            Deseja usar uma imagem de fundo no topo da pagina?
+            Deseja usar uma imagem de fundo no topo da página?
           </label>
           <div className="flex gap-3 mb-3">
             <button
@@ -198,14 +198,14 @@ export function IdentidadeVisualStep({ perfil, userId, onSave, onBack, isSaving 
                   : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
               }`}
             >
-              Nao
+              Não
             </button>
           </div>
 
           {usarImagemHero && (
             <div className="space-y-3 pt-2 border-t border-gray-100">
               <p className="text-xs text-gray-500">
-                Envie uma imagem personalizada ou use a imagem padrao com tema de contabilidade.
+                Envie uma imagem personalizada ou use a imagem padrão com tema de contabilidade.
               </p>
               <div className="flex items-center gap-4">
                 <img
@@ -225,7 +225,7 @@ export function IdentidadeVisualStep({ perfil, userId, onSave, onBack, isSaving 
                   </Button>
                   <p className="text-xs text-gray-400">PNG, JPG ou WebP. Recomendado: 1920x1080.</p>
                   {!heroImageUrl && (
-                    <p className="text-xs text-blue-500">Usando imagem padrao de contabilidade</p>
+                    <p className="text-xs text-blue-500">Usando imagem padrão de contabilidade</p>
                   )}
                 </div>
               </div>
@@ -235,7 +235,7 @@ export function IdentidadeVisualStep({ perfil, userId, onSave, onBack, isSaving 
                   onClick={() => setHeroImageUrl('')}
                   className="text-xs text-red-500 hover:text-red-700"
                 >
-                  Remover imagem (usar padrao)
+                  Remover imagem (usar padrão)
                 </button>
               )}
             </div>
@@ -253,7 +253,7 @@ export function IdentidadeVisualStep({ perfil, userId, onSave, onBack, isSaving 
                 <div className="h-10 w-10 rounded bg-gray-100" />
               )}
               <span className="font-semibold" style={{ color: corPrimaria }}>
-                {perfil.nome_empresa || 'Nome do Escritorio'}
+                {perfil.nome_empresa || 'Nome do Escritório'}
               </span>
             </div>
             <div className="mt-3 flex gap-2">

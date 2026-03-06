@@ -34,17 +34,17 @@ const adminNavItems: NavItem[] = [
   { label: 'Templates', href: '/admin/templates', icon: <FileText className="h-5 w-5" /> },
   { label: 'Seções', href: '/admin/secoes', icon: <LayoutGrid className="h-5 w-5" /> },
   { label: 'Importar Layout', href: '/admin/importar', icon: <Import className="h-5 w-5" /> },
-  { label: 'Usuarios', href: '/admin/usuarios', icon: <Users className="h-5 w-5" /> },
+  { label: 'Usuários', href: '/admin/usuarios', icon: <Users className="h-5 w-5" /> },
   { label: 'Comunicados', href: '/admin/comunicados', icon: <Megaphone className="h-5 w-5" /> },
   { label: 'Aprendizado', href: '/admin/aprendizado', icon: <GraduationCap className="h-5 w-5" /> },
   { label: 'Dicas de Ajuda', href: '/admin/ajuda', icon: <HelpCircle className="h-5 w-5" /> },
   { label: 'Suporte', href: '/admin/suporte', icon: <Headphones className="h-5 w-5" /> },
-  { label: 'Paginas Legais', href: '/admin/paginas-legais', icon: <Scale className="h-5 w-5" /> },
-  { label: 'Configuracoes de IA', href: '/admin/ia', icon: <Sparkles className="h-5 w-5" /> },
+  { label: 'Páginas Legais', href: '/admin/paginas-legais', icon: <Scale className="h-5 w-5" /> },
+  { label: 'Configurações de IA', href: '/admin/ia', icon: <Sparkles className="h-5 w-5" /> },
 ]
 
 const baseClienteNavItems: NavItem[] = [
-  { label: 'Inicio', href: '/', icon: <PlusSquare className="h-5 w-5" /> },
+  { label: 'Início', href: '/', icon: <PlusSquare className="h-5 w-5" /> },
   { label: 'Meus Projetos', href: '/dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
   { label: 'Meu Perfil', href: '/perfil', icon: <User className="h-5 w-5" /> },
   { label: 'Minha Conta', href: '/minha-conta', icon: <Settings className="h-5 w-5" /> },

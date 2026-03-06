@@ -162,7 +162,7 @@ export function PerfilEmpresaPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Perfil da Empresa</h1>
         <p className="text-sm text-gray-500">
-          Edite as informacoes do seu escritorio. Esses dados alimentam a geracao de landing pages.
+          Edite as informações do seu escritório. Esses dados alimentam a geração de landing pages.
         </p>
       </div>
 
@@ -176,8 +176,8 @@ export function PerfilEmpresaPage() {
       <Section
         id="dados"
         icon={<Building2 className="h-5 w-5" />}
-        title="Dados do Escritorio"
-        summary={perfil.nome_empresa || 'Nenhuma informacao preenchida'}
+        title="Dados do Escritório"
+        summary={perfil.nome_empresa || 'Nenhuma informação preenchida'}
         isOpen={openSection === 'dados'}
         onToggle={() => toggleSection('dados')}
         isSaving={savingSection === 'dados'}
@@ -258,8 +258,8 @@ export function PerfilEmpresaPage() {
       <Section
         id="sobre"
         icon={<BookOpen className="h-5 w-5" />}
-        title="Sobre o Escritorio"
-        summary={perfil.historia ? 'Historia e valores preenchidos' : 'Nenhuma informacao'}
+        title="Sobre o Escritório"
+        summary={perfil.historia ? 'História e valores preenchidos' : 'Nenhuma informação'}
         isOpen={openSection === 'sobre'}
         onToggle={() => toggleSection('sobre')}
         isSaving={savingSection === 'sobre'}
@@ -365,7 +365,7 @@ function DadosEscritorioForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">Nome do Escritorio</label>
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">Nome do Escritório</label>
           <Input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome da empresa" />
         </div>
         <div>
@@ -386,13 +386,13 @@ function DadosEscritorioForm({
           </select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">Ano de Fundacao</label>
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">Ano de Fundação</label>
           <Input value={ano} onChange={(e) => setAno(e.target.value)} placeholder="2010" type="number" />
         </div>
       </div>
       <div>
         <label className="mb-1.5 block text-sm font-medium text-gray-700">Slogan</label>
-        <Input value={slogan} onChange={(e) => setSlogan(e.target.value)} placeholder="Frase que define seu escritorio" />
+        <Input value={slogan} onChange={(e) => setSlogan(e.target.value)} placeholder="Frase que define seu escritório" />
       </div>
       <div className="flex justify-end pt-2">
         <SaveButton isSaving={isSaving} isSaved={isSaved} />
@@ -896,22 +896,22 @@ function SobreForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-gray-700">Historia</label>
-        <Textarea value={historia} onChange={(e) => setHistoria(e.target.value)} rows={3} placeholder="Conte a historia do escritorio..." />
+        <label className="mb-1.5 block text-sm font-medium text-gray-700">História</label>
+        <Textarea value={historia} onChange={(e) => setHistoria(e.target.value)} rows={3} placeholder="Conte a história do escritório..." />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">Missao</label>
-          <Textarea value={missao} onChange={(e) => setMissao(e.target.value)} rows={2} placeholder="Missao do escritorio" />
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">Missão</label>
+          <Textarea value={missao} onChange={(e) => setMissao(e.target.value)} rows={2} placeholder="Missão do escritório" />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">Visao</label>
-          <Textarea value={visao} onChange={(e) => setVisao(e.target.value)} rows={2} placeholder="Visao do escritorio" />
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">Visão</label>
+          <Textarea value={visao} onChange={(e) => setVisao(e.target.value)} rows={2} placeholder="Visão do escritório" />
         </div>
       </div>
       <div>
         <label className="mb-1.5 block text-sm font-medium text-gray-700">Valores</label>
-        <Textarea value={valores} onChange={(e) => setValores(e.target.value)} rows={2} placeholder="Etica, transparencia, inovacao..." />
+        <Textarea value={valores} onChange={(e) => setValores(e.target.value)} rows={2} placeholder="Ética, transparência, inovação..." />
       </div>
       <div>
         <label className="mb-1.5 block text-sm font-medium text-gray-700">Diferenciais</label>

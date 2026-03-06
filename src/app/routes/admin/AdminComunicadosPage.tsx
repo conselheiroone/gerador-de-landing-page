@@ -40,9 +40,9 @@ import {
 import type { Announcement, AnnouncementType } from '@/features/admin/types/admin.types'
 
 const TYPE_CONFIG: Record<AnnouncementType, { icon: typeof Info; color: string; label: string }> = {
-  info: { icon: Info, color: 'text-blue-600 bg-blue-100', label: 'Informacao' },
+  info: { icon: Info, color: 'text-blue-600 bg-blue-100', label: 'Informação' },
   warning: { icon: AlertTriangle, color: 'text-amber-600 bg-amber-100', label: 'Aviso' },
-  maintenance: { icon: Wrench, color: 'text-orange-600 bg-orange-100', label: 'Manutencao' },
+  maintenance: { icon: Wrench, color: 'text-orange-600 bg-orange-100', label: 'Manutenção' },
   update: { icon: Rocket, color: 'text-emerald-600 bg-emerald-100', label: 'Novidade' },
 }
 

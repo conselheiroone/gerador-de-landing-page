@@ -187,7 +187,7 @@ export const EditorPage = () => {
                     color="#111827"
                   />
                   <TextComponent
-                    text="Arraste componentes da barra lateral para construir sua pagina. Clique em qualquer elemento para editar suas propriedades."
+                    text="Arraste componentes da barra lateral para construir sua página. Clique em qualquer elemento para editar suas propriedades."
                     fontSize="18"
                     textAlign="center"
                     color="#6b7280"

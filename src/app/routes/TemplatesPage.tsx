@@ -154,7 +154,7 @@ export function TemplatesPage() {
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
-          Selecione um modelo para comecar
+          Selecione um modelo para começar
         </h1>
         <p className="mt-1 text-sm text-gray-500">
           Escolha um template e personalize no editor visual

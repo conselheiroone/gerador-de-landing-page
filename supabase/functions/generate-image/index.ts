@@ -21,7 +21,7 @@ import { createClient, SupabaseClient } from 'https://esm.sh/@supabase/supabase-
 
 const AVAILABLE_MODELS = [
   {
-    id: 'google/gemini-flash-3.1-image-preview',
+    id: 'google/gemini-3.1-flash-image-preview',
     alias: 'Gemini Flash',
     apiType: 'chat' as const, // usa /chat/completions
   },

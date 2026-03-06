@@ -618,7 +618,7 @@ function buildFeaturesSection(section: ParsedSection, sectionIndex: number, pale
   const headerContainer: TemplateNode = {
     type: 'ContainerComponent',
     isCanvas: true,
-    displayName: 'Cabecalho',
+    displayName: 'Cabeçalho',
     props: {
       background: 'transparent',
       padding: 0,
@@ -685,7 +685,7 @@ function buildFeaturesSection(section: ParsedSection, sectionIndex: number, pale
       },
       {
         type: 'TextComponent',
-        displayName: 'Descricao',
+        displayName: 'Descrição',
         props: {
           text: 'Descrição do serviço. Edite com suas informações.',
           fontSize: '14',
@@ -720,7 +720,7 @@ function buildFeaturesSection(section: ParsedSection, sectionIndex: number, pale
   return {
     type: 'FeaturesSectionComponent',
     isCanvas: true,
-    displayName: 'Servicos',
+    displayName: 'Serviços',
     props: {
       background: colors.bg,
       columns,
@@ -757,7 +757,7 @@ function buildTestimonialsSection(section: ParsedSection, sectionIndex: number, 
     children: [
       {
         type: 'TextComponent',
-        displayName: 'Citacao',
+        displayName: 'Citação',
         props: {
           text: '"Depoimento do cliente. Edite com informações reais."',
           fontSize: '14',
@@ -842,7 +842,7 @@ function buildAboutSection(section: ParsedSection, sectionIndex: number, palette
       },
       {
         type: 'TextComponent',
-        displayName: 'Descricao',
+        displayName: 'Descrição',
         props: {
           text: paragraphText(section, 'Descrição sobre a empresa. Edite com suas informações.'),
           fontSize: '16',
@@ -893,7 +893,7 @@ function buildAboutSection(section: ParsedSection, sectionIndex: number, palette
       children: [
         {
           type: 'HeadingComponent',
-          displayName: 'Numero',
+          displayName: 'Número',
           props: {
             text: '00+',
             tagName: 'h3',
@@ -1120,7 +1120,7 @@ function buildGallerySection(section: ParsedSection, sectionIndex: number, palet
     if (hasText) {
       cardChildren.push({
         type: 'TextComponent',
-        displayName: 'Descricao',
+        displayName: 'Descrição',
         props: {
           text: 'Descrição do item. Edite com suas informações.',
           fontSize: '14',
@@ -1211,7 +1211,7 @@ function buildContactSection(section: ParsedSection, sectionIndex: number, palet
       },
       {
         type: 'TextComponent',
-        displayName: 'Descricao',
+        displayName: 'Descrição',
         props: {
           text: paragraphText(section, 'Entre em contato pelos canais abaixo.'),
           fontSize: '16',
@@ -1591,7 +1591,7 @@ export function converterParaTemplate(response: FetchHtmlResponse): ImportResult
   const root: TemplateNode = {
     type: 'ContainerComponent',
     isCanvas: true,
-    displayName: 'Pagina',
+    displayName: 'Página',
     props: {
       background: rootBg,
       padding: 0,
@@ -1605,7 +1605,7 @@ export function converterParaTemplate(response: FetchHtmlResponse): ImportResult
       radius: 0,
       ...(fontFamily ? { fontFamily } : {}),
     },
-    custom: { displayName: 'Pagina' },
+    custom: { displayName: 'Página' },
     children: sectionNodes,
   }
 

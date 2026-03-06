@@ -48,7 +48,7 @@ export function HomePage() {
         Crie sua Landing Page
       </h1>
       <p className="text-gray-500">
-        {isAvancado ? 'Escolha como deseja comecar' : 'Gere automaticamente com os dados do seu escritorio'}
+        {isAvancado ? 'Escolha como deseja começar' : 'Gere automaticamente com os dados do seu escritório'}
       </p>
 
       <div className="mt-4 grid w-full max-w-lg gap-4">
@@ -71,7 +71,7 @@ export function HomePage() {
               {generating ? 'Gerando...' : 'Gerar do meu perfil'}
             </h3>
             <p className="text-xs text-gray-500">
-              Crie automaticamente com os dados do seu escritorio
+              Crie automaticamente com os dados do seu escritório
             </p>
           </div>
           <span className="absolute right-4 top-4 rounded-full bg-brand-500 px-2 py-0.5 text-[10px] font-semibold text-white">

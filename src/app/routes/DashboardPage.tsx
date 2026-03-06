@@ -95,7 +95,7 @@ export function DashboardPage() {
             Nenhum projeto ainda
           </h3>
           <p className="mt-1 text-sm text-gray-500">
-            Crie seu primeiro projeto para comecar
+            Crie seu primeiro projeto para começar
           </p>
           <Button className="mt-4" onClick={() => navigate('/')}>
             Criar Projeto

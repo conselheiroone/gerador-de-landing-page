@@ -99,7 +99,7 @@ export const ExportModal = ({ open, onClose, pageTitle }: ExportModalProps) => {
             }`}
           >
             <FileCode className="w-4 h-4" />
-            Codigo HTML
+            Código HTML
           </button>
         </div>
 
@@ -149,13 +149,13 @@ export const ExportModal = ({ open, onClose, pageTitle }: ExportModalProps) => {
             <div className="flex items-start gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
               <span className="text-amber-500 text-base leading-none mt-0.5">&#9888;</span>
               <p className="text-xs text-amber-700">
-                <strong>Imagens locais detectadas:</strong> Algumas imagens apontam para o servidor local (localhost) e nao funcionarao fora deste computador. Para publicar, faca upload das imagens e atualize as URLs.
+                <strong>Imagens locais detectadas:</strong> Algumas imagens apontam para o servidor local (localhost) e não funcionarão fora deste computador. Para publicar, faça upload das imagens e atualize as URLs.
               </p>
             </div>
           )}
           <div className="flex items-center justify-between">
           <p className="text-xs text-gray-400">
-            A pagina exportada e totalmente responsiva e independente.
+            A página exportada é totalmente responsiva e independente.
           </p>
           <div className="flex items-center gap-3">
             <button
@@ -163,7 +163,7 @@ export const ExportModal = ({ open, onClose, pageTitle }: ExportModalProps) => {
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <Download className="w-4 h-4" />
-              HTML Unico
+              HTML Único
             </button>
             <button
               onClick={() => handleDownload('html-css-zip')}

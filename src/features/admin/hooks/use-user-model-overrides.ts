@@ -102,7 +102,7 @@ export function useUserModelOverrides() {
       }
 
       if (!data || data.length === 0) {
-        const rslError = { message: 'Falha ao salvar: permissao negada (RLS). Verifique se voce e admin.' }
+        const rslError = { message: 'Falha ao salvar: permissão negada (RLS). Verifique se você é admin.' }
         setError(rslError.message)
         setSaving(false)
         return { error: rslError }

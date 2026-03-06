@@ -345,7 +345,7 @@ function sobreTexto(): TemplateNode {
       },
       {
         type: 'TextComponent',
-        displayName: 'Descricao',
+        displayName: 'Descrição',
         props: {
           text: 'Desde a nossa fundação, trabalhamos com dedicação para oferecer as melhores soluções do mercado. Nossa equipe é formada por profissionais experientes e comprometidos com a excelência em cada projeto.',
           fontSize: '16',
@@ -434,7 +434,7 @@ function sobreDuasColunas(): TemplateNode {
           },
           {
             type: 'TextComponent',
-            displayName: 'Descricao',
+            displayName: 'Descrição',
             props: {
               text: 'Com anos de experiência no mercado, construímos nossa reputação com base na confiança e na entrega de resultados excepcionais para nossos clientes.',
               fontSize: '16',

@@ -166,7 +166,7 @@ export function AdminSuportePage() {
       <motion.div variants={staggerItem} className="mt-6 flex items-center gap-3">
         <Button onClick={handleSave} disabled={saving}>
           <Save className="mr-2 h-4 w-4" />
-          {saving ? 'Salvando...' : 'Salvar Configuracoes'}
+          {saving ? 'Salvando...' : 'Salvar Configurações'}
         </Button>
         {saved && (
           <span className="text-sm font-medium text-green-600">Salvo com sucesso!</span>
