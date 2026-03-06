@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Page background -->
+  <rect x="4" y="2" width="24" height="28" rx="3" fill="#6366f1"/>
+  <!-- Header bar -->
+  <rect x="7" y="5" width="18" height="4" rx="1" fill="#c7d2fe"/>
+  <!-- Left column block -->
+  <rect x="7" y="11" width="8" height="6" rx="1" fill="#a5b4fc"/>
+  <!-- Right column block -->
+  <rect x="17" y="11" width="8" height="6" rx="1" fill="#a5b4fc"/>
+  <!-- Full-width block -->
+  <rect x="7" y="19" width="18" height="3" rx="1" fill="#c7d2fe"/>
+  <!-- Footer block -->
+  <rect x="7" y="24" width="18" height="3" rx="1" fill="#818cf8"/>
+</svg>
