@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Briefcase, Plus, X, GripVertical } from 'lucide-react'
+import { Briefcase, Plus, X, GripVertical, ChevronDown, ChevronUp } from 'lucide-react'
 import { slideUp } from '@/lib/motion-variants'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,6 +19,7 @@ export function ServicosStep({ perfil, onSave, onBack, isSaving }: ServicosStepP
   const servicosIniciais = (perfil.servicos as ServicoItem[] | null) ?? []
   const [servicos, setServicos] = useState<ServicoItem[]>(servicosIniciais)
   const [novoServico, setNovoServico] = useState('')
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
 
   function adicionarServico(nome: string) {
     const trimmed = nome.trim()
@@ -30,6 +31,12 @@ export function ServicosStep({ perfil, onSave, onBack, isSaving }: ServicosStepP
 
   function removerServico(index: number) {
     setServicos(prev => prev.filter((_, i) => i !== index))
+    if (expandedIndex === index) setExpandedIndex(null)
+    else if (expandedIndex !== null && expandedIndex > index) setExpandedIndex(expandedIndex - 1)
+  }
+
+  function updateDescricao(index: number, descricao: string) {
+    setServicos(prev => prev.map((s, i) => i === index ? { ...s, descricao } : s))
   }
 
   function toggleSugerido(nome: string) {
@@ -128,17 +135,41 @@ export function ServicosStep({ perfil, onSave, onBack, isSaving }: ServicosStepP
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 10 }}
-                    className="flex items-center gap-2 rounded-lg border border-gray-100 bg-white px-3 py-2"
+                    className="rounded-lg border border-gray-100 bg-white"
                   >
-                    <GripVertical className="h-4 w-4 text-gray-300" />
-                    <span className="flex-1 text-sm text-gray-900">{servico.nome}</span>
-                    <button
-                      type="button"
-                      onClick={() => removerServico(index)}
-                      className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </button>
+                    <div className="flex items-center gap-2 px-3 py-2">
+                      <GripVertical className="h-4 w-4 text-gray-300" />
+                      <span className="flex-1 text-sm text-gray-900">{servico.nome}</span>
+                      <button
+                        type="button"
+                        onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
+                        className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                        title="Adicionar descrição"
+                      >
+                        {expandedIndex === index ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removerServico(index)}
+                        className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                    {expandedIndex === index && (
+                      <div className="border-t border-gray-50 px-3 pb-3 pt-2">
+                        <textarea
+                          value={servico.descricao ?? ''}
+                          onChange={(e) => updateDescricao(index, e.target.value)}
+                          placeholder="Descreva este serviço para a landing page (opcional)"
+                          rows={2}
+                          className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20"
+                        />
+                        <p className="mt-1 text-[10px] text-gray-400">
+                          Este texto aparecerá no card do serviço na landing page.
+                        </p>
+                      </div>
+                    )}
                   </motion.div>
                 ))}
               </AnimatePresence>

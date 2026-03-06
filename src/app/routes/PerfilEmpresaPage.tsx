@@ -17,6 +17,7 @@ import {
   Star,
   Download,
   ExternalLink,
+  X,
 } from 'lucide-react'
 import {
   fetchDepoimentos,
@@ -277,8 +278,8 @@ export function PerfilEmpresaPage() {
       <Section
         id="servicos"
         icon={<Briefcase className="h-5 w-5" />}
-        title="Servicos"
-        summary={perfil.servicos.length > 0 ? `${perfil.servicos.length} servico(s)` : 'Nenhum servico'}
+        title="Serviços"
+        summary={perfil.servicos.length > 0 ? `${perfil.servicos.length} serviço(s)` : 'Nenhum serviço'}
         isOpen={openSection === 'servicos'}
         onToggle={() => toggleSection('servicos')}
         isSaving={savingSection === 'servicos'}
@@ -954,6 +955,7 @@ function ServicosForm({
 }) {
   const [servicos, setServicos] = useState<ServicoItem[]>(perfil.servicos ?? [])
   const [novoServico, setNovoServico] = useState('')
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
 
   function addServico(nome: string) {
     const n = nome.trim()
@@ -961,6 +963,16 @@ function ServicosForm({
       setServicos(prev => [...prev, { nome: n }])
       setNovoServico('')
     }
+  }
+
+  function updateDescricao(index: number, descricao: string) {
+    setServicos(prev => prev.map((s, i) => i === index ? { ...s, descricao } : s))
+  }
+
+  function removeServico(index: number) {
+    setServicos(prev => prev.filter((_, idx) => idx !== index))
+    if (editingIndex === index) setEditingIndex(null)
+    else if (editingIndex !== null && editingIndex > index) setEditingIndex(editingIndex - 1)
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -971,7 +983,7 @@ function ServicosForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-gray-700">Servicos sugeridos</label>
+        <label className="mb-1.5 block text-sm font-medium text-gray-700">Serviços sugeridos</label>
         <div className="flex flex-wrap gap-1.5">
           {SERVICOS_SUGERIDOS.map(s => (
             <button
@@ -991,21 +1003,43 @@ function ServicosForm({
         </div>
       </div>
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-gray-700">Adicionar servico personalizado</label>
+        <label className="mb-1.5 block text-sm font-medium text-gray-700">Adicionar serviço personalizado</label>
         <div className="flex gap-2">
-          <Input value={novoServico} onChange={(e) => setNovoServico(e.target.value)} placeholder="Nome do servico" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addServico(novoServico) } }} />
+          <Input value={novoServico} onChange={(e) => setNovoServico(e.target.value)} placeholder="Nome do serviço" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addServico(novoServico) } }} />
           <Button type="button" variant="outline" size="sm" onClick={() => addServico(novoServico)}>
             <Plus className="h-4 w-4" />
           </Button>
         </div>
       </div>
       {servicos.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className="space-y-1.5">
           {servicos.map((s, i) => (
-            <span key={i} className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
-              {s.nome}
-              <button type="button" onClick={() => setServicos(prev => prev.filter((_, idx) => idx !== i))} className="hover:text-red-500">&times;</button>
-            </span>
+            <div key={i} className="rounded-lg border border-gray-100 bg-white">
+              <div className="flex items-center gap-2 px-3 py-2">
+                <span className="flex-1 text-sm font-medium text-brand-700">{s.nome}</span>
+                <button
+                  type="button"
+                  onClick={() => setEditingIndex(editingIndex === i ? null : i)}
+                  className="rounded px-1.5 py-0.5 text-[10px] text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                >
+                  {s.descricao ? 'editar' : '+ descrição'}
+                </button>
+                <button type="button" onClick={() => removeServico(i)} className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500">
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              {editingIndex === i && (
+                <div className="border-t border-gray-50 px-3 pb-3 pt-2">
+                  <textarea
+                    value={s.descricao ?? ''}
+                    onChange={(e) => updateDescricao(i, e.target.value)}
+                    placeholder="Descreva este serviço para a landing page (opcional)"
+                    rows={2}
+                    className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20"
+                  />
+                </div>
+              )}
+            </div>
           ))}
         </div>
       )}
