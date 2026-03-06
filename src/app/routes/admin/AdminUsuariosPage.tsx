@@ -23,6 +23,9 @@ import {
   UserPlus,
   Mail,
   Pencil,
+  Phone,
+  Briefcase,
+  Clock,
 } from 'lucide-react'
 import type { UserRole } from '@/types'
 import type { AdminUser } from '@/features/admin/types/admin.types'
@@ -52,6 +55,8 @@ export function AdminUsuariosPage() {
   const [cadastroOpen, setCadastroOpen] = useState(false)
   const [cadastroEmail, setCadastroEmail] = useState('')
   const [cadastroNome, setCadastroNome] = useState('')
+  const [cadastroTelefone, setCadastroTelefone] = useState('')
+  const [cadastroCargo, setCadastroCargo] = useState('')
   const [cadastroRole, setCadastroRole] = useState<UserRole>('cliente')
   const [cadastroError, setCadastroError] = useState('')
   const [cadastroLoading, setCadastroLoading] = useState(false)
@@ -61,7 +66,7 @@ export function AdminUsuariosPage() {
     if (!cadastroEmail.trim()) { setCadastroError('Email é obrigatório'); return }
     setCadastroLoading(true)
     setCadastroError('')
-    const { error } = await cadastrarUsuario(cadastroEmail.trim(), cadastroNome.trim(), cadastroRole)
+    const { error } = await cadastrarUsuario(cadastroEmail.trim(), cadastroNome.trim(), cadastroRole, cadastroTelefone.trim() || undefined, cadastroCargo.trim() || undefined)
     setCadastroLoading(false)
     if (error) {
       setCadastroError(error.message)
@@ -69,6 +74,8 @@ export function AdminUsuariosPage() {
       setCadastroSuccess(true)
       setCadastroEmail('')
       setCadastroNome('')
+      setCadastroTelefone('')
+      setCadastroCargo('')
       setCadastroRole('cliente')
       setTimeout(() => { setCadastroSuccess(false); setCadastroOpen(false) }, 2000)
     }
@@ -77,6 +84,9 @@ export function AdminUsuariosPage() {
   // ── Editar ─────────────────────────────────────────────
   const [editUser, setEditUser] = useState<AdminUser | null>(null)
   const [editNome, setEditNome] = useState('')
+  const [editTelefone, setEditTelefone] = useState('')
+  const [editCargo, setEditCargo] = useState('')
+  const [editStatus, setEditStatus] = useState<'ativo' | 'suspenso' | 'pendente'>('ativo')
   const [editRole, setEditRole] = useState<UserRole>('cliente')
   const [editError, setEditError] = useState('')
   const [editLoading, setEditLoading] = useState(false)
@@ -84,6 +94,9 @@ export function AdminUsuariosPage() {
   const openEdit = (user: AdminUser) => {
     setEditUser(user)
     setEditNome(user.nome ?? '')
+    setEditTelefone(user.telefone ?? '')
+    setEditCargo(user.cargo ?? '')
+    setEditStatus(user.status ?? 'ativo')
     setEditRole(user.role as UserRole)
     setEditError('')
   }
@@ -92,7 +105,13 @@ export function AdminUsuariosPage() {
     if (!editUser) return
     setEditLoading(true)
     setEditError('')
-    const { error } = await updateUser(editUser.id, { nome: editNome, role: editRole })
+    const { error } = await updateUser(editUser.id, {
+      nome: editNome,
+      role: editRole,
+      telefone: editTelefone,
+      cargo: editCargo,
+      status: editStatus,
+    })
     setEditLoading(false)
     if (error) {
       setEditError(error.message)
@@ -201,9 +220,25 @@ export function AdminUsuariosPage() {
                         <p className="truncate font-medium text-gray-900">{user.nome ?? 'Sem nome'}</p>
                         {user.role === 'admin' && <Badge variant="success">Admin</Badge>}
                         {user.role === 'avancado' && <Badge variant="primary">Avancado</Badge>}
+                        {user.status === 'suspenso' && <Badge variant="error">Suspenso</Badge>}
+                        {user.status === 'pendente' && <Badge variant="secondary">Pendente</Badge>}
                         {isCurrentUser && <Badge variant="secondary">Voce</Badge>}
                       </div>
-                      <p className="truncate text-sm text-gray-500">{user.email}</p>
+                      <div className="flex items-center gap-3 text-sm text-gray-500">
+                        <span className="truncate">{user.email}</span>
+                        {user.cargo && (
+                          <span className="flex items-center gap-1">
+                            <Briefcase className="h-3 w-3" />
+                            {user.cargo}
+                          </span>
+                        )}
+                        {user.telefone && (
+                          <span className="flex items-center gap-1">
+                            <Phone className="h-3 w-3" />
+                            {user.telefone}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     {!isCurrentUser && (
                       <div className="flex items-center gap-2">
@@ -267,9 +302,19 @@ export function AdminUsuariosPage() {
                 <p className="text-sm font-medium text-gray-700">Email *</p>
                 <Input type="email" placeholder="usuario@exemplo.com" value={cadastroEmail} onChange={(e) => setCadastroEmail(e.target.value)} />
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <p className="text-sm font-medium text-gray-700">Nome</p>
+                  <Input placeholder="Nome completo" value={cadastroNome} onChange={(e) => setCadastroNome(e.target.value)} />
+                </div>
+                <div className="space-y-1.5">
+                  <p className="text-sm font-medium text-gray-700">Telefone</p>
+                  <Input placeholder="(11) 99999-9999" value={cadastroTelefone} onChange={(e) => setCadastroTelefone(e.target.value)} />
+                </div>
+              </div>
               <div className="space-y-1.5">
-                <p className="text-sm font-medium text-gray-700">Nome</p>
-                <Input placeholder="Nome completo (opcional)" value={cadastroNome} onChange={(e) => setCadastroNome(e.target.value)} />
+                <p className="text-sm font-medium text-gray-700">Cargo</p>
+                <Input placeholder="Ex: Contador, Gerente" value={cadastroCargo} onChange={(e) => setCadastroCargo(e.target.value)} />
               </div>
               <div className="space-y-1.5">
                 <p className="text-sm font-medium text-gray-700">Nivel de acesso</p>
@@ -313,21 +358,50 @@ export function AdminUsuariosPage() {
               <p className="text-sm font-medium text-gray-700">Email</p>
               <Input value={editUser?.email ?? ''} disabled className="bg-gray-50 text-gray-500" />
             </div>
-            <div className="space-y-1.5">
-              <p className="text-sm font-medium text-gray-700">Nome</p>
-              <Input placeholder="Nome completo" value={editNome} onChange={(e) => setEditNome(e.target.value)} />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <p className="text-sm font-medium text-gray-700">Nome</p>
+                <Input placeholder="Nome completo" value={editNome} onChange={(e) => setEditNome(e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <p className="text-sm font-medium text-gray-700">Telefone</p>
+                <Input placeholder="(11) 99999-9999" value={editTelefone} onChange={(e) => setEditTelefone(e.target.value)} />
+              </div>
             </div>
             <div className="space-y-1.5">
-              <p className="text-sm font-medium text-gray-700">Nivel de acesso</p>
-              <Select value={editRole} onValueChange={(v) => setEditRole(v as UserRole)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="cliente">Cliente — apenas gerar do perfil</SelectItem>
-                  <SelectItem value="avancado">Avancado — gerar + editor livre</SelectItem>
-                  <SelectItem value="admin">Admin — acesso total</SelectItem>
-                </SelectContent>
-              </Select>
+              <p className="text-sm font-medium text-gray-700">Cargo</p>
+              <Input placeholder="Ex: Gerente de Marketing, Desenvolvedor" value={editCargo} onChange={(e) => setEditCargo(e.target.value)} />
             </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <p className="text-sm font-medium text-gray-700">Status</p>
+                <Select value={editStatus} onValueChange={(v) => setEditStatus(v as 'ativo' | 'suspenso' | 'pendente')}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ativo">Ativo</SelectItem>
+                    <SelectItem value="pendente">Pendente</SelectItem>
+                    <SelectItem value="suspenso">Suspenso</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <p className="text-sm font-medium text-gray-700">Nivel de acesso</p>
+                <Select value={editRole} onValueChange={(v) => setEditRole(v as UserRole)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cliente">Cliente</SelectItem>
+                    <SelectItem value="avancado">Avancado</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            {editUser?.ultimo_acesso && (
+              <p className="flex items-center gap-1.5 text-xs text-gray-400">
+                <Clock className="h-3 w-3" />
+                Ultimo acesso: {new Date(editUser.ultimo_acesso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+              </p>
+            )}
             {editError && <p className="text-sm text-red-600">{editError}</p>}
           </div>
           <DialogFooter>

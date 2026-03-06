@@ -56,13 +56,13 @@ export function useUsersAdmin() {
     return setUserRole(userId, newRole as UserRole)
   }, [setUserRole])
 
-  const cadastrarUsuario = useCallback(async (email: string, nome: string, role: UserRole) => {
+  const cadastrarUsuario = useCallback(async (email: string, nome: string, role: UserRole, telefone?: string, cargo?: string) => {
     const { data: { session } } = await supabase.auth.getSession()
     const token = session?.access_token
     if (!token) return { error: new Error('Não autenticado') }
 
     const res = await supabase.functions.invoke('cadastrar-usuario', {
-      body: { email, nome, role },
+      body: { email, nome, role, telefone, cargo },
       headers: { Authorization: `Bearer ${token}` },
     })
 
@@ -74,11 +74,24 @@ export function useUsersAdmin() {
     return { error: null }
   }, [loadUsers, page, search])
 
-  const updateUser = useCallback(async (userId: string, dados: { nome: string; role: UserRole }) => {
+  const updateUser = useCallback(async (userId: string, dados: {
+    nome: string
+    role: UserRole
+    telefone?: string
+    cargo?: string
+    status?: 'ativo' | 'suspenso' | 'pendente'
+  }) => {
     const { error } = await supabase
       .from('profiles')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .update({ nome: dados.nome, role: dados.role as any, updated_at: new Date().toISOString() })
+      .update({
+        nome: dados.nome,
+        role: dados.role as any,
+        telefone: dados.telefone ?? null,
+        cargo: dados.cargo ?? null,
+        status: (dados.status ?? 'ativo') as any,
+        updated_at: new Date().toISOString(),
+      })
       .eq('id', userId)
 
     if (!error) {

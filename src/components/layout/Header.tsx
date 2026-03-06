@@ -32,15 +32,13 @@ export function Header() {
 
         <div className="flex items-center gap-3">
           <Avatar
-            src={profile?.logo_url}
+            src={profile?.avatar_url ?? profile?.logo_url}
             fallback={profile?.nome ?? profile?.email ?? 'U'}
             size="sm"
           />
-          {profile?.nome && (
-            <span className="text-sm font-medium text-gray-700">
-              {profile.nome}
-            </span>
-          )}
+          <span className="text-sm font-medium text-gray-700">
+            {profile?.nome ?? profile?.email?.split('@')[0] ?? ''}
+          </span>
           <Button variant="ghost" size="sm" onClick={signOut}>
             Sair
           </Button>

@@ -48,7 +48,7 @@ serve(async (req) => {
       return respond({ error: 'Apenas administradores podem cadastrar usuários' })
     }
 
-    const { email, nome, role } = await req.json()
+    const { email, nome, role, telefone, cargo } = await req.json()
     if (!email) return respond({ error: 'Email é obrigatório' })
 
     const validRoles = ['admin', 'avancado', 'cliente']
@@ -63,11 +63,16 @@ serve(async (req) => {
 
     if (createError) return respond({ error: createError.message })
 
-    // Atualizar profile com nome e role
+    // Atualizar profile com nome, role, telefone e cargo
     if (createData.user) {
       await supabaseAdmin
         .from('profiles')
-        .update({ nome: nome ?? null, role: userRole })
+        .update({
+          nome: nome ?? null,
+          role: userRole,
+          telefone: telefone ?? null,
+          cargo: cargo ?? null,
+        })
         .eq('id', createData.user.id)
     }
 

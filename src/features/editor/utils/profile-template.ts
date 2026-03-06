@@ -1201,7 +1201,7 @@ function buildCta(
   // Texto do botão adapta ao ramo
   const nomeFantasia = perfil.nome_fantasia || perfil.razao_social || ''
   const ramoLower = perfil.ramo_atividade?.toLowerCase() || ''
-  let ctaBtnText = 'Fale conosco'
+  let ctaBtnText = 'Fale Conosco'
   if (whatsappHref) {
     ctaBtnText = 'Falar pelo WhatsApp'
   } else if (ramoLower.includes('contab') || ramoLower.includes('fiscal')) {

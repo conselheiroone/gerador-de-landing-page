@@ -23,10 +23,12 @@ import { AdminAprendizadoModuloPage } from './routes/admin/AdminAprendizadoModul
 import { AdminDicasAjudaPage } from './routes/admin/AdminDicasAjudaPage'
 import { AdminImportarLayoutPage } from './routes/admin/AdminImportarLayoutPage'
 import { AdminSecoesPage } from './routes/admin/AdminSecoesPage'
+import { AdminIAPage } from './routes/admin/AdminIAPage'
 import { EditorNovoPage } from './routes/EditorNovoPage'
 import { PerfilEmpresaPage } from './routes/PerfilEmpresaPage'
 import { AprendizadoPage } from './routes/AprendizadoPage'
 import { AprendizadoModuloPage } from './routes/AprendizadoModuloPage'
+import { MinhaContaPage } from './routes/MinhaContaPage'
 
 export const router = createBrowserRouter([
   // Public routes (no layout)
@@ -68,6 +70,7 @@ export const router = createBrowserRouter([
               { path: '/', element: <HomePage /> },
               { path: '/dashboard', element: <DashboardPage /> },
               { path: '/perfil', element: <PerfilEmpresaPage /> },
+              { path: '/minha-conta', element: <MinhaContaPage /> },
               { path: '/aprendizado', element: <AprendizadoPage /> },
               { path: '/aprendizado/modulo/:moduloId', element: <AprendizadoModuloPage /> },
             ],
@@ -114,6 +117,7 @@ export const router = createBrowserRouter([
           { path: '/admin/aprendizado/modulo/:moduloId', element: <AdminAprendizadoModuloPage /> },
           { path: '/admin/ajuda', element: <AdminDicasAjudaPage /> },
           { path: '/admin/importar', element: <AdminImportarLayoutPage /> },
+          { path: '/admin/ia', element: <AdminIAPage /> },
         ],
       },
     ],

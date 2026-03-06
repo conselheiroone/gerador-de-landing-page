@@ -40,6 +40,21 @@ import {
   SERVICOS_SUGERIDOS,
 } from '@/features/onboarding/types/onboarding.types'
 
+// ==================== SAVE BUTTON WITH FEEDBACK ====================
+
+function SaveButton({ isSaving, isSaved }: { isSaving: boolean; isSaved: boolean }) {
+  return (
+    <div className="flex items-center gap-2">
+      {isSaved && (
+        <span className="flex items-center gap-1 text-xs font-medium text-green-600 animate-in fade-in">
+          <Check className="h-3.5 w-3.5" /> Salvo com sucesso
+        </span>
+      )}
+      <Button type="submit" size="sm" isLoading={isSaving}>Salvar alteracoes</Button>
+    </div>
+  )
+}
+
 // ==================== SECTION WRAPPER ====================
 
 function Section({
@@ -171,6 +186,7 @@ export function PerfilEmpresaPage() {
         <DadosEscritorioForm
           perfil={perfil}
           isSaving={savingSection === 'dados'}
+          isSaved={savedSection === 'dados'}
           onSave={updateDadosEscritorio}
         />
       </Section>
@@ -190,6 +206,7 @@ export function PerfilEmpresaPage() {
           sociosIniciais={socios}
           userId={userId!}
           isSaving={savingSection === 'socios'}
+          isSaved={savedSection === 'socios'}
           onSave={updateSocios}
           uploadFotoSocio={uploadFotoSocio}
         />
@@ -209,6 +226,7 @@ export function PerfilEmpresaPage() {
         <ContatoForm
           perfil={perfil}
           isSaving={savingSection === 'contato'}
+          isSaved={savedSection === 'contato'}
           onSave={updateContato}
           buscarCep={buscarCep}
         />
@@ -229,6 +247,7 @@ export function PerfilEmpresaPage() {
           perfil={perfil}
           userId={userId!}
           isSaving={savingSection === 'visual'}
+          isSaved={savedSection === 'visual'}
           onSave={updateIdentidadeVisual}
           uploadLogo={uploadLogo}
           uploadHeroImage={uploadHeroImage}
@@ -249,6 +268,7 @@ export function PerfilEmpresaPage() {
         <SobreForm
           perfil={perfil}
           isSaving={savingSection === 'sobre'}
+          isSaved={savedSection === 'sobre'}
           onSave={updateSobre}
         />
       </Section>
@@ -267,6 +287,7 @@ export function PerfilEmpresaPage() {
         <ServicosForm
           perfil={perfil}
           isSaving={savingSection === 'servicos'}
+          isSaved={savedSection === 'servicos'}
           onSave={updateServicos}
         />
       </Section>
@@ -289,6 +310,7 @@ export function PerfilEmpresaPage() {
         <RedesSociaisForm
           perfil={perfil}
           isSaving={savingSection === 'redes'}
+          isSaved={savedSection === 'redes'}
           onSave={updateRedesSociais}
         />
       </Section>
@@ -320,10 +342,12 @@ export function PerfilEmpresaPage() {
 function DadosEscritorioForm({
   perfil,
   isSaving,
+  isSaved,
   onSave,
 }: {
   perfil: { nome_empresa: string | null; cnpj: string | null; tipo_escritorio: 'individual' | 'sociedade' | null; slogan: string | null; ano_fundacao: number | null }
   isSaving: boolean
+  isSaved: boolean
   onSave: (dados: { nome_empresa: string; cnpj: string; tipo_escritorio: 'individual' | 'sociedade'; slogan: string; ano_fundacao: string }) => Promise<void>
 }) {
   const [nome, setNome] = useState(perfil.nome_empresa ?? '')
@@ -371,7 +395,7 @@ function DadosEscritorioForm({
         <Input value={slogan} onChange={(e) => setSlogan(e.target.value)} placeholder="Frase que define seu escritorio" />
       </div>
       <div className="flex justify-end pt-2">
-        <Button type="submit" size="sm" isLoading={isSaving}>Salvar alteracoes</Button>
+        <SaveButton isSaving={isSaving} isSaved={isSaved} />
       </div>
     </form>
   )
@@ -401,12 +425,14 @@ function SociosForm({
   sociosIniciais,
   userId,
   isSaving,
+  isSaved,
   onSave,
   uploadFotoSocio,
 }: {
   sociosIniciais: Socio[]
   userId: string
   isSaving: boolean
+  isSaved: boolean
   onSave: (socios: Array<Omit<Socio, 'created_at' | 'updated_at' | 'perfil_empresa_id'>>) => Promise<void>
   uploadFotoSocio: (userId: string, file: File) => Promise<string>
 }) {
@@ -559,7 +585,7 @@ function SociosForm({
         <Plus className="h-4 w-4" /> Adicionar socio
       </button>
       <div className="flex justify-end pt-2">
-        <Button type="submit" size="sm" isLoading={isSaving}>Salvar alteracoes</Button>
+        <SaveButton isSaving={isSaving} isSaved={isSaved} />
       </div>
     </form>
   )
@@ -570,11 +596,13 @@ function SociosForm({
 function ContatoForm({
   perfil,
   isSaving,
+  isSaved,
   onSave,
   buscarCep,
 }: {
   perfil: { telefone: string | null; whatsapp: string | null; email_contato: string | null; horario_atendimento: string | null; cep: string | null; logradouro: string | null; numero: string | null; complemento: string | null; bairro: string | null; cidade: string | null; estado: string | null }
   isSaving: boolean
+  isSaved: boolean
   onSave: (dados: { telefone: string; whatsapp: string; email_contato: string; horario_atendimento: string; cep: string; logradouro: string; numero: string; complemento: string; bairro: string; cidade: string; estado: string }) => Promise<void>
   buscarCep: (cep: string) => Promise<{ logradouro: string; bairro: string; localidade: string; uf: string } | null>
 }) {
@@ -665,7 +693,7 @@ function ContatoForm({
         </div>
       </div>
       <div className="flex justify-end pt-2">
-        <Button type="submit" size="sm" isLoading={isSaving}>Salvar alteracoes</Button>
+        <SaveButton isSaving={isSaving} isSaved={isSaved} />
       </div>
     </form>
   )
@@ -677,6 +705,7 @@ function IdentidadeVisualForm({
   perfil,
   userId,
   isSaving,
+  isSaved,
   onSave,
   uploadLogo,
   uploadHeroImage,
@@ -684,6 +713,7 @@ function IdentidadeVisualForm({
   perfil: { logo_url: string | null; cor_primaria: string; cor_secundaria: string; usar_imagem_hero: boolean; hero_image_url: string | null }
   userId: string
   isSaving: boolean
+  isSaved: boolean
   onSave: (dados: { logo_url: string; cor_primaria: string; cor_secundaria: string; usar_imagem_hero: boolean; hero_image_url: string }) => Promise<void>
   uploadLogo: (userId: string, file: File) => Promise<string>
   uploadHeroImage: (userId: string, file: File) => Promise<string>
@@ -824,7 +854,7 @@ function IdentidadeVisualForm({
       </div>
 
       <div className="flex justify-end pt-2">
-        <Button type="submit" size="sm" isLoading={isSaving}>Salvar alteracoes</Button>
+        <SaveButton isSaving={isSaving} isSaved={isSaved} />
       </div>
     </form>
   )
@@ -835,10 +865,12 @@ function IdentidadeVisualForm({
 function SobreForm({
   perfil,
   isSaving,
+  isSaved,
   onSave,
 }: {
   perfil: { historia: string | null; missao: string | null; visao: string | null; valores: string | null; diferenciais: string[] }
   isSaving: boolean
+  isSaved: boolean
   onSave: (dados: { historia: string; missao: string; visao: string; valores: string; diferenciais: string[] }) => Promise<void>
 }) {
   const [historia, setHistoria] = useState(perfil.historia ?? '')
@@ -901,7 +933,7 @@ function SobreForm({
         )}
       </div>
       <div className="flex justify-end pt-2">
-        <Button type="submit" size="sm" isLoading={isSaving}>Salvar alteracoes</Button>
+        <SaveButton isSaving={isSaving} isSaved={isSaved} />
       </div>
     </form>
   )
@@ -912,10 +944,12 @@ function SobreForm({
 function ServicosForm({
   perfil,
   isSaving,
+  isSaved,
   onSave,
 }: {
   perfil: { servicos: ServicoItem[] }
   isSaving: boolean
+  isSaved: boolean
   onSave: (servicos: ServicoItem[]) => Promise<void>
 }) {
   const [servicos, setServicos] = useState<ServicoItem[]>(perfil.servicos ?? [])
@@ -976,7 +1010,7 @@ function ServicosForm({
         </div>
       )}
       <div className="flex justify-end pt-2">
-        <Button type="submit" size="sm" isLoading={isSaving}>Salvar alteracoes</Button>
+        <SaveButton isSaving={isSaving} isSaved={isSaved} />
       </div>
     </form>
   )
@@ -1284,10 +1318,12 @@ function DepoimentosForm({
 function RedesSociaisForm({
   perfil,
   isSaving,
+  isSaved,
   onSave,
 }: {
   perfil: { redes_sociais: { instagram?: string; facebook?: string; linkedin?: string; youtube?: string; site?: string; twitter?: string } }
   isSaving: boolean
+  isSaved: boolean
   onSave: (redes: { instagram?: string; facebook?: string; linkedin?: string; youtube?: string; site?: string; twitter?: string }) => Promise<void>
 }) {
   const redes = perfil.redes_sociais || {}
@@ -1343,7 +1379,7 @@ function RedesSociaisForm({
         </div>
       </div>
       <div className="flex justify-end pt-2">
-        <Button type="submit" size="sm" isLoading={isSaving}>Salvar alteracoes</Button>
+        <SaveButton isSaving={isSaving} isSaved={isSaved} />
       </div>
     </form>
   )

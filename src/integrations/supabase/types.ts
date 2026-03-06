@@ -628,6 +628,60 @@ export interface Database {
         }
         Relationships: []
       }
+      openrouter_user_overrides: {
+        Row: {
+          id: string
+          user_id: string
+          image_model: string
+          reason: string | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          image_model: string
+          reason?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          user_id?: string
+          image_model?: string
+          reason?: string | null
+          is_active?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      ai_model_prompts: {
+        Row: {
+          id: string
+          model_id: string
+          prompt_template: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          model_id: string
+          prompt_template?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          model_id?: string
+          prompt_template?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: {

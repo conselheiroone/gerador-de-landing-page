@@ -20,6 +20,7 @@ import {
   BookOpen,
   User,
   LayoutGrid,
+  Sparkles,
 } from 'lucide-react'
 
 interface NavItem {
@@ -39,12 +40,14 @@ const adminNavItems: NavItem[] = [
   { label: 'Dicas de Ajuda', href: '/admin/ajuda', icon: <HelpCircle className="h-5 w-5" /> },
   { label: 'Suporte', href: '/admin/suporte', icon: <Headphones className="h-5 w-5" /> },
   { label: 'Paginas Legais', href: '/admin/paginas-legais', icon: <Scale className="h-5 w-5" /> },
+  { label: 'Configuracoes de IA', href: '/admin/ia', icon: <Sparkles className="h-5 w-5" /> },
 ]
 
 const baseClienteNavItems: NavItem[] = [
   { label: 'Inicio', href: '/', icon: <PlusSquare className="h-5 w-5" /> },
   { label: 'Meus Projetos', href: '/dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
   { label: 'Meu Perfil', href: '/perfil', icon: <User className="h-5 w-5" /> },
+  { label: 'Minha Conta', href: '/minha-conta', icon: <Settings className="h-5 w-5" /> },
   { label: 'Aprendizado', href: '/aprendizado', icon: <BookOpen className="h-5 w-5" /> },
 ]
 

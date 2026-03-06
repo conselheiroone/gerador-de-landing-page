@@ -1,11 +1,17 @@
 export type UserRole = 'admin' | 'avancado' | 'cliente'
 
+export type UserStatus = 'ativo' | 'suspenso' | 'pendente'
+
 export interface UserProfile {
   id: string
   email: string
   nome: string | null
   empresa: string | null
   logo_url: string | null
+  avatar_url: string | null
+  telefone: string | null
+  cargo: string | null
+  status: UserStatus
   role: UserRole
 }
 

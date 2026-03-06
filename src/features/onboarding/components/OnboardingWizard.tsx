@@ -1,7 +1,7 @@
 import { AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/features/auth/hooks/use-auth'
-import { LogOut } from 'lucide-react'
+import { LogOut, User } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useOnboarding } from '../hooks/useOnboarding'
 import { StepIndicator } from './StepIndicator'
@@ -17,7 +17,7 @@ import { RevisaoStep } from './steps/RevisaoStep'
 
 export function OnboardingWizard() {
   const navigate = useNavigate()
-  const { session, signOut } = useAuth()
+  const { session, profile, signOut } = useAuth()
   const userId = session?.user?.id ?? ''
 
   const {
@@ -190,9 +190,26 @@ export function OnboardingWizard() {
       <header className="border-b border-gray-200 bg-white">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
           <h1 className="text-xl font-bold text-brand-500">LandingGen</h1>
-          <span className="text-sm text-gray-400">
-            Etapa {currentStep} de 8
-          </span>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-400">
+              Etapa {currentStep} de 8
+            </span>
+            <div className="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-1.5">
+              <User className="h-4 w-4 text-gray-400" />
+              <span className="text-sm font-medium text-gray-700">
+                {profile?.nome || profile?.email?.split('@')[0] || ''}
+              </span>
+            </div>
+            <button
+              onClick={async () => {
+                await signOut()
+                navigate('/login', { replace: true })
+              }}
+              className="text-sm text-gray-400 hover:text-gray-600"
+            >
+              Sair
+            </button>
+          </div>
         </div>
       </header>
 

@@ -29,6 +29,11 @@ export interface AdminUser {
   email: string
   nome: string | null
   empresa: string | null
+  telefone: string | null
+  avatar_url: string | null
+  cargo: string | null
+  status: 'ativo' | 'suspenso' | 'pendente'
   role: 'admin' | 'avancado' | 'cliente'
   created_at: string
+  ultimo_acesso: string | null
 }

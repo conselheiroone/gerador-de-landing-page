@@ -16,7 +16,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const fetchProfile = useCallback(async (userId: string): Promise<boolean> => {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, email, nome, empresa, logo_url, role')
+      .select('id, email, nome, empresa, logo_url, avatar_url, telefone, cargo, status, role')
       .eq('id', userId)
       .single()
 
