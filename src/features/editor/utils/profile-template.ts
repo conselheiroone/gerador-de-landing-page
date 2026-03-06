@@ -573,8 +573,8 @@ function buildServicos(
   sectionBg: string,
   _tintPri: string,
 ): TemplateNode {
-  const items = servicos.slice(0, 9)
-  const columns = items.length <= 2 ? 2 : items.length % 2 === 0 && items.length <= 4 ? 2 : 3
+  const items = servicos as ServicoItem[]
+  const columns = items.length <= 2 ? 2 : 3
 
   const headerChildren: TemplateNode[] = [
     {
