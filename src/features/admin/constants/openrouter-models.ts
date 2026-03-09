@@ -1,13 +1,13 @@
 export const OPENROUTER_MODELS = [
   {
-    id: 'google/gemini-flash-3.1-image-preview',
+    id: 'google/gemini-3.1-flash-image-preview',
     alias: 'Gemini Flash (Nano Banana 2)',
     description: 'Geracao nativa de imagens do Google. Melhor custo-beneficio com instrucoes ricas.',
   },
   {
-    id: 'black-forest-labs/flux-2-klein-4b',
-    alias: 'FLUX.2 Klein',
-    description: 'Ultra economico para alto volume.',
+    id: 'google/gemini-2.5-flash-image',
+    alias: 'Gemini 2.5 Flash Image',
+    description: 'Modelo Gemini 2.5 otimizado para geracao de imagens.',
   },
   {
     id: 'openai/gpt-5-image-mini',

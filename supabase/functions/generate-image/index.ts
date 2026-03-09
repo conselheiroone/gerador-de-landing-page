@@ -23,17 +23,14 @@ const AVAILABLE_MODELS = [
   {
     id: 'google/gemini-3.1-flash-image-preview',
     alias: 'Gemini Flash',
-    apiType: 'chat' as const, // usa /chat/completions
   },
   {
-    id: 'black-forest-labs/flux-2-klein-4b',
-    alias: 'FLUX.2 Klein',
-    apiType: 'image' as const, // usa /images/generations
+    id: 'google/gemini-2.5-flash-image',
+    alias: 'Gemini 2.5 Flash Image',
   },
   {
     id: 'openai/gpt-5-image-mini',
     alias: 'GPT-5 Image Mini',
-    apiType: 'chat' as const, // usa /chat/completions
   },
 ] as const
 
@@ -69,10 +66,7 @@ function respond(body: Record<string, unknown>, status = 200) {
 function getSupabaseAdmin(): SupabaseClient | null {
   const url = Deno.env.get('SUPABASE_URL')
   const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
-  if (!url || !key) {
-    console.warn('SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY nao configurados. Resolucao de modelo via banco indisponivel.')
-    return null
-  }
+  if (!url || !key) return null
   return createClient(url, key)
 }
 
@@ -93,8 +87,7 @@ async function extractUserId(
     const { data, error } = await supabase.auth.getUser(token)
     if (error || !data?.user?.id) return null
     return data.user.id
-  } catch (err) {
-    console.warn('Nao foi possivel extrair user_id do JWT:', err)
+  } catch {
     return null
   }
 }
@@ -125,15 +118,12 @@ async function resolveModel(
   if (bodyModelOverride) {
     const found = findModel(bodyModelOverride)
     if (found) {
-      console.log(`Modelo resolvido via body override: ${found.id}`)
       return found
     }
-    console.warn(`Modelo do body "${bodyModelOverride}" nao esta na whitelist. Ignorando.`)
   }
 
   // Se nao temos client Supabase, vai direto pro fallback
   if (!supabase) {
-    console.log(`Modelo resolvido via fallback (sem Supabase client): ${fallback.id}`)
     return fallback
   }
 
@@ -150,13 +140,11 @@ async function resolveModel(
       if (data?.image_model) {
         const found = findModel(data.image_model)
         if (found) {
-          console.log(`Modelo resolvido via user override (${userId}): ${found.id}`)
           return found
         }
-        console.warn(`Modelo do user override "${data.image_model}" nao esta na whitelist. Ignorando.`)
       }
-    } catch (err) {
-      console.warn('Erro ao buscar user override:', err)
+    } catch {
+      // Erro ao buscar user override
     }
   }
 
@@ -171,17 +159,14 @@ async function resolveModel(
     if (data?.value) {
       const found = findModel(data.value)
       if (found) {
-        console.log(`Modelo resolvido via default global: ${found.id}`)
         return found
       }
-      console.warn(`Modelo global "${data.value}" nao esta na whitelist. Ignorando.`)
     }
-  } catch (err) {
-    console.warn('Erro ao buscar default global:', err)
+  } catch {
+    // Erro ao buscar default global
   }
 
   // 4. Fallback
-  console.log(`Modelo resolvido via fallback: ${fallback.id}`)
   return fallback
 }
 
@@ -200,6 +185,12 @@ function extractImageFromChatResponse(data: any): string | null {
   try {
     const message = data?.choices?.[0]?.message
     if (!message) return null
+
+    // Caso 0: campo images (response_format: image_url)
+    if (Array.isArray(message.images) && message.images.length > 0) {
+      const img = message.images[0]
+      if (img?.image_url?.url) return img.image_url.url
+    }
 
     const content = message.content
 
@@ -252,8 +243,7 @@ function extractImageFromChatResponse(data: any): string | null {
     }
 
     return null
-  } catch (err) {
-    console.error('Erro ao extrair imagem da resposta chat:', err)
+  } catch {
     return null
   }
 }
@@ -265,7 +255,6 @@ function extractImageFromChatResponse(data: any): string | null {
 async function callOpenRouter(
   model: AvailableModel,
   prompt: string,
-  size: string,
   apiKey: string,
   signal?: AbortSignal,
 ): Promise<Response> {
@@ -276,28 +265,14 @@ async function callOpenRouter(
     'X-Title': 'LandingGen - Gerador de Landing Pages',
   }
 
-  if (model.apiType === 'image') {
-    // Endpoint de geracao de imagem (FLUX.2, DALL-E, etc.)
-    return fetch(`${OPENROUTER_BASE}/images/generations`, {
-      method: 'POST',
-      headers,
-      signal,
-      body: JSON.stringify({
-        model: model.id,
-        prompt,
-        n: 1,
-        size,
-      }),
-    })
-  }
-
-  // Endpoint chat/completions (Gemini, GPT-5 multimodal)
   return fetch(`${OPENROUTER_BASE}/chat/completions`, {
     method: 'POST',
     headers,
     signal,
     body: JSON.stringify({
       model: model.id,
+      max_tokens: 4096,
+      response_format: { type: 'image_url' },
       messages: [
         {
           role: 'user',
@@ -310,18 +285,9 @@ async function callOpenRouter(
 
 /**
  * Processa a resposta da API e extrai a URL da imagem.
- * Lida com ambos os formatos: images/generations e chat/completions.
  */
 // deno-lint-ignore no-explicit-any
-function extractImageUrl(data: any, model: AvailableModel): string | null {
-  if (model.apiType === 'image') {
-    // Formato OpenAI images: { data: [{ url?, b64_json? }] }
-    const imageData = data?.data?.[0]
-    if (!imageData) return null
-    return imageData.url || (imageData.b64_json ? `data:image/png;base64,${imageData.b64_json}` : null)
-  }
-
-  // Formato chat/completions multimodal
+function extractImageUrl(data: any): string | null {
   return extractImageFromChatResponse(data)
 }
 
@@ -377,8 +343,6 @@ Deno.serve(async (req: Request) => {
 
   // Resolver modelo (cadeia de prioridade)
   const model = await resolveModel(supabase, userId, bodyModelOverride)
-  console.log(`Modelo selecionado: ${model.alias} (${model.id}) — apiType: ${model.apiType}`)
-
   // Chamar OpenRouter com timeout
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), API_TIMEOUT_MS)
@@ -387,7 +351,6 @@ Deno.serve(async (req: Request) => {
     const response = await callOpenRouter(
       model,
       prompt.trim().slice(0, 4000),
-      size,
       apiKey,
       controller.signal,
     )
@@ -397,7 +360,6 @@ Deno.serve(async (req: Request) => {
     // Tratamento de erros da API
     if (!response.ok) {
       const errorText = await response.text()
-      console.error(`OpenRouter API error (${model.id}):`, response.status, errorText)
 
       if (response.status === 429) {
         return respond({ error: 'Limite de requisicoes atingido. Tente novamente em alguns minutos.' }, 429)
@@ -420,10 +382,9 @@ Deno.serve(async (req: Request) => {
 
     const data = await response.json()
 
-    // Extrair URL da imagem (formato depende do apiType do modelo)
-    const imageUrl = extractImageUrl(data, model)
+    // Extrair URL da imagem da resposta
+    const imageUrl = extractImageUrl(data)
     if (!imageUrl) {
-      console.error(`Nao foi possivel extrair imagem da resposta (${model.id}):`, JSON.stringify(data).slice(0, 500))
       return respond({ error: 'Nenhuma imagem foi gerada. Tente com outro prompt.' }, 502)
     }
 
@@ -433,7 +394,6 @@ Deno.serve(async (req: Request) => {
     if (err instanceof Error && err.name === 'AbortError') {
       return respond({ error: 'A geracao de imagem demorou demais. Tente com um prompt mais simples.' }, 504)
     }
-    console.error('Erro inesperado:', err)
     return respond({ error: 'Erro interno ao gerar imagem.' }, 500)
   }
 })
