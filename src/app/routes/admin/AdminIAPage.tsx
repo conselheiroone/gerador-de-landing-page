@@ -71,21 +71,21 @@ function InlineFeedback({
 
 // ── Prompt placeholders por modelo ──────────────────────────────
 const PROMPT_PLACEHOLDERS: Record<string, string> = {
-  'google/gemini-flash-3.1-image-preview': `## Instrucoes de Geracao
+  'google/gemini-flash-3.1-image-preview': `## Instruções de Geração
 
 Crie uma imagem profissional para o site da empresa **{{nome_empresa}}**.
 
 ### Contexto
 - Segmento: {{segmento}}
-- Servicos: {{servicos}}
+- Serviços: {{servicos}}
 - Diferenciais: {{diferenciais}}
-- Localizacao: {{cidade}}/{{estado}}
+- Localização: {{cidade}}/{{estado}}
 
 ### Estilo Visual
 - Cores predominantes: {{cor_primaria}} e {{cor_secundaria}}
-- Estilo: fotografia corporativa moderna, clean, alta resolucao
+- Estilo: fotografia corporativa moderna, clean, alta resolução
 - Sem texto na imagem
-- Aspecto profissional e confiavel`,
+- Aspecto profissional e confiável`,
 
   'black-forest-labs/flux-2-klein-4b': `Professional corporate photography for {{nome_empresa}}, a {{segmento}} company.
 Clean modern style, colors {{cor_primaria}} and {{cor_secundaria}}.
@@ -137,31 +137,31 @@ export function AdminIAPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              Configuracoes de IA
+              Configurações de IA
             </h1>
             <p className="text-sm text-gray-500">
-              Gerencie modelos, prompts e overrides de geracao de imagens
+              Gerencie modelos, prompts e overrides de geração de imagens
             </p>
           </div>
         </div>
       </motion.div>
 
-      {/* Secao 1: Modelo Global */}
+      {/* Seção 1: Modelo Global */}
       <motion.div variants={staggerItem} className="mb-6">
         <ModeloGlobalSection />
       </motion.div>
 
-      {/* Secao 2: Overrides por Usuario */}
+      {/* Seção 2: Overrides por Usuário */}
       <motion.div variants={staggerItem} className="mb-6">
         <OverridesSection />
       </motion.div>
 
-      {/* Secao 3: System Prompt Global */}
+      {/* Seção 3: System Prompt Global */}
       <motion.div variants={staggerItem} className="mb-6">
         <SystemPromptSection />
       </motion.div>
 
-      {/* Secao 4: Prompts por Modelo */}
+      {/* Seção 4: Prompts por Modelo */}
       <motion.div variants={staggerItem}>
         <PromptsPorModeloSection />
       </motion.div>
@@ -169,7 +169,7 @@ export function AdminIAPage() {
   )
 }
 
-// ── SECAO 1: Modelo Global ──────────────────────────────────────
+// ── SEÇÃO 1: Modelo Global ──────────────────────────────────────
 function ModeloGlobalSection() {
   const { settings, loading, saveSetting } = useAdminSettings()
   const [selected, setSelected] = useState<OpenRouterModelId>(
@@ -222,7 +222,7 @@ function ModeloGlobalSection() {
           Modelo Global
         </h2>
         <p className="mb-4 text-sm text-gray-500">
-          Selecione o modelo padrao para geracao de imagens em toda a plataforma.
+          Selecione o modelo padrão para geração de imagens em toda a plataforma.
         </p>
 
         <div className="space-y-3">
@@ -291,7 +291,7 @@ function ModeloGlobalSection() {
   )
 }
 
-// ── SECAO 2: System Prompt Global ───────────────────────────────
+// ── SEÇÃO 2: System Prompt Global ───────────────────────────────
 function SystemPromptSection() {
   const { settings, loading, saveSetting } = useAdminSettings()
   const [prompt, setPrompt] = useState('')
@@ -341,14 +341,14 @@ function SystemPromptSection() {
           System Prompt Global
         </h2>
         <p className="mb-4 text-sm text-gray-500">
-          Prefixo aplicado a todos os modelos. Este texto e concatenado antes do
-          prompt especifico de cada modelo.
+          Prefixo aplicado a todos os modelos. Este texto é concatenado antes do
+          prompt específico de cada modelo.
         </p>
 
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Ex: Voce e um assistente especializado em gerar imagens profissionais para landing pages..."
+          placeholder="Ex: Você é um assistente especializado em gerar imagens profissionais para landing pages..."
           className="w-full rounded-lg border border-gray-300 bg-white p-4 font-mono text-sm text-gray-800 placeholder:text-gray-400 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
           rows={6}
         />
@@ -368,7 +368,7 @@ function SystemPromptSection() {
   )
 }
 
-// ── SECAO 3: Prompts por Modelo ─────────────────────────────────
+// ── SEÇÃO 3: Prompts por Modelo ─────────────────────────────────
 function PromptsPorModeloSection() {
   const { settings } = useAdminSettings()
   const { prompts, loading, savePrompt } = useModelPrompts()
@@ -469,12 +469,12 @@ function PromptsPorModeloSection() {
           })}
         </div>
 
-        {/* Conteudo da tab ativa */}
+        {/* Conteúdo da tab ativa */}
         <div className="mt-4">
-          {/* Referencia de variaveis */}
+          {/* Referência de variáveis */}
           <div className="mb-4 rounded-lg bg-gray-50 p-3">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
-              Variaveis disponiveis
+              Variáveis disponíveis
             </p>
             <div className="flex flex-wrap gap-1.5">
               {AVAILABLE_VARIABLES.map((v) => (
@@ -520,7 +520,7 @@ function PromptsPorModeloSection() {
   )
 }
 
-// ── SECAO 4: Overrides por Usuario ──────────────────────────────
+// ── SEÇÃO 4: Overrides por Usuário ──────────────────────────────
 function OverridesSection() {
   const { overrides, loading, saving, saveOverride, removeOverride } =
     useUserModelOverrides()
@@ -626,11 +626,11 @@ function OverridesSection() {
         <div className="mb-4 flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">
-              Overrides por Usuario
+              Overrides por Usuário
             </h2>
             <p className="text-sm text-gray-500">
-              Atribua um modelo especifico a um usuario (invisivel para o
-              usuario).
+              Atribua um modelo específico a um usuário (invisível para o
+              usuário).
             </p>
           </div>
           <Button
@@ -650,7 +650,7 @@ function OverridesSection() {
           </p>
         ) : overrides.length === 0 ? (
           <p className="py-8 text-center text-sm text-gray-500">
-            Nenhum override ativo. Todos os usuarios usam o modelo global.
+            Nenhum override ativo. Todos os usuários usam o modelo global.
           </p>
         ) : (
           <div className="overflow-x-auto">
@@ -658,7 +658,7 @@ function OverridesSection() {
               <thead>
                 <tr className="border-b border-gray-200 text-left">
                   <th className="pb-3 pr-4 font-medium text-gray-500">
-                    Usuario
+                    Usuário
                   </th>
                   <th className="pb-3 pr-4 font-medium text-gray-500">
                     Modelo
@@ -666,7 +666,7 @@ function OverridesSection() {
                   <th className="pb-3 pr-4 font-medium text-gray-500">
                     Motivo
                   </th>
-                  <th className="pb-3 font-medium text-gray-500">Acoes</th>
+                  <th className="pb-3 font-medium text-gray-500">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -724,16 +724,16 @@ function OverridesSection() {
                 Adicionar Override de Modelo
               </DialogTitle>
               <DialogDescription>
-                Atribua um modelo especifico a um usuario. O usuario nao sera
+                Atribua um modelo específico a um usuário. O usuário não será
                 notificado.
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4 py-2">
-              {/* Busca de usuario */}
+              {/* Busca de usuário */}
               <div className="space-y-1.5">
                 <p className="text-sm font-medium text-gray-700">
-                  Buscar usuario por email
+                  Buscar usuário por e-mail
                 </p>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -744,7 +744,7 @@ function OverridesSection() {
                       setSelectedUserId('')
                       setSelectedUserEmail('')
                     }}
-                    placeholder="Digite o email do usuario..."
+                    placeholder="Digite o e-mail do usuário..."
                     className="pl-10"
                   />
                 </div>
@@ -783,7 +783,7 @@ function OverridesSection() {
 
                 {selectedUserId && (
                   <p className="text-xs text-emerald-600">
-                    Usuario selecionado: {selectedUserEmail}
+                    Usuário selecionado: {selectedUserEmail}
                   </p>
                 )}
               </div>

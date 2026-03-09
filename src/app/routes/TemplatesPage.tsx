@@ -17,6 +17,13 @@ const categorias = [
   'Basico',
 ]
 
+const categoriaLabel: Record<string, string> = {
+  Todos: 'Todos',
+  Negocios: 'Negócios',
+  Portfolio: 'Portfólio',
+  Basico: 'Básico',
+}
+
 const categoriaCores: Record<string, string> = {
   Negocios: 'bg-blue-100 text-blue-700',
   Portfolio: 'bg-purple-100 text-purple-700',
@@ -178,7 +185,7 @@ export function TemplatesPage() {
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 }`}
               >
-                {cat}
+                {categoriaLabel[cat] ?? cat}
               </button>
             ))}
           </nav>
@@ -263,7 +270,7 @@ export function TemplatesPage() {
                             categoriaCores[template.categoria] ?? 'bg-gray-100 text-gray-600'
                           }`}
                         >
-                          {template.categoria}
+                          {categoriaLabel[template.categoria] ?? template.categoria}
                         </span>
                       </div>
                       {template.isBuiltin && (
@@ -310,7 +317,7 @@ export function TemplatesPage() {
               <span className={`rounded-full px-2 py-0.5 font-medium ${
                 categoriaCores[previewTemplate.categoria] ?? 'bg-gray-100 text-gray-600'
               }`}>
-                {previewTemplate.categoria}
+                {categoriaLabel[previewTemplate.categoria] ?? previewTemplate.categoria}
               </span>
               {previewTemplate.isBuiltin && (
                 <span className="rounded bg-amber-50 px-1.5 py-0.5 font-medium text-amber-700">

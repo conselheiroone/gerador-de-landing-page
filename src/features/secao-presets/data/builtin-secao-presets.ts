@@ -55,7 +55,7 @@ function heroCenter(): TemplateNode {
       },
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo Hero',
+        displayName: 'Título Hero',
         props: {
           text: 'Soluções Profissionais para o Seu Negócio',
           tagName: 'h1',
@@ -69,7 +69,7 @@ function heroCenter(): TemplateNode {
       },
       {
         type: 'TextComponent',
-        displayName: 'Subtitulo Hero',
+        displayName: 'Subtítulo Hero',
         props: {
           text: 'Transformamos desafios em resultados com qualidade, compromisso e experiência comprovada no mercado.',
           fontSize: '18',
@@ -149,7 +149,7 @@ function heroSplit(): TemplateNode {
             children: [
               {
                 type: 'HeadingComponent',
-                displayName: 'Titulo',
+                displayName: 'Título',
                 props: {
                   text: 'Cresça Seu Negócio com Estratégia',
                   tagName: 'h1',
@@ -162,7 +162,7 @@ function heroSplit(): TemplateNode {
               },
               {
                 type: 'TextComponent',
-                displayName: 'Subtitulo',
+                displayName: 'Subtítulo',
                 props: {
                   text: 'Descubra como nossas soluções podem transformar sua empresa e impulsionar seus resultados.',
                   fontSize: '18',
@@ -224,7 +224,7 @@ function heroGradient(): TemplateNode {
     children: [
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo',
+        displayName: 'Título',
         props: {
           text: 'Inovação que Transforma Resultados',
           tagName: 'h1',
@@ -238,7 +238,7 @@ function heroGradient(): TemplateNode {
       },
       {
         type: 'TextComponent',
-        displayName: 'Subtitulo',
+        displayName: 'Subtítulo',
         props: {
           text: 'Uma plataforma completa para levar seu negócio ao próximo nível com tecnologia de ponta.',
           fontSize: '20',
@@ -268,7 +268,7 @@ function heroGradient(): TemplateNode {
         children: [
           {
             type: 'ButtonComponent',
-            displayName: 'CTA Primario',
+            displayName: 'CTA Primário',
             props: {
               text: 'Começar Grátis',
               href: '#',
@@ -281,7 +281,7 @@ function heroGradient(): TemplateNode {
           },
           {
             type: 'ButtonComponent',
-            displayName: 'CTA Secundario',
+            displayName: 'CTA Secundário',
             props: {
               text: 'Ver Demonstração',
               href: '#',
@@ -332,7 +332,7 @@ function sobreTexto(): TemplateNode {
       },
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo',
+        displayName: 'Título',
         props: {
           text: 'Conheça Nossa História',
           tagName: 'h2',
@@ -421,7 +421,7 @@ function sobreDuasColunas(): TemplateNode {
           },
           {
             type: 'HeadingComponent',
-            displayName: 'Titulo',
+            displayName: 'Título',
             props: {
               text: 'Uma Empresa que Valoriza Pessoas',
               tagName: 'h2',
@@ -544,7 +544,7 @@ function servicosGrid(): TemplateNode {
       },
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo',
+        displayName: 'Título',
         props: {
           text: 'O Que Fazemos por Você',
           tagName: 'h2',
@@ -651,7 +651,7 @@ function servicosLista(): TemplateNode {
       },
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo',
+        displayName: 'Título',
         props: { text: 'Soluções Completas', tagName: 'h2', fontSize: '36', fontWeight: '800', textAlign: 'center', color: SECONDARY, lineHeight: '1.2' },
       },
       itemNode('Planejamento Estratégico', 'Definimos metas claras e caminhos para alcançar os resultados desejados.'),
@@ -741,7 +741,7 @@ function featuresChecklist(): TemplateNode {
       },
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo',
+        displayName: 'Título',
         props: { text: 'O Que Nos Torna Diferentes', tagName: 'h2', fontSize: '36', fontWeight: '800', textAlign: 'center', color: SECONDARY, lineHeight: '1.2' },
       },
       checkItem('Atendimento personalizado e dedicado'),
@@ -775,7 +775,7 @@ function ctaFaixa(): TemplateNode {
     children: [
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo CTA',
+        displayName: 'Título CTA',
         props: {
           text: 'Pronto para Começar?',
           tagName: 'h2',
@@ -788,7 +788,7 @@ function ctaFaixa(): TemplateNode {
       },
       {
         type: 'TextComponent',
-        displayName: 'Descricao CTA',
+        displayName: 'Descrição CTA',
         props: {
           text: 'Entre em contato e descubra como podemos ajudar seu negócio a crescer.',
           fontSize: '18',
@@ -800,7 +800,7 @@ function ctaFaixa(): TemplateNode {
       },
       {
         type: 'ButtonComponent',
-        displayName: 'Botao CTA',
+        displayName: 'Botão CTA',
         props: {
           text: 'Fale Conosco',
           href: '#contato',
@@ -852,17 +852,17 @@ function ctaCard(): TemplateNode {
         children: [
           {
             type: 'HeadingComponent',
-            displayName: 'Titulo',
+            displayName: 'Título',
             props: { text: 'Vamos Trabalhar Juntos?', tagName: 'h2', fontSize: '32', fontWeight: '800', textAlign: 'center', color: WHITE, lineHeight: '1.2' },
           },
           {
             type: 'TextComponent',
-            displayName: 'Subtitulo',
+            displayName: 'Subtítulo',
             props: { text: 'Solicite um orçamento gratuito e sem compromisso.', fontSize: '16', fontWeight: '400', textAlign: 'center', color: '#94a3b8', lineHeight: '1.6' },
           },
           {
             type: 'ButtonComponent',
-            displayName: 'Botao',
+            displayName: 'Botão',
             props: { text: 'Solicitar Orçamento', href: '#contato', background: PRIMARY, color: WHITE, size: 'lg', buttonStyle: 'filled', borderRadius: 8 },
           },
         ],
@@ -990,7 +990,7 @@ function precosPlanos(): TemplateNode {
       },
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo',
+        displayName: 'Título',
         props: { text: 'Escolha o Plano Ideal', tagName: 'h2', fontSize: '36', fontWeight: '800', textAlign: 'center', color: SECONDARY, lineHeight: '1.2', margin: [0, 0, 12, 0] },
       },
       {
@@ -1065,7 +1065,7 @@ function faqSimples(): TemplateNode {
       },
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo',
+        displayName: 'Título',
         props: { text: 'Dúvidas Comuns', tagName: 'h2', fontSize: '36', fontWeight: '800', textAlign: 'center', color: SECONDARY, lineHeight: '1.2', margin: [0, 0, 12, 0] },
       },
       faqItem('Como funciona o processo?', 'Nosso processo é simples: você nos procura, analisamos sua necessidade e apresentamos uma proposta personalizada em até 48 horas.'),
@@ -1138,7 +1138,7 @@ function equipeGrid(): TemplateNode {
       },
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo',
+        displayName: 'Título',
         props: { text: 'Conheça Quem Faz Acontecer', tagName: 'h2', fontSize: '36', fontWeight: '800', textAlign: 'center', color: SECONDARY, lineHeight: '1.2', margin: [0, 0, 12, 0] },
       },
       {
@@ -1264,7 +1264,7 @@ function contatoInfoLateral(): TemplateNode {
           },
           {
             type: 'HeadingComponent',
-            displayName: 'Titulo',
+            displayName: 'Título',
             props: { text: 'Fale Conosco', tagName: 'h2', fontSize: '32', fontWeight: '800', textAlign: 'left', color: SECONDARY, lineHeight: '1.2' },
           },
           {
@@ -1284,7 +1284,7 @@ function contatoInfoLateral(): TemplateNode {
           },
           {
             type: 'TextComponent',
-            displayName: 'Endereco',
+            displayName: 'Endereço',
             props: { text: 'Endereço: São Paulo, SP', fontSize: '15', fontWeight: '500', textAlign: 'left', color: SECONDARY },
           },
         ],

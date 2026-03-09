@@ -150,13 +150,13 @@ export function AdminUsuariosPage() {
               <Users className="h-5 w-5 text-indigo-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Usuarios</h1>
-              <p className="text-sm text-gray-500">Gerencie usuarios e permissoes</p>
+              <h1 className="text-2xl font-bold text-gray-900">Usuários</h1>
+              <p className="text-sm text-gray-500">Gerencie usuários e permissões</p>
             </div>
           </div>
           <Button onClick={() => { setCadastroOpen(true); setCadastroError(''); setCadastroSuccess(false) }}>
             <UserPlus className="mr-2 h-4 w-4" />
-            Cadastrar Usuario
+            Cadastrar Usuário
           </Button>
         </div>
       </motion.div>
@@ -173,7 +173,7 @@ export function AdminUsuariosPage() {
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
           <p className="text-2xl font-bold text-blue-600">{avancadoCount}</p>
-          <p className="text-sm text-gray-500">Avancados</p>
+          <p className="text-sm text-gray-500">Avançados</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
           <p className="text-2xl font-bold text-gray-600">{clienteCount}</p>
@@ -201,7 +201,7 @@ export function AdminUsuariosPage() {
             {loading ? (
               <div className="flex items-center justify-center py-12 text-gray-500">Carregando...</div>
             ) : users.length === 0 ? (
-              <div className="flex items-center justify-center py-12 text-gray-500">Nenhum usuario encontrado</div>
+              <div className="flex items-center justify-center py-12 text-gray-500">Nenhum usuário encontrado</div>
             ) : (
               users.map((user) => {
                 const isCurrentUser = user.id === session?.user?.id
@@ -219,10 +219,10 @@ export function AdminUsuariosPage() {
                       <div className="flex items-center gap-2">
                         <p className="truncate font-medium text-gray-900">{user.nome ?? 'Sem nome'}</p>
                         {user.role === 'admin' && <Badge variant="success">Admin</Badge>}
-                        {user.role === 'avancado' && <Badge variant="primary">Avancado</Badge>}
+                        {user.role === 'avancado' && <Badge variant="primary">Avançado</Badge>}
                         {user.status === 'suspenso' && <Badge variant="error">Suspenso</Badge>}
                         {user.status === 'pendente' && <Badge variant="secondary">Pendente</Badge>}
-                        {isCurrentUser && <Badge variant="secondary">Voce</Badge>}
+                        {isCurrentUser && <Badge variant="secondary">Você</Badge>}
                       </div>
                       <div className="flex items-center gap-3 text-sm text-gray-500">
                         <span className="truncate">{user.email}</span>
@@ -269,14 +269,14 @@ export function AdminUsuariosPage() {
       {totalPages > 1 && (
         <motion.div variants={staggerItem} className="mt-4 flex items-center justify-between">
           <span className="text-sm text-gray-500">
-            Pagina {page + 1} de {totalPages} ({total} usuarios)
+            Página {page + 1} de {totalPages} ({total} usuários)
           </span>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(page - 1)}>
               <ChevronLeft className="mr-1 h-4 w-4" /> Anterior
             </Button>
             <Button variant="outline" size="sm" disabled={page >= totalPages - 1} onClick={() => setPage(page + 1)}>
-              Proximo <ChevronRight className="ml-1 h-4 w-4" />
+              Próximo <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
           </div>
         </motion.div>
@@ -288,14 +288,14 @@ export function AdminUsuariosPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Mail className="h-5 w-5" />
-              Cadastrar Usuario
+              Cadastrar Usuário
             </DialogTitle>
             <DialogDescription>
-              A conta será criada imediatamente. O usuario acessa pelo login com seu email e recebe o código de acesso por email.
+              A conta será criada imediatamente. O usuário acessa pelo login com seu e-mail e recebe o código de acesso por e-mail.
             </DialogDescription>
           </DialogHeader>
           {cadastroSuccess ? (
-            <div className="py-6 text-center text-emerald-600 font-medium">Usuario cadastrado com sucesso!</div>
+            <div className="py-6 text-center text-emerald-600 font-medium">Usuário cadastrado com sucesso!</div>
           ) : (
             <div className="space-y-4 py-2">
               <div className="space-y-1.5">
@@ -317,12 +317,12 @@ export function AdminUsuariosPage() {
                 <Input placeholder="Ex: Contador, Gerente" value={cadastroCargo} onChange={(e) => setCadastroCargo(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <p className="text-sm font-medium text-gray-700">Nivel de acesso</p>
+                <p className="text-sm font-medium text-gray-700">Nível de acesso</p>
                 <Select value={cadastroRole} onValueChange={(v) => setCadastroRole(v as UserRole)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="cliente">Cliente — apenas gerar do perfil</SelectItem>
-                    <SelectItem value="avancado">Avancado — gerar + editor livre</SelectItem>
+                    <SelectItem value="avancado">Avançado — gerar + editor livre</SelectItem>
                     <SelectItem value="admin">Admin — acesso total</SelectItem>
                   </SelectContent>
                 </Select>
@@ -347,10 +347,10 @@ export function AdminUsuariosPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Pencil className="h-5 w-5" />
-              Editar Usuario
+              Editar Usuário
             </DialogTitle>
             <DialogDescription>
-              Altere o nome e o nivel de acesso do usuario.
+              Altere o nome e o nível de acesso do usuário.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
@@ -385,12 +385,12 @@ export function AdminUsuariosPage() {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <p className="text-sm font-medium text-gray-700">Nivel de acesso</p>
+                <p className="text-sm font-medium text-gray-700">Nível de acesso</p>
                 <Select value={editRole} onValueChange={(v) => setEditRole(v as UserRole)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="cliente">Cliente</SelectItem>
-                    <SelectItem value="avancado">Avancado</SelectItem>
+                    <SelectItem value="avancado">Avançado</SelectItem>
                     <SelectItem value="admin">Admin</SelectItem>
                   </SelectContent>
                 </Select>
@@ -399,7 +399,7 @@ export function AdminUsuariosPage() {
             {editUser?.ultimo_acesso && (
               <p className="flex items-center gap-1.5 text-xs text-gray-400">
                 <Clock className="h-3 w-3" />
-                Ultimo acesso: {new Date(editUser.ultimo_acesso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                Último acesso: {new Date(editUser.ultimo_acesso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
               </p>
             )}
             {editError && <p className="text-sm text-red-600">{editError}</p>}
@@ -419,10 +419,10 @@ export function AdminUsuariosPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-600">
               <Trash2 className="h-5 w-5" />
-              Excluir Usuario
+              Excluir Usuário
             </DialogTitle>
             <DialogDescription>
-              Tem certeza que deseja excluir o usuario "<strong>{confirmDelete?.nome}</strong>"? Esta acao nao pode ser desfeita.
+              Tem certeza que deseja excluir o usuário "<strong>{confirmDelete?.nome}</strong>"? Esta ação não pode ser desfeita.
             </DialogDescription>
           </DialogHeader>
           {deleteError && <p className="text-sm text-red-600 px-1">{deleteError}</p>}

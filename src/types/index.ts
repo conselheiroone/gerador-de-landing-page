@@ -13,6 +13,8 @@ export interface UserProfile {
   cargo: string | null
   status: UserStatus
   role: UserRole
+  aceite_termos_em: string | null
+  aceite_termos_versao: number
 }
 
 export interface TemplateSecaoProp {

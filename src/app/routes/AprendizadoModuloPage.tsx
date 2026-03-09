@@ -287,7 +287,7 @@ export function AprendizadoModuloPage() {
                     </div>
                     <Button
                       size="sm"
-                      variant={completedIds.has(selectedLesson.id) ? 'default' : 'outline'}
+                      variant={completedIds.has(selectedLesson.id) ? 'primary' : 'outline'}
                       className="shrink-0 gap-2"
                       onClick={() => toggleComplete(selectedLesson.id)}
                     >

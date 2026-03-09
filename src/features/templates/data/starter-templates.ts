@@ -85,8 +85,8 @@ function heroCenter(titulo: string, subtitulo: string): TemplateNode {
       minHeight: '480px',
     },
     children: [
-      { type: 'HeadingComponent', displayName: 'Titulo', props: { text: titulo, tagName: 'h1', fontSize: '48', fontWeight: '900', textAlign: 'center', color: WHITE, lineHeight: '1.1', maxWidth: '700' } },
-      { type: 'TextComponent', displayName: 'Subtitulo', props: { text: subtitulo, fontSize: '18', fontWeight: '400', textAlign: 'center', color: '#cbd5e1', lineHeight: '1.6', margin: [8, 0, 16, 0] } },
+      { type: 'HeadingComponent', displayName: 'Título', props: { text: titulo, tagName: 'h1', fontSize: '48', fontWeight: '900', textAlign: 'center', color: WHITE, lineHeight: '1.1', maxWidth: '700' } },
+      { type: 'TextComponent', displayName: 'Subtítulo', props: { text: subtitulo, fontSize: '18', fontWeight: '400', textAlign: 'center', color: '#cbd5e1', lineHeight: '1.6', margin: [8, 0, 16, 0] } },
       { type: 'ButtonComponent', displayName: 'CTA', props: { text: 'Começar Agora', href: '#contato', background: PRI, color: WHITE, size: 'lg', buttonStyle: 'filled', borderRadius: 50 } },
     ],
   }
@@ -111,7 +111,7 @@ function secaoServicos(): TemplateNode {
     props: { background: LIGHT, padding: 60, gap: 20, width: '100%', height: 'auto', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', shadow: 0, radius: 0 },
     children: [
       { type: 'TextComponent', displayName: 'Tag', props: { text: 'NOSSOS SERVIÇOS', fontSize: '13', fontWeight: '700', textAlign: 'center', color: PRI, letterSpacing: '2' } },
-      { type: 'HeadingComponent', displayName: 'Titulo', props: { text: 'O Que Fazemos', tagName: 'h2', fontSize: '36', fontWeight: '800', textAlign: 'center', color: SEC, lineHeight: '1.2', margin: [0, 0, 12, 0] } },
+      { type: 'HeadingComponent', displayName: 'Título', props: { text: 'O Que Fazemos', tagName: 'h2', fontSize: '36', fontWeight: '800', textAlign: 'center', color: SEC, lineHeight: '1.2', margin: [0, 0, 12, 0] } },
       {
         type: 'FeaturesSectionComponent',
         isCanvas: true,
@@ -142,7 +142,7 @@ function secaoSobre(): TemplateNode {
         props: { background: 'transparent', padding: 0, gap: 12, width: '50%', height: 'auto', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', shadow: 0, radius: 0 },
         children: [
           { type: 'TextComponent', displayName: 'Tag', props: { text: 'SOBRE NÓS', fontSize: '13', fontWeight: '700', textAlign: 'left', color: PRI, letterSpacing: '2' } },
-          { type: 'HeadingComponent', displayName: 'Titulo', props: { text: 'Nossa História', tagName: 'h2', fontSize: '32', fontWeight: '800', textAlign: 'left', color: SEC, lineHeight: '1.2' } },
+          { type: 'HeadingComponent', displayName: 'Título', props: { text: 'Nossa História', tagName: 'h2', fontSize: '32', fontWeight: '800', textAlign: 'left', color: SEC, lineHeight: '1.2' } },
           { type: 'TextComponent', displayName: 'Desc', props: { text: 'Com anos de experiência, construímos nossa reputação com base na confiança e entrega de resultados excepcionais.', fontSize: '16', fontWeight: '400', textAlign: 'left', color: '#64748b', lineHeight: '1.7' } },
         ],
       },
@@ -157,9 +157,9 @@ function secaoCta(): TemplateNode {
     displayName: 'CTA',
     props: { background: PRI, padding: 60, gap: 16, width: '100%', height: 'auto', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', shadow: 0, radius: 0 },
     children: [
-      { type: 'HeadingComponent', displayName: 'Titulo', props: { text: 'Pronto para Começar?', tagName: 'h2', fontSize: '36', fontWeight: '800', textAlign: 'center', color: WHITE, lineHeight: '1.2' } },
+      { type: 'HeadingComponent', displayName: 'Título', props: { text: 'Pronto para Começar?', tagName: 'h2', fontSize: '36', fontWeight: '800', textAlign: 'center', color: WHITE, lineHeight: '1.2' } },
       { type: 'TextComponent', displayName: 'Desc', props: { text: 'Entre em contato e descubra como podemos ajudar.', fontSize: '18', fontWeight: '400', textAlign: 'center', color: 'rgba(255,255,255,0.9)', lineHeight: '1.6' } },
-      { type: 'ButtonComponent', displayName: 'Botao', props: { text: 'Fale Conosco', href: '#contato', background: WHITE, color: PRI, size: 'lg', buttonStyle: 'filled', borderRadius: 50 } },
+      { type: 'ButtonComponent', displayName: 'Botão', props: { text: 'Fale Conosco', href: '#contato', background: WHITE, color: PRI, size: 'lg', buttonStyle: 'filled', borderRadius: 50 } },
     ],
   }
 }
@@ -251,7 +251,7 @@ function secaoPrecos(): TemplateNode {
     props: { background: LIGHT, padding: 60, gap: 20, width: '100%', height: 'auto', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', shadow: 0, radius: 0 },
     children: [
       { type: 'TextComponent', displayName: 'Tag', props: { text: 'PLANOS', fontSize: '13', fontWeight: '700', textAlign: 'center', color: PRI, letterSpacing: '2' } },
-      { type: 'HeadingComponent', displayName: 'Titulo', props: { text: 'Escolha o Plano Ideal', tagName: 'h2', fontSize: '36', fontWeight: '800', textAlign: 'center', color: SEC, lineHeight: '1.2', margin: [0, 0, 12, 0] } },
+      { type: 'HeadingComponent', displayName: 'Título', props: { text: 'Escolha o Plano Ideal', tagName: 'h2', fontSize: '36', fontWeight: '800', textAlign: 'center', color: SEC, lineHeight: '1.2', margin: [0, 0, 12, 0] } },
       {
         type: 'FeaturesSectionComponent',
         isCanvas: true,

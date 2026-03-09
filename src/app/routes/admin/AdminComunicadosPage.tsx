@@ -167,7 +167,7 @@ export function AdminComunicadosPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Comunicados</h1>
-              <p className="text-sm text-gray-500">Gerencie anuncios e notificacoes</p>
+              <p className="text-sm text-gray-500">Gerencie anúncios e notificações</p>
             </div>
           </div>
           <Button onClick={openCreate}>
@@ -261,11 +261,11 @@ export function AdminComunicadosPage() {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Titulo</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Título</label>
               <Input
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                placeholder="Titulo do comunicado"
+                placeholder="Título do comunicado"
               />
             </div>
             <div>
@@ -273,7 +273,7 @@ export function AdminComunicadosPage() {
               <Textarea
                 value={form.content}
                 onChange={(e) => setForm({ ...form, content: e.target.value })}
-                placeholder="Conteudo do comunicado"
+                placeholder="Conteúdo do comunicado"
                 rows={3}
               />
             </div>
@@ -285,9 +285,9 @@ export function AdminComunicadosPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="info">Informacao</SelectItem>
+                    <SelectItem value="info">Informação</SelectItem>
                     <SelectItem value="warning">Aviso</SelectItem>
-                    <SelectItem value="maintenance">Manutencao</SelectItem>
+                    <SelectItem value="maintenance">Manutenção</SelectItem>
                     <SelectItem value="update">Novidade</SelectItem>
                   </SelectContent>
                 </Select>
@@ -306,7 +306,7 @@ export function AdminComunicadosPage() {
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Data de expiracao (opcional)</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Data de expiração (opcional)</label>
               <Input
                 type="datetime-local"
                 value={form.expires_at}
@@ -330,11 +330,11 @@ export function AdminComunicadosPage() {
             {form.has_detail && (
               <div className="space-y-4 rounded-lg border border-gray-200 p-4">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">Conteudo detalhado</label>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Conteúdo detalhado</label>
                   <Textarea
                     value={form.detail_body}
                     onChange={(e) => setForm({ ...form, detail_body: e.target.value })}
-                    placeholder="Conteudo completo do comunicado..."
+                    placeholder="Conteúdo completo do comunicado..."
                     rows={5}
                   />
                 </div>
@@ -375,7 +375,7 @@ export function AdminComunicadosPage() {
             <DialogTitle className="text-red-600">Excluir Comunicado</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-gray-600">
-            Tem certeza que deseja excluir este comunicado? Esta acao nao pode ser desfeita.
+            Tem certeza que deseja excluir este comunicado? Esta ação não pode ser desfeita.
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmDelete(null)}>Cancelar</Button>

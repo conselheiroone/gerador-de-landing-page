@@ -16,7 +16,14 @@ export interface Database {
           nome: string | null
           empresa: string | null
           logo_url: string | null
+          avatar_url: string | null
+          telefone: string | null
+          cargo: string | null
+          status: string
           role: 'admin' | 'cliente'
+          aceite_termos_em: string | null
+          aceite_termos_versao: number
+          ultimo_acesso: string | null
           created_at: string
           updated_at: string
         }
@@ -26,7 +33,14 @@ export interface Database {
           nome?: string | null
           empresa?: string | null
           logo_url?: string | null
+          avatar_url?: string | null
+          telefone?: string | null
+          cargo?: string | null
+          status?: string
           role?: 'admin' | 'cliente'
+          aceite_termos_em?: string | null
+          aceite_termos_versao?: number
+          ultimo_acesso?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -36,7 +50,14 @@ export interface Database {
           nome?: string | null
           empresa?: string | null
           logo_url?: string | null
+          avatar_url?: string | null
+          telefone?: string | null
+          cargo?: string | null
+          status?: string
           role?: 'admin' | 'cliente'
+          aceite_termos_em?: string | null
+          aceite_termos_versao?: number
+          ultimo_acesso?: string | null
           updated_at?: string
         }
         Relationships: []

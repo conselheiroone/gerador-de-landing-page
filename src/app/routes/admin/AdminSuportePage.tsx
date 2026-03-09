@@ -65,7 +65,7 @@ export function AdminSuportePage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Suporte</h1>
-            <p className="text-sm text-gray-500">Configure o WhatsApp e horarios de atendimento</p>
+            <p className="text-sm text-gray-500">Configure o WhatsApp e horários de atendimento</p>
           </div>
         </div>
       </motion.div>
@@ -83,7 +83,7 @@ export function AdminSuportePage() {
             <CardContent className="space-y-4">
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
-                  Numero com DDD
+                  Número com DDD
                 </label>
                 <Input
                   value={formatPhone(phone)}
@@ -109,13 +109,13 @@ export function AdminSuportePage() {
           </Card>
         </motion.div>
 
-        {/* Horarios */}
+        {/* Horários */}
         <motion.div variants={staggerItem}>
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Clock className="h-4 w-4 text-blue-600" />
-                Horario de Atendimento
+                Horário de Atendimento
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -131,7 +131,7 @@ export function AdminSuportePage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">Inicio</label>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Início</label>
                   <Input
                     type="time"
                     value={start}
@@ -149,12 +149,12 @@ export function AdminSuportePage() {
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
-                  Mensagem fora do horario
+                  Mensagem fora do horário
                 </label>
                 <Input
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
-                  placeholder="Retornaremos no proximo dia util"
+                  placeholder="Retornaremos no próximo dia útil"
                 />
               </div>
             </CardContent>

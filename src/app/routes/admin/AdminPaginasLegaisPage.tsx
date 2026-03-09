@@ -13,7 +13,7 @@ import type { LegalPage } from '@/features/admin/types/admin.types'
 
 const PAGES_CONFIG = [
   { slug: 'termos-de-uso', label: 'Termos de Uso', icon: FileText },
-  { slug: 'politica-de-privacidade', label: 'Politica de Privacidade', icon: Shield },
+  { slug: 'politica-de-privacidade', label: 'Política de Privacidade', icon: Shield },
   { slug: 'lgpd', label: 'LGPD', icon: Lock },
 ]
 
@@ -52,7 +52,7 @@ export function AdminPaginasLegaisPage() {
     setSaving(slug)
     const newVersion = page.current_version + 1
 
-    // Salvar versao
+    // Salvar versão
     await supabase.from('legal_page_versions').insert({
       legal_page_id: page.id,
       version: newVersion,
@@ -60,7 +60,7 @@ export function AdminPaginasLegaisPage() {
       published_by: session?.user?.id ?? null,
     })
 
-    // Atualizar pagina
+    // Atualizar página
     await supabase
       .from('legal_pages')
       .update({
@@ -90,7 +90,7 @@ export function AdminPaginasLegaisPage() {
             <Scale className="h-5 w-5 text-blue-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Paginas Legais</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Páginas Legais</h1>
             <p className="text-sm text-gray-500">Gerencie Termos de Uso, Privacidade e LGPD</p>
           </div>
         </div>
@@ -134,7 +134,7 @@ export function AdminPaginasLegaisPage() {
                       onChange={(e) =>
                         setContents((prev) => ({ ...prev, [slug]: e.target.value }))
                       }
-                      placeholder={`Insira o conteudo de ${label} aqui...`}
+                      placeholder={`Insira o conteúdo de ${label} aqui...`}
                       rows={20}
                       className="min-h-[400px] font-mono text-sm"
                     />

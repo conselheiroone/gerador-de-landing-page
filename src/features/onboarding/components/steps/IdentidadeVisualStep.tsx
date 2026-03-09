@@ -1,6 +1,6 @@
 import { useState, useRef, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
-import { Palette, Upload, ImageIcon } from 'lucide-react'
+import { Palette, Upload } from 'lucide-react'
 import { slideUp } from '@/lib/motion-variants'
 import { Button } from '@/components/ui/button'
 import { extractColorsFromFile } from '@/utils/extract-colors'
@@ -261,13 +261,13 @@ export function IdentidadeVisualStep({ perfil, userId, onSave, onBack, isSaving 
                 className="rounded px-3 py-1.5 text-xs font-medium text-white"
                 style={{ backgroundColor: corPrimaria }}
               >
-                Botao Primario
+                Botão Primário
               </div>
               <div
                 className="rounded px-3 py-1.5 text-xs font-medium text-white"
                 style={{ backgroundColor: corSecundaria }}
               >
-                Botao Secundario
+                Botão Secundário
               </div>
             </div>
           </div>
@@ -278,7 +278,7 @@ export function IdentidadeVisualStep({ perfil, userId, onSave, onBack, isSaving 
             Voltar
           </Button>
           <Button type="submit" isLoading={isSaving}>
-            Proximo
+            Próximo
           </Button>
         </div>
       </form>

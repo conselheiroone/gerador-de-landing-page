@@ -20,7 +20,7 @@ export type HeadingProps = {
 }
 
 const defaultProps: HeadingProps = {
-  text: 'Titulo da Secao',
+  text: 'Título da Seção',
   tagName: 'h2',
   fontSize: '32',
   textAlign: 'left',
@@ -82,7 +82,7 @@ export const HeadingComponent: UserComponent<Partial<HeadingProps>> = (incomingP
 }
 
 HeadingComponent.craft = {
-  displayName: 'Titulo',
+  displayName: 'Título',
   props: defaultProps,
   related: {
     settings: HeadingSettings,

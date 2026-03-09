@@ -94,7 +94,7 @@ export function AdminAprendizadoPage() {
       const file = (e.target as HTMLInputElement).files?.[0]
       if (!file) return
       if (file.size > 5 * 1024 * 1024) {
-        alert('Imagem deve ter no maximo 5MB')
+        alert('Imagem deve ter no máximo 5MB')
         return
       }
       await uploadModuleThumbnail(moduleId, file)
@@ -129,11 +129,11 @@ export function AdminAprendizadoPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Aprendizado</h1>
-              <p className="text-sm text-gray-500">Gerencie modulos e aulas</p>
+              <p className="text-sm text-gray-500">Gerencie módulos e aulas</p>
             </div>
           </div>
           <Button onClick={openCreate}>
-            <Plus className="mr-2 h-4 w-4" /> Novo Modulo
+            <Plus className="mr-2 h-4 w-4" /> Novo Módulo
           </Button>
         </div>
       </motion.div>
@@ -144,9 +144,9 @@ export function AdminAprendizadoPage() {
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12 text-gray-500">
               <BookOpen className="mb-3 h-12 w-12 text-gray-300" />
-              <p>Nenhum modulo criado ainda</p>
+              <p>Nenhum módulo criado ainda</p>
               <Button onClick={openCreate} variant="outline" className="mt-4">
-                <Plus className="mr-2 h-4 w-4" /> Criar primeiro modulo
+                <Plus className="mr-2 h-4 w-4" /> Criar primeiro módulo
               </Button>
             </CardContent>
           </Card>
@@ -236,23 +236,23 @@ export function AdminAprendizadoPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editingId ? 'Editar Modulo' : 'Novo Modulo'}</DialogTitle>
+            <DialogTitle>{editingId ? 'Editar Módulo' : 'Novo Módulo'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Titulo</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Título</label>
               <Input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Nome do modulo"
+                placeholder="Nome do módulo"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Descricao (opcional)</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Descrição (opcional)</label>
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Descricao do modulo"
+                placeholder="Descrição do módulo"
                 rows={3}
               />
             </div>
@@ -270,10 +270,10 @@ export function AdminAprendizadoPage() {
       <Dialog open={!!confirmDelete} onOpenChange={() => setConfirmDelete(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-red-600">Excluir Modulo</DialogTitle>
+            <DialogTitle className="text-red-600">Excluir Módulo</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-gray-600">
-            Tem certeza? Todas as aulas e anexos deste modulo serao excluidos.
+            Tem certeza? Todas as aulas e anexos deste módulo serão excluídos.
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmDelete(null)}>Cancelar</Button>

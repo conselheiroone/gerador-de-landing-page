@@ -135,7 +135,7 @@ export function AdminAprendizadoModuloPage() {
       const file = (e.target as HTMLInputElement).files?.[0]
       if (!file) return
       if (file.size > 10 * 1024 * 1024) {
-        alert('Arquivo deve ter no maximo 10MB')
+        alert('Arquivo deve ter no máximo 10MB')
         return
       }
       await uploadAttachment(lessonId, file)
@@ -169,8 +169,8 @@ export function AdminAprendizadoModuloPage() {
         </Button>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{module?.title ?? 'Modulo'}</h1>
-            <p className="text-sm text-gray-500">{module?.description ?? 'Gerencie as aulas deste modulo'}</p>
+            <h1 className="text-2xl font-bold text-gray-900">{module?.title ?? 'Módulo'}</h1>
+            <p className="text-sm text-gray-500">{module?.description ?? 'Gerencie as aulas deste módulo'}</p>
           </div>
           <Button onClick={openCreate}>
             <Plus className="mr-2 h-4 w-4" /> Nova Aula
@@ -307,12 +307,12 @@ export function AdminAprendizadoModuloPage() {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Titulo</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Título</label>
               <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Nome da aula" />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Descricao (opcional)</label>
-              <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Descricao da aula" rows={2} />
+              <label className="mb-1 block text-sm font-medium text-gray-700">Descrição (opcional)</label>
+              <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Descrição da aula" rows={2} />
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">URL do YouTube</label>
@@ -330,7 +330,7 @@ export function AdminAprendizadoModuloPage() {
             )}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Duracao (minutos)</label>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Duração (minutos)</label>
                 <Input type="number" min={0} value={durationMin} onChange={(e) => setDurationMin(Number(e.target.value))} />
               </div>
               <div>

@@ -105,7 +105,7 @@ export const ContainerSettings = () => {
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
-                  {align === 'flex-start' ? 'Inicio' : align === 'center' ? 'Centro' : 'Fim'}
+                  {align === 'flex-start' ? 'Início' : align === 'center' ? 'Centro' : 'Fim'}
                 </button>
               ))}
             </div>
@@ -123,7 +123,7 @@ export const ContainerSettings = () => {
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
-                  {j === 'flex-start' ? 'Inicio' : j === 'center' ? 'Centro' : j === 'flex-end' ? 'Fim' : 'Espaco'}
+                  {j === 'flex-start' ? 'Início' : j === 'center' ? 'Centro' : j === 'flex-end' ? 'Fim' : 'Espaço'}
                 </button>
               ))}
             </div>

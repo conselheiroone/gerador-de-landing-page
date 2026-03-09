@@ -12,7 +12,6 @@ import {
   Plus,
   Trash2,
   Upload,
-  ImageIcon,
   ChevronUp,
   Star,
   Download,
@@ -217,8 +216,8 @@ export function PerfilEmpresaPage() {
       <Section
         id="contato"
         icon={<MapPin className="h-5 w-5" />}
-        title="Contato e Localizacao"
-        summary={[perfil.cidade, perfil.estado].filter(Boolean).join('/') || 'Nenhum endereco'}
+        title="Contato e Localização"
+        summary={[perfil.cidade, perfil.estado].filter(Boolean).join('/') || 'Nenhum endereço'}
         isOpen={openSection === 'contato'}
         onToggle={() => toggleSection('contato')}
         isSaving={savingSection === 'contato'}

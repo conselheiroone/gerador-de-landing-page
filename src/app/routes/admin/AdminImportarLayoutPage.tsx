@@ -27,7 +27,7 @@ type ExtractionMode = 'playwright' | 'edge-function'
 
 const SECTION_LABELS: Record<string, string> = {
   hero: 'Hero / Banner',
-  features: 'Servicos / Features',
+  features: 'Serviços / Features',
   testimonials: 'Depoimentos',
   about: 'Sobre / Quem Somos',
   faq: 'Perguntas Frequentes',
@@ -35,8 +35,8 @@ const SECTION_LABELS: Record<string, string> = {
   gallery: 'Galeria',
   cta: 'Call to Action',
   contact: 'Contato',
-  footer: 'Rodape',
-  generic: 'Secao',
+  footer: 'Rodapé',
+  generic: 'Seção',
 }
 
 export function AdminImportarLayoutPage() {
@@ -54,7 +54,7 @@ export function AdminImportarLayoutPage() {
   const [playwrightResult, setPlaywrightResult] = useState<PlaywrightLayoutResponse | null>(null)
   const [excludedSections, setExcludedSections] = useState<Set<number>>(new Set())
 
-  // Verificar se o servidor Playwright esta disponivel
+  // Verificar se o servidor Playwright está disponível
   useEffect(() => {
     checkPlaywrightServer().then((available) => {
       setPlaywrightAvailable(available)
@@ -198,7 +198,7 @@ export function AdminImportarLayoutPage() {
               Cole a URL do site
             </h2>
             <p className="mb-6 text-center text-sm text-gray-500">
-              O sistema analisara a estrutura do site e criara um layout semelhante com placeholders editaveis.
+              O sistema analisará a estrutura do site e criará um layout semelhante com placeholders editáveis.
             </p>
 
             <div className="flex gap-3">
@@ -231,7 +231,7 @@ export function AdminImportarLayoutPage() {
               <p className="mt-3 text-sm text-red-500">{error}</p>
             )}
 
-            {/* Toggle modo de extracao */}
+            {/* Toggle modo de extração */}
             <div className="mt-5 flex items-center justify-center gap-2">
               <button
                 onClick={() => setExtractionMode('playwright')}
@@ -264,8 +264,8 @@ export function AdminImportarLayoutPage() {
 
             <p className="mt-3 text-center text-xs text-gray-400">
               {extractionMode === 'playwright'
-                ? 'Modo Playwright: renderizacao real com browser headless (alta fidelidade, suporta SPAs).'
-                : 'Funciona melhor com sites estaticos. Sites que dependem de JavaScript (SPAs) podem nao ser analisados corretamente.'}
+                ? 'Modo Playwright: renderização real com browser headless (alta fidelidade, suporta SPAs).'
+                : 'Funciona melhor com sites estáticos. Sites que dependem de JavaScript (SPAs) podem não ser analisados corretamente.'}
             </p>
           </div>
         </div>
@@ -286,8 +286,8 @@ export function AdminImportarLayoutPage() {
                   </h3>
                   <p className="text-sm text-gray-500">
                     {playwrightResult
-                      ? `${playwrightResult.sectionCount} secao(oes) detectada(s) via Playwright`
-                      : `${selectedCount} de ${totalSections} secao(oes) selecionada(s)`}
+                      ? `${playwrightResult.sectionCount} seção(ões) detectada(s) via Playwright`
+                      : `${selectedCount} de ${totalSections} seção(ões) selecionada(s)`}
                   </p>
                 </div>
               </div>
@@ -312,7 +312,7 @@ export function AdminImportarLayoutPage() {
                       Template gerado com alta fidelidade
                     </span>
                     <span className="ml-2 text-sm text-gray-400">
-                      — {playwrightResult.sectionCount} secoes
+                      — {playwrightResult.sectionCount} seções
                       {playwrightResult.fontFamily && `, fonte: ${playwrightResult.fontFamily}`}
                     </span>
                   </div>
@@ -398,7 +398,7 @@ export function AdminImportarLayoutPage() {
                             ? 'text-green-600 hover:bg-green-100'
                             : 'text-gray-400 hover:bg-red-100 hover:text-red-500'
                         }`}
-                        title={isExcluded ? 'Restaurar secao' : 'Remover secao'}
+                        title={isExcluded ? 'Restaurar seção' : 'Remover seção'}
                       >
                         {isExcluded ? (
                           <RotateCcw className="h-4 w-4" />
@@ -460,7 +460,7 @@ export function AdminImportarLayoutPage() {
             Template salvo com sucesso!
           </h3>
           <p className="mb-6 text-sm text-gray-500">
-            O template &quot;{templateName}&quot; esta disponivel na lista de templates.
+            O template &quot;{templateName}&quot; está disponível na lista de templates.
           </p>
           <div className="flex gap-3">
             <Button onClick={() => navigate('/admin/templates')}>

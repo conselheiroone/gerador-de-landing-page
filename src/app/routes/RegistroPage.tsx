@@ -149,17 +149,17 @@ export function RegistroPage() {
 
                 <Button type="submit" className="w-full" isLoading={isLoading}>
                   <Mail className="h-4 w-4" />
-                  Enviar codigo de verificacao
+                  Enviar código de verificação
                 </Button>
               </form>
 
               <p className="mt-6 text-center text-sm text-gray-500">
-                Ja tem uma conta?{' '}
+                Já tem uma conta?{' '}
                 <a
                   href="/login"
                   className="font-medium text-brand-500 hover:text-brand-600"
                 >
-                  Faca login
+                  Faça login
                 </a>
               </p>
             </motion.div>
@@ -172,7 +172,7 @@ export function RegistroPage() {
               exit="hidden"
             >
               <p className="mb-2 text-center text-sm text-gray-500">
-                Enviamos um codigo de 6 digitos para
+                Enviamos um código de 6 dígitos para
               </p>
               <p className="mb-6 text-center text-sm font-medium text-gray-900">
                 {email}
@@ -219,7 +219,7 @@ export function RegistroPage() {
                   disabled={isLoading}
                   className="text-sm font-medium text-brand-500 hover:text-brand-600 disabled:opacity-50"
                 >
-                  Reenviar codigo
+                  Reenviar código
                 </button>
               </div>
             </motion.div>

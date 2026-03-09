@@ -463,7 +463,7 @@ function buildSectionFromDomTree(
       {
         type: 'ContainerComponent',
         isCanvas: true,
-        displayName: 'Conteudo',
+        displayName: 'Conteúdo',
         props: {
           background: 'transparent',
           padding: typeof cs.padding === 'number' ? cs.padding : 60,
@@ -532,7 +532,7 @@ function buildHeroSection(section: ParsedSection, palette: ColorPalette | null):
   const children: TemplateNode[] = [
     {
       type: 'HeadingComponent',
-      displayName: 'Titulo',
+      displayName: 'Título',
       props: {
         text: heading(section, 'Título Principal'),
         tagName: 'h1',
@@ -544,7 +544,7 @@ function buildHeroSection(section: ParsedSection, palette: ColorPalette | null):
     },
     {
       type: 'TextComponent',
-      displayName: 'Subtitulo',
+      displayName: 'Subtítulo',
       props: {
         text: paragraphText(section, 'Descrição da empresa. Edite este texto com suas informações.'),
         fontSize: '18',
@@ -634,7 +634,7 @@ function buildFeaturesSection(section: ParsedSection, sectionIndex: number, pale
     children: [
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo Secao',
+        displayName: 'Título Seção',
         props: {
           text: heading(section, 'Nossos Serviços'),
           tagName: 'h2',
@@ -673,7 +673,7 @@ function buildFeaturesSection(section: ParsedSection, sectionIndex: number, pale
     cardChildren.push(
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo',
+        displayName: 'Título',
         props: {
           text: section.headingTexts[i + 1] ?? `Serviço ${i + 1}`,
           tagName: 'h3',
@@ -790,7 +790,7 @@ function buildTestimonialsSection(section: ParsedSection, sectionIndex: number, 
     children: [
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo',
+        displayName: 'Título',
         props: {
           text: heading(section, 'Depoimentos'),
           tagName: 'h2',
@@ -814,7 +814,7 @@ function buildAboutSection(section: ParsedSection, sectionIndex: number, palette
   const leftColumn: TemplateNode = {
     type: 'ContainerComponent',
     isCanvas: true,
-    displayName: 'Conteudo',
+    displayName: 'Conteúdo',
     props: {
       background: 'transparent',
       padding: 0,
@@ -830,7 +830,7 @@ function buildAboutSection(section: ParsedSection, sectionIndex: number, palette
     children: [
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo',
+        displayName: 'Título',
         props: {
           text: heading(section, 'Quem Somos'),
           tagName: 'h2',
@@ -854,7 +854,7 @@ function buildAboutSection(section: ParsedSection, sectionIndex: number, palette
       },
       {
         type: 'ButtonComponent',
-        displayName: 'Botao',
+        displayName: 'Botão',
         props: {
           text: ctaText(section, 'Saiba Mais'),
           href: '#',
@@ -1019,7 +1019,7 @@ function buildFaqSection(section: ParsedSection, sectionIndex: number, palette: 
     children: [
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo',
+        displayName: 'Título',
         props: {
           text: heading(section, 'Perguntas Frequentes'),
           tagName: 'h2',
@@ -1062,7 +1062,7 @@ function buildLogosSection(section: ParsedSection, sectionIndex: number, palette
     children: [
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo',
+        displayName: 'Título',
         props: {
           text: heading(section, 'Nossos Parceiros'),
           tagName: 'h2',
@@ -1105,7 +1105,7 @@ function buildGallerySection(section: ParsedSection, sectionIndex: number, palet
     if (hasHeading) {
       cardChildren.push({
         type: 'HeadingComponent',
-        displayName: 'Titulo',
+        displayName: 'Título',
         props: {
           text: section.headingTexts[i + 1] ?? `Item ${i + 1}`,
           tagName: 'h3',
@@ -1160,7 +1160,7 @@ function buildGallerySection(section: ParsedSection, sectionIndex: number, palet
     children: [
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo',
+        displayName: 'Título',
         props: {
           text: heading(section, 'Galeria'),
           tagName: 'h2',
@@ -1199,7 +1199,7 @@ function buildContactSection(section: ParsedSection, sectionIndex: number, palet
     children: [
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo',
+        displayName: 'Título',
         props: {
           text: heading(section, 'Entre em Contato'),
           tagName: 'h2',
@@ -1235,7 +1235,7 @@ function buildContactSection(section: ParsedSection, sectionIndex: number, palet
       },
       {
         type: 'ButtonComponent',
-        displayName: 'Botao Contato',
+        displayName: 'Botão Contato',
         props: {
           text: ctaText(section, 'Enviar Mensagem'),
           href: '#',
@@ -1267,7 +1267,7 @@ function buildCtaSection(section: ParsedSection, palette: ColorPalette | null): 
     children: [
       {
         type: 'HeadingComponent',
-        displayName: 'Titulo CTA',
+        displayName: 'Título CTA',
         props: {
           text: heading(section, 'Entre em Contato'),
           tagName: 'h2',
@@ -1279,7 +1279,7 @@ function buildCtaSection(section: ParsedSection, palette: ColorPalette | null): 
       },
       {
         type: 'TextComponent',
-        displayName: 'Subtitulo',
+        displayName: 'Subtítulo',
         props: {
           text: paragraphText(section, 'Fale conosco para saber mais sobre nossos serviços.'),
           fontSize: '18',
@@ -1303,7 +1303,7 @@ function buildCtaSection(section: ParsedSection, palette: ColorPalette | null): 
       },
       {
         type: 'ButtonComponent',
-        displayName: 'Botao CTA',
+        displayName: 'Botão CTA',
         props: {
           text: ctaText(section, 'Fale Conosco'),
           href: '#',
@@ -1337,7 +1337,7 @@ function buildFooterSection(section: ParsedSection, palette: ColorPalette | null
   return {
     type: 'FooterComponent',
     isCanvas: true,
-    displayName: 'Rodape',
+    displayName: 'Rodapé',
     props: { background: bg, gradientFrom, gradientTo, gradientType, gradientDirection, paddingY: 40, columns: cols },
     children: [
       {
@@ -1366,7 +1366,7 @@ function buildFooterSection(section: ParsedSection, palette: ColorPalette | null
       },
       {
         type: 'TextComponent',
-        displayName: 'Endereco',
+        displayName: 'Endereço',
         props: {
           text: 'Endereço da empresa\nCidade/Estado',
           fontSize: '13',
@@ -1389,7 +1389,7 @@ function buildGenericSection(section: ParsedSection, sectionIndex: number, palet
   const children: TemplateNode[] = [
     {
       type: 'HeadingComponent',
-      displayName: 'Titulo',
+      displayName: 'Título',
       props: {
         text: heading(section, 'Título da Seção'),
         tagName: 'h2',
@@ -1436,7 +1436,7 @@ function buildGenericSection(section: ParsedSection, sectionIndex: number, palet
       children: [
         {
           type: 'HeadingComponent',
-          displayName: 'Titulo',
+          displayName: 'Título',
           props: {
             text: section.headingTexts[i + 1] ?? `Item ${i + 1}`,
             tagName: 'h3',
@@ -1464,7 +1464,7 @@ function buildGenericSection(section: ParsedSection, sectionIndex: number, palet
     return {
       type: 'FeaturesSectionComponent',
       isCanvas: true,
-      displayName: 'Secao',
+      displayName: 'Seção',
       props: { background: colors.bg, columns: cols, gap: 24, paddingY: 60 },
       children: [children[0], ...cards],
     }
@@ -1473,7 +1473,7 @@ function buildGenericSection(section: ParsedSection, sectionIndex: number, palet
   if (section.contentInventory.buttonCount > 0) {
     children.push({
       type: 'ButtonComponent',
-      displayName: 'Botao',
+      displayName: 'Botão',
       props: {
         text: ctaText(section, 'Saiba Mais'),
         href: '#',
@@ -1489,7 +1489,7 @@ function buildGenericSection(section: ParsedSection, sectionIndex: number, palet
   return {
     type: 'ContainerComponent',
     isCanvas: true,
-    displayName: 'Secao',
+    displayName: 'Seção',
     props: {
       background: colors.bg,
       padding: 60,

@@ -127,7 +127,7 @@ export function AdminDicasAjudaPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Dicas de Ajuda</h1>
-              <p className="text-sm text-gray-500">Gerencie dicas contextuais por pagina</p>
+              <p className="text-sm text-gray-500">Gerencie dicas contextuais por página</p>
             </div>
           </div>
           <Button onClick={() => setCreateDialogOpen(true)}>
@@ -141,7 +141,7 @@ export function AdminDicasAjudaPage() {
         <Card>
           <CardContent className="p-4 text-center">
             <p className="text-2xl font-bold text-gray-900">{totalPages}</p>
-            <p className="text-sm text-gray-500">Paginas</p>
+            <p className="text-sm text-gray-500">Páginas</p>
           </CardContent>
         </Card>
         <Card>
@@ -153,7 +153,7 @@ export function AdminDicasAjudaPage() {
         <Card>
           <CardContent className="p-4 text-center">
             <p className="text-2xl font-bold text-emerald-600">{tipsWithContent}</p>
-            <p className="text-sm text-gray-500">Com Conteudo</p>
+            <p className="text-sm text-gray-500">Com Conteúdo</p>
           </CardContent>
         </Card>
         <Card>
@@ -204,7 +204,7 @@ export function AdminDicasAjudaPage() {
                       <div className="flex items-center gap-2">
                         <Badge variant="secondary">{pageTips.length} dicas</Badge>
                         <Badge variant={contentCount > 0 ? 'success' : 'warning'}>
-                          {contentCount} com conteudo
+                          {contentCount} com conteúdo
                         </Badge>
                       </div>
                     </button>
@@ -216,12 +216,12 @@ export function AdminDicasAjudaPage() {
                           <div key={tip.id} className="flex items-center gap-3 border-b border-gray-50 px-6 py-3 last:border-0">
                             <div className="flex-1 min-w-0">
                               <p className="truncate text-sm font-medium text-gray-900">
-                                {tip.title ?? tip.section_title ?? tip.anchor_key ?? 'Sem titulo'}
+                                {tip.title ?? tip.section_title ?? tip.anchor_key ?? 'Sem título'}
                               </p>
                               <div className="mt-1 flex items-center gap-2">
                                 {tip.video_url && (
                                   <Badge variant="primary" className="flex items-center gap-1">
-                                    <Video className="h-3 w-3" /> Video
+                                    <Video className="h-3 w-3" /> Vídeo
                                   </Badge>
                                 )}
                                 {tip.description && (
@@ -268,15 +268,15 @@ export function AdminDicasAjudaPage() {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Titulo personalizado</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Título personalizado</label>
               <Input
                 value={formTitle}
                 onChange={(e) => setFormTitle(e.target.value)}
-                placeholder="Titulo da dica (opcional)"
+                placeholder="Título da dica (opcional)"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">URL do Video (YouTube)</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">URL do Vídeo (YouTube)</label>
               <Input
                 value={formVideoUrl}
                 onChange={(e) => setFormVideoUrl(e.target.value)}
@@ -294,7 +294,7 @@ export function AdminDicasAjudaPage() {
               </div>
             )}
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Descricao</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Descrição</label>
               <Textarea
                 value={formDescription}
                 onChange={(e) => setFormDescription(e.target.value)}
@@ -320,7 +320,7 @@ export function AdminDicasAjudaPage() {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Caminho da pagina</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Caminho da página</label>
               <Input
                 value={newPagePath}
                 onChange={(e) => setNewPagePath(e.target.value)}
@@ -328,15 +328,15 @@ export function AdminDicasAjudaPage() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Nome da pagina</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Nome da página</label>
               <Input
                 value={newPageName}
                 onChange={(e) => setNewPageName(e.target.value)}
-                placeholder="ex: Templates, Editor de Paginas"
+                placeholder="ex: Templates, Editor de Páginas"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Titulo da secao (opcional)</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Título da seção (opcional)</label>
               <Input
                 value={newSectionTitle}
                 onChange={(e) => setNewSectionTitle(e.target.value)}
@@ -344,7 +344,7 @@ export function AdminDicasAjudaPage() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Chave ancora (opcional)</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Chave âncora (opcional)</label>
               <Input
                 value={newAnchorKey}
                 onChange={(e) => setNewAnchorKey(e.target.value)}

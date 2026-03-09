@@ -36,4 +36,6 @@ export interface AdminUser {
   role: 'admin' | 'avancado' | 'cliente'
   created_at: string
   ultimo_acesso: string | null
+  aceite_termos_em: string | null
+  aceite_termos_versao: number
 }

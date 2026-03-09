@@ -9,10 +9,10 @@ export const HeadingSettings = () => {
   return (
     <div className="space-y-4">
       <div>
-        <h4 className="text-xs font-medium text-gray-500 uppercase mb-2">Titulo</h4>
+        <h4 className="text-xs font-medium text-gray-500 uppercase mb-2">Título</h4>
         <div className="space-y-2">
           <div>
-            <label className="text-xs text-gray-400">Nivel</label>
+            <label className="text-xs text-gray-400">Nível</label>
             <div className="flex gap-1 mt-1">
               {(['h1', 'h2', 'h3', 'h4'] as const).map((tag) => (
                 <button

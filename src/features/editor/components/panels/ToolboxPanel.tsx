@@ -133,7 +133,7 @@ export const ToolboxPanel = () => {
       ],
     },
     {
-      title: 'Basicos',
+      title: 'Básicos',
       items: [
         {
           icon: <Square className="w-5 h-5" />,
@@ -152,7 +152,7 @@ export const ToolboxPanel = () => {
         },
         {
           icon: <Heading className="w-5 h-5" />,
-          label: 'Titulo',
+          label: 'Título',
           element: <HeadingComponent />,
         },
         {
@@ -162,7 +162,7 @@ export const ToolboxPanel = () => {
         },
         {
           icon: <MousePointerClick className="w-5 h-5" />,
-          label: 'Botao',
+          label: 'Botão',
           element: <ButtonComponent />,
         },
         {
@@ -177,7 +177,7 @@ export const ToolboxPanel = () => {
         },
         {
           icon: <Video className="w-5 h-5" />,
-          label: 'Video',
+          label: 'Vídeo',
           element: <VideoComponent />,
         },
       ],
@@ -248,7 +248,7 @@ export const ToolboxPanel = () => {
       ],
     },
     {
-      title: 'Secoes',
+      title: 'Seções',
       items: [
         {
           icon: <Navigation className="w-5 h-5" />,
@@ -329,7 +329,7 @@ export const ToolboxPanel = () => {
         },
         {
           icon: <PanelBottom className="w-5 h-5" />,
-          label: 'Rodape',
+          label: 'Rodapé',
           element: (
             <Element
               canvas

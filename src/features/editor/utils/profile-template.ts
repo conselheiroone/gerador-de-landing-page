@@ -12,7 +12,7 @@
  * - Usa as cores do perfil exatamente como o usuário definiu
  */
 
-import type { PerfilEmpresa, Socio, Depoimento } from '@/features/onboarding/types/onboarding.types'
+import type { PerfilEmpresa, Socio, Depoimento, ServicoItem } from '@/features/onboarding/types/onboarding.types'
 import { buildCraftJson, type TemplateNode } from './default-templates'
 
 // ─── Color utilities ─────────────────────────────────────────
@@ -1198,23 +1198,18 @@ function buildCta(
   const ctaTextColor = '#ffffff'
   const ctaSubText = 'rgba(255,255,255,0.75)'
 
-  // Texto do botão adapta ao ramo
-  const nomeFantasia = perfil.nome_fantasia || perfil.razao_social || ''
-  const ramoLower = perfil.ramo_atividade?.toLowerCase() || ''
+  // Texto do botão adapta ao contexto
+  const nomeEmpresa = perfil.nome_empresa || ''
   let ctaBtnText = 'Fale Conosco'
   if (whatsappHref) {
     ctaBtnText = 'Falar pelo WhatsApp'
-  } else if (ramoLower.includes('contab') || ramoLower.includes('fiscal')) {
+  } else {
     ctaBtnText = 'Falar com um contador'
-  } else if (ramoLower.includes('advoc') || ramoLower.includes('jurídic')) {
-    ctaBtnText = 'Falar com um advogado'
-  } else if (ramoLower.includes('saúde') || ramoLower.includes('médic') || ramoLower.includes('clínic')) {
-    ctaBtnText = 'Agendar uma consulta'
   }
 
   // Título CTA adapta ao nome da empresa
-  const ctaTitle = nomeFantasia
-    ? `Pronto para transformar\nseu negócio com a ${nomeFantasia}?`
+  const ctaTitle = nomeEmpresa
+    ? `Pronto para transformar\nseu negócio com a ${nomeEmpresa}?`
     : 'Pronto para transformar\nseu negócio?'
 
   const ctaChildren: TemplateNode[] = [

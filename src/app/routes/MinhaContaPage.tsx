@@ -67,7 +67,7 @@ export function MinhaContaPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Minha Conta</h1>
-            <p className="text-sm text-gray-500">Gerencie suas informacoes pessoais</p>
+            <p className="text-sm text-gray-500">Gerencie suas informações pessoais</p>
           </div>
         </div>
       </motion.div>
@@ -82,14 +82,14 @@ export function MinhaContaPage() {
                 Email
               </label>
               <Input value={profile?.email ?? ''} disabled className="bg-gray-50 text-gray-500" />
-              <p className="text-xs text-gray-400">O email nao pode ser alterado.</p>
+              <p className="text-xs text-gray-400">O e-mail não pode ser alterado.</p>
             </div>
 
-            {/* Nivel de acesso — somente leitura */}
+            {/* Nível de acesso — somente leitura */}
             <div className="space-y-1.5">
               <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
                 <Shield className="h-4 w-4" />
-                Nivel de acesso
+                Nível de acesso
               </label>
               <div>
                 <Badge variant={profile?.role === 'admin' ? 'success' : profile?.role === 'avancado' ? 'primary' : 'secondary'}>

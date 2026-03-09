@@ -58,7 +58,7 @@ export const ButtonComponent: UserComponent<Partial<ButtonProps>> = (incomingPro
 }
 
 ButtonComponent.craft = {
-  displayName: 'Botao',
+  displayName: 'Botão',
   props: defaultProps,
   related: {
     settings: ButtonSettings,

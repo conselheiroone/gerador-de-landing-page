@@ -163,7 +163,7 @@ export const EditorPage = () => {
                 gap={20}
                 width="800px"
                 height="auto"
-                custom={{ displayName: 'Pagina' }}
+                custom={{ displayName: 'Página' }}
               >
                 {/* Hero Section */}
                 <Element
