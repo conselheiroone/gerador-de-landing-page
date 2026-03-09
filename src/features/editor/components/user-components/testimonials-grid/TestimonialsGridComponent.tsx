@@ -20,6 +20,7 @@ export type TestimonialsGridProps = {
   showStars: boolean
   sectionTag: string
   sectionTitle: string
+  sectionDescription?: string
 }
 
 const DEFAULT_DEPOIMENTOS: TestimonialItem[] = [
@@ -54,6 +55,7 @@ const defaultProps: TestimonialsGridProps = {
   showStars: true,
   sectionTag: 'DEPOIMENTOS',
   sectionTitle: 'O que nossos clientes dizem',
+  sectionDescription: 'A satisfação dos nossos clientes é o nosso maior orgulho.',
 }
 
 export const TestimonialsGridComponent: UserComponent<Partial<TestimonialsGridProps>> = (incomingProps) => {
@@ -62,7 +64,7 @@ export const TestimonialsGridComponent: UserComponent<Partial<TestimonialsGridPr
 
   const {
     background, cardBackground, accentColor, textColor,
-    paddingY, showStars, sectionTag, sectionTitle, depoimentos,
+    paddingY, showStars, sectionTag, sectionTitle, sectionDescription, depoimentos,
   } = props
 
   return (
@@ -76,14 +78,14 @@ export const TestimonialsGridComponent: UserComponent<Partial<TestimonialsGridPr
     >
       <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
         {/* Cabeçalho */}
-        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '48px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <p style={{
             fontSize: '12px',
             fontWeight: '700',
             letterSpacing: '2px',
             textTransform: 'uppercase' as const,
             color: accentColor,
-            margin: '0 0 12px',
+            margin: '0 0 8px',
           }}>
             {sectionTag}
           </p>
@@ -97,6 +99,25 @@ export const TestimonialsGridComponent: UserComponent<Partial<TestimonialsGridPr
           }}>
             {sectionTitle}
           </h2>
+          {/* Divisor */}
+          <div style={{
+            width: '60px',
+            height: '4px',
+            background: accentColor,
+            margin: '16px 0',
+            borderRadius: '2px',
+          }} />
+          {sectionDescription && (
+            <p style={{
+              fontSize: '16px',
+              fontWeight: '400',
+              color: '#64748b',
+              margin: 0,
+              maxWidth: '500px',
+            }}>
+              {sectionDescription}
+            </p>
+          )}
         </div>
 
         {/* Grid de cards */}
@@ -125,7 +146,7 @@ export const TestimonialsGridComponent: UserComponent<Partial<TestimonialsGridPr
                     <span
                       key={s}
                       style={{
-                        color: s < dep.nota ? (dep.accentColor || accentColor) : '#e2e8f0',
+                        color: s < dep.nota ? '#f59e0b' : '#e2e8f0',
                         fontSize: '16px',
                       }}
                     >

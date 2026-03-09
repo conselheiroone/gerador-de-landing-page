@@ -17,6 +17,8 @@ export type HeadingProps = {
   textTransform?: 'none' | 'uppercase' | 'capitalize'
   /** Largura máxima para controle de linha (ex: '700px') */
   maxWidth?: string
+  /** Margin [top, right, bottom, left] em px */
+  margin?: number[]
 }
 
 const defaultProps: HeadingProps = {
@@ -29,6 +31,7 @@ const defaultProps: HeadingProps = {
   letterSpacing: 'normal',
   lineHeight: '1.2',
   textTransform: 'none',
+  margin: [0, 0, 0, 0],
 }
 
 export const HeadingComponent: UserComponent<Partial<HeadingProps>> = (incomingProps) => {
@@ -52,7 +55,12 @@ export const HeadingComponent: UserComponent<Partial<HeadingProps>> = (incomingP
     lineHeight,
     textTransform,
     maxWidth,
+    margin,
   } = props
+
+  const marginStyle = margin && margin.length === 4
+    ? `${margin[0]}px ${margin[1]}px ${margin[2]}px ${margin[3]}px`
+    : undefined
 
   return (
     <ContentEditable
@@ -75,6 +83,7 @@ export const HeadingComponent: UserComponent<Partial<HeadingProps>> = (incomingP
         lineHeight: lineHeight || '1.2',
         letterSpacing: letterSpacing || 'normal',
         textTransform: textTransform || 'none',
+        margin: marginStyle,
         outline: 'none',
       }}
     />

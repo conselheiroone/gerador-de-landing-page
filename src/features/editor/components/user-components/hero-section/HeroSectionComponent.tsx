@@ -10,6 +10,10 @@ export type HeroSectionProps = {
   /** 'linear' | 'radial' | '' — vazio usa apenas background sólido */
   gradientType: 'linear' | 'radial' | ''
   paddingY: number
+  /** Padding top específico (sobrescreve paddingY para o topo) */
+  paddingTop?: number
+  /** Padding bottom específico (sobrescreve paddingY para a base) */
+  paddingBottom?: number
   minHeight: number
   textAlign: string
   // ── Design profissional ──────────────────────────────────
@@ -21,6 +25,8 @@ export type HeroSectionProps = {
   overlayColor?: string
   /** Altura mínima em vh (ex: 80 = 80vh) — sobrescreve minHeight */
   minHeightVh?: number
+  /** Altura mínima como calc() string (ex: 'calc(100vh - 140px)') */
+  minHeightCalc?: string
   /** Ativa parallax scrolling no background */
   parallax?: boolean
   /** Max-width do conteúdo interno (bg fica full-width). Ex: '1080px' */
@@ -65,9 +71,17 @@ export const HeroSectionComponent: UserComponent<Partial<HeroSectionProps>> = (i
   const bg = buildBackground(props)
   const hasImage = !!props.backgroundImage
   const hasOverlay = hasImage && (props.overlayOpacity ?? 0) > 0
-  const resolvedMinHeight = props.minHeightVh
-    ? `${props.minHeightVh}vh`
-    : `${props.minHeight}px`
+
+  // Resolução de minHeight: calc > vh > px
+  const resolvedMinHeight = props.minHeightCalc
+    ? props.minHeightCalc
+    : props.minHeightVh
+      ? `${props.minHeightVh}vh`
+      : `${props.minHeight}px`
+
+  // Resolução de padding: específico > geral
+  const paddingTop = props.paddingTop ?? props.paddingY
+  const paddingBottom = props.paddingBottom ?? props.paddingY
 
   const [bgLoaded, setBgLoaded] = useState(!hasImage)
 
@@ -108,14 +122,16 @@ export const HeroSectionComponent: UserComponent<Partial<HeroSectionProps>> = (i
           />
         </>
       )}
-      {/* Overlay sobre imagem de fundo */}
+      {/* Overlay sobre imagem de fundo (suporta cor sólida ou gradiente) */}
       {hasOverlay && (
         <div
           style={{
             position: 'absolute',
             inset: 0,
-            backgroundColor: props.overlayColor || '#000000',
-            opacity: props.overlayOpacity,
+            // Se overlayColor contém "gradient", usa como background; caso contrário, usa como backgroundColor
+            ...(props.overlayColor?.includes('gradient')
+              ? { background: props.overlayColor, opacity: props.overlayOpacity }
+              : { backgroundColor: props.overlayColor || '#000000', opacity: props.overlayOpacity }),
             pointerEvents: 'none',
             zIndex: 0,
           }}
@@ -127,7 +143,10 @@ export const HeroSectionComponent: UserComponent<Partial<HeroSectionProps>> = (i
           position: 'relative',
           zIndex: 1,
           width: '100%',
-          padding: `${props.paddingY}px clamp(16px, 5vw, 40px)`,
+          paddingTop: `${paddingTop}px`,
+          paddingBottom: `${paddingBottom}px`,
+          paddingLeft: 'clamp(16px, 5vw, 40px)',
+          paddingRight: 'clamp(16px, 5vw, 40px)',
           display: 'flex',
           flexDirection: 'column',
           alignItems:

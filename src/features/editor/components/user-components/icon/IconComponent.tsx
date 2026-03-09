@@ -1,47 +1,89 @@
 import { useNode, type UserComponent } from '@craftjs/core'
 import { ColorInput } from '../../ColorInput'
 import {
-  Star, Heart, CheckCircle, ArrowRight, Zap, Shield, Award, Target,
-  Users, Clock, Mail, Phone, MapPin, Globe, Camera, Music,
-  Briefcase, BookOpen, Coffee, Gift, Rocket, ThumbsUp, TrendingUp, Eye,
-} from 'lucide-react'
+  // Básicos
+  Star, Heart, CheckCircle, ArrowRight, Lightning, Shield, Trophy, Target,
+  Users, Clock, Envelope, Phone, MapPin, Globe, Camera, MusicNote,
+  Briefcase, BookOpen, Coffee, Gift, Rocket, ThumbsUp, TrendUp, Eye,
+  // Contabilidade e negócios
+  Buildings, FileText, CheckSquare, Calculator, Receipt,
+  Wallet, CreditCard, Money, Scales, MagnifyingGlass, UserCheck,
+  ChartBar, ChartPie, ClipboardText, ListChecks, Bank,
+  Table, FolderOpen, Coins, Percent, SealCheck,
+  CurrencyDollar, Scroll, PencilSimple, UserGear, Building,
+  // Adicionais úteis
+  Handshake, Notebook, Invoice, CalendarCheck, ShieldCheck, HandCoins,
+  type IconProps as PhosphorIconProps,
+} from '@phosphor-icons/react'
 
-const ICON_MAP: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+// Tipo para componentes Phosphor
+type PhosphorIcon = React.ComponentType<PhosphorIconProps>
+
+const ICON_MAP: Record<string, PhosphorIcon> = {
+  // Básicos
   star: Star, heart: Heart, check: CheckCircle, arrow: ArrowRight,
-  zap: Zap, shield: Shield, award: Award, target: Target,
-  users: Users, clock: Clock, mail: Mail, phone: Phone,
-  mappin: MapPin, globe: Globe, camera: Camera, music: Music,
+  zap: Lightning, shield: Shield, award: Trophy, target: Target,
+  users: Users, clock: Clock, mail: Envelope, phone: Phone,
+  mappin: MapPin, globe: Globe, camera: Camera, music: MusicNote,
   briefcase: Briefcase, book: BookOpen, coffee: Coffee, gift: Gift,
-  rocket: Rocket, thumbsup: ThumbsUp, trending: TrendingUp, eye: Eye,
+  rocket: Rocket, thumbsup: ThumbsUp, trending: TrendUp, eye: Eye,
+  // Contabilidade e negócios
+  building: Buildings, building2: Building, filetext: FileText, filecheck: CheckSquare,
+  calculator: Calculator, receipt: Receipt, wallet: Wallet, creditcard: CreditCard,
+  banknote: Money, scale: Scales, search: MagnifyingGlass, usercheck: UserCheck,
+  barchart: ChartBar, piechart: ChartPie, clipboardcheck: ListChecks,
+  clipboardlist: ClipboardText, landmark: Bank, spreadsheet: Table,
+  folder: FolderOpen, handcoins: HandCoins, percent: Percent, badgecheck: SealCheck,
+  dollar: CurrencyDollar, scroll: Scroll, filepen: PencilSimple, usercog: UserGear,
+  // Adicionais
+  handshake: Handshake, notebook: Notebook, invoice: Invoice, coins: Coins,
+  calendarcheck: CalendarCheck, shieldcheck: ShieldCheck,
 }
 
 const ICON_NAMES: Record<string, string> = {
+  // Originais
   star: 'Estrela', heart: 'Coração', check: 'Check', arrow: 'Seta',
-  zap: 'Raio', shield: 'Escudo', award: 'Prêmio', target: 'Alvo',
+  zap: 'Raio', shield: 'Escudo', award: 'Troféu', target: 'Alvo',
   users: 'Pessoas', clock: 'Relógio', mail: 'Email', phone: 'Telefone',
   mappin: 'Local', globe: 'Globo', camera: 'Câmera', music: 'Música',
   briefcase: 'Maleta', book: 'Livro', coffee: 'Café', gift: 'Presente',
   rocket: 'Foguete', thumbsup: 'Curtir', trending: 'Tendência', eye: 'Olho',
+  // Contabilidade e negócios
+  building: 'Prédios', building2: 'Empresa', filetext: 'Documento', filecheck: 'Doc. OK',
+  calculator: 'Calculadora', receipt: 'Recibo', wallet: 'Carteira', creditcard: 'Cartão',
+  banknote: 'Dinheiro', scale: 'Balança', search: 'Busca', usercheck: 'Usuário OK',
+  barchart: 'Gráfico', piechart: 'Pizza', clipboardcheck: 'Lista OK',
+  clipboardlist: 'Lista', landmark: 'Banco', spreadsheet: 'Planilha',
+  folder: 'Pasta', handcoins: 'Moedas', percent: '%', badgecheck: 'Verificado',
+  dollar: 'Dólar', scroll: 'Pergaminho', filepen: 'Editar', usercog: 'Config',
+  // Adicionais
+  handshake: 'Acordo', notebook: 'Caderno', invoice: 'Nota Fiscal', coins: 'Moedas',
+  calendarcheck: 'Agenda OK', shieldcheck: 'Seguro',
 }
 
+export type IconWeight = 'thin' | 'light' | 'regular' | 'bold' | 'fill' | 'duotone'
 export type IconShape = 'none' | 'circle' | 'square' | 'rounded'
 
 export type IconProps = {
   icon: string
   size: number
   color: string
+  secondaryColor?: string // Cor secundária para duotone
   backgroundColor: string
   shape: IconShape
   padding: number
+  weight: IconWeight
 }
 
 const defaultProps: IconProps = {
   icon: 'star',
   size: 32,
   color: '#2563eb',
+  secondaryColor: '', // Se vazio, usa opacidade da cor principal
   backgroundColor: '#eff6ff',
-  shape: 'circle',
+  shape: 'rounded',
   padding: 16,
+  weight: 'duotone',
 }
 
 const IconSettings = () => {
@@ -53,7 +95,7 @@ const IconSettings = () => {
     <div className="space-y-4">
       <div>
         <h4 className="text-xs font-medium text-gray-500 uppercase mb-2">Ícone</h4>
-        <div className="grid grid-cols-6 gap-1">
+        <div className="grid grid-cols-6 gap-1 max-h-48 overflow-y-auto">
           {Object.entries(ICON_MAP).map(([key, Icon]) => (
             <button
               key={key}
@@ -65,7 +107,26 @@ const IconSettings = () => {
               }`}
               title={ICON_NAMES[key]}
             >
-              <Icon size={16} />
+              <Icon size={16} weight="duotone" />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h4 className="text-xs font-medium text-gray-500 uppercase mb-2">Estilo</h4>
+        <div className="flex flex-wrap gap-1">
+          {(['thin', 'light', 'regular', 'bold', 'fill', 'duotone'] as const).map((w) => (
+            <button
+              key={w}
+              onClick={() => setProp((p: Record<string, unknown>) => { p.weight = w })}
+              className={`px-2 py-1 text-xs rounded capitalize ${
+                props.weight === w
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {w}
             </button>
           ))}
         </div>
@@ -118,12 +179,22 @@ const IconSettings = () => {
         <h4 className="text-xs font-medium text-gray-500 uppercase mb-2">Cores</h4>
         <div className="space-y-2">
           <div>
-            <label className="text-xs text-gray-400">Cor do Ícone</label>
+            <label className="text-xs text-gray-400">Cor Principal</label>
             <ColorInput
               value={props.color || '#2563eb'}
               onChange={(v) => setProp((p: Record<string, unknown>) => { p.color = v })}
             />
           </div>
+          {props.weight === 'duotone' && (
+            <div>
+              <label className="text-xs text-gray-400">Cor Secundária (duotone)</label>
+              <ColorInput
+                value={props.secondaryColor || ''}
+                onChange={(v) => setProp((p: Record<string, unknown>) => { p.secondaryColor = v })}
+              />
+              <span className="text-xs text-gray-400">Deixe vazio para usar opacidade automática</span>
+            </div>
+          )}
           {props.shape !== 'none' && (
             <div>
               <label className="text-xs text-gray-400">Fundo</label>
@@ -143,10 +214,16 @@ export const IconComponent: UserComponent<Partial<IconProps>> = (incomingProps) 
   const props = { ...defaultProps, ...incomingProps }
   const { connectors: { connect } } = useNode()
 
-  const { icon, size, color, backgroundColor, shape, padding } = props
+  const { icon, size, color, secondaryColor, backgroundColor, shape, padding, weight } = props
   const Icon = ICON_MAP[icon] || Star
 
   const borderRadius = shape === 'circle' ? '50%' : shape === 'rounded' ? '12px' : shape === 'square' ? '4px' : undefined
+  const totalSize = shape !== 'none' ? size + padding * 2 : size
+
+  // Estilo CSS para duotone - Phosphor usa CSS variables
+  const duotoneStyle: React.CSSProperties = weight === 'duotone' && secondaryColor
+    ? { '--ph-duotone-opacity': '1', '--ph-duotone-fill': secondaryColor } as React.CSSProperties
+    : {}
 
   return (
     <div
@@ -155,14 +232,17 @@ export const IconComponent: UserComponent<Partial<IconProps>> = (incomingProps) 
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: shape !== 'none' ? `${size + padding * 2}px` : `${size}px`,
-        height: shape !== 'none' ? `${size + padding * 2}px` : `${size}px`,
+        width: `${totalSize}px`,
+        height: `${totalSize}px`,
+        minWidth: `${totalSize}px`,
+        minHeight: `${totalSize}px`,
         backgroundColor: shape !== 'none' ? backgroundColor : 'transparent',
         borderRadius,
         color,
+        ...duotoneStyle,
       }}
     >
-      <Icon size={size} />
+      <Icon size={size} weight={weight} />
     </div>
   )
 }

@@ -32,6 +32,47 @@ export type ContainerProps = {
   boxShadowPreset?: 'none' | 'soft' | 'elevated' | 'dramatic'
   /** Altura mínima em px (sobrescreve o padrão de 60px) */
   minHeight?: number
+  // ── Layout avançado ──────────────────────────────────────
+  /** Largura mínima (ex: '300px') — útil para colunas responsivas */
+  minWidth?: string
+  /** Largura máxima (ex: '1200px') */
+  maxWidth?: string
+  /** Margem superior em px */
+  marginTop?: number
+  /** Margem inferior em px */
+  marginBottom?: number
+  /** Padding vertical em px (sobrescreve padding) */
+  paddingY?: number
+  /** Padding horizontal em px (sobrescreve padding) */
+  paddingX?: number
+  /** Flex property (ex: '1 0 auto', '0 0 50%') */
+  flex?: string
+  /** Posicionamento CSS */
+  position?: 'static' | 'relative' | 'absolute' | 'fixed'
+  /** Distância do topo (quando position != static) */
+  top?: string
+  /** Distância da direita (quando position != static) */
+  right?: string
+  /** Distância da base (quando position != static) */
+  bottom?: string
+  /** Distância da esquerda (quando position != static) */
+  left?: string
+  /** Z-index para controle de empilhamento */
+  zIndex?: number
+  /** Flex-wrap explícito (default: wrap quando flexDirection='row') */
+  flexWrap?: 'wrap' | 'nowrap'
+  /** Borda customizada (ex: '3px solid rgba(255,255,255,0.2)') */
+  border?: string
+  /** Borda inferior customizada (ex: 'none') */
+  borderBottom?: string
+  /** Border-radius customizado (ex: '20px 20px 0 0') - sobrescreve radius */
+  borderRadiusCustom?: string
+  /** Transform CSS (ex: 'translateX(-50%)') */
+  transform?: string
+  /** Backdrop filter (ex: 'blur(10px)') */
+  backdropFilter?: string
+  /** Box-shadow customizado (ex: '0 10px 30px rgba(0,0,0,0.15)') */
+  boxShadowCustom?: string
   children?: React.ReactNode
 }
 
@@ -83,6 +124,26 @@ export const ContainerComponent: UserComponent<Partial<ContainerProps>> = (incom
     borderAccentPosition,
     boxShadowPreset,
     minHeight,
+    minWidth,
+    maxWidth,
+    marginTop,
+    marginBottom,
+    paddingY,
+    paddingX,
+    flex,
+    position,
+    top,
+    right,
+    bottom,
+    left,
+    zIndex,
+    flexWrap,
+    border,
+    borderBottom,
+    borderRadiusCustom,
+    transform,
+    backdropFilter,
+    boxShadowCustom,
     children,
   } = props
 
@@ -92,11 +153,13 @@ export const ContainerComponent: UserComponent<Partial<ContainerProps>> = (incom
   const [bgLoaded, setBgLoaded] = useState(!hasImage)
 
   const resolvedShadow =
-    boxShadowPreset && boxShadowPreset !== 'none'
-      ? SHADOW_PRESETS[boxShadowPreset]
-      : shadow === 0
-        ? 'none'
-        : `0px 3px 100px ${shadow}px rgba(0,0,0,0.13)`
+    boxShadowCustom
+      ? boxShadowCustom
+      : boxShadowPreset && boxShadowPreset !== 'none'
+        ? SHADOW_PRESETS[boxShadowPreset]
+        : shadow === 0
+          ? 'none'
+          : `0px 3px 100px ${shadow}px rgba(0,0,0,0.13)`
 
   const borderTopStyle =
     borderAccent && borderAccentPosition === 'top'
@@ -107,26 +170,52 @@ export const ContainerComponent: UserComponent<Partial<ContainerProps>> = (incom
       ? `4px solid ${borderAccent}`
       : undefined
 
+  // Resolve padding (paddingY/paddingX têm prioridade)
+  const resolvedPaddingY = paddingY ?? padding
+  const resolvedPaddingX = paddingX ?? padding
+  const resolvedPadding = `${resolvedPaddingY}px ${resolvedPaddingX}px`
+
+  // Resolve margin
+  const resolvedMarginTop = marginTop ? `${marginTop}px` : undefined
+  const resolvedMarginBottom = marginBottom ? `${marginBottom}px` : undefined
+
+  // Resolve flexWrap (default: wrap quando flexDirection='row')
+  const resolvedFlexWrap = flexWrap ?? (flexDirection === 'row' ? 'wrap' : undefined)
+
   return (
     <div
       id={props.sectionId || undefined}
       ref={(ref) => { if (ref) connect(drag(ref)) }}
       style={{
-        position: 'relative',
+        position: position || 'relative',
         width: isPixelWidth ? '100%' : width,
-        maxWidth: isPixelWidth ? width : undefined,
+        maxWidth: maxWidth || (isPixelWidth ? width : undefined),
+        minWidth: minWidth || undefined,
         margin: isPixelWidth ? '0 auto' : undefined,
+        marginTop: resolvedMarginTop,
+        marginBottom: resolvedMarginBottom,
         height,
-        borderRadius: `${radius}px`,
+        borderRadius: borderRadiusCustom || `${radius}px`,
         boxShadow: resolvedShadow,
         overflow: hasImage ? 'hidden' : undefined,
+        border: border || undefined,
         borderTop: borderTopStyle,
         borderLeft: borderLeftStyle,
+        borderBottom: borderBottom || undefined,
         backgroundImage: hasImage && bgLoaded ? `url("${backgroundImage}")` : undefined,
         backgroundSize: hasImage ? 'cover' : undefined,
         backgroundPosition: hasImage ? 'center' : undefined,
         background: hasImage ? undefined : background,
         fontFamily: fontFamily || undefined,
+        flex: flex || undefined,
+        top: top || undefined,
+        right: right || undefined,
+        bottom: bottom || undefined,
+        left: left || undefined,
+        zIndex: zIndex || undefined,
+        transform: transform || undefined,
+        backdropFilter: backdropFilter || undefined,
+        WebkitBackdropFilter: backdropFilter || undefined,
       }}
     >
       {/* Skeleton enquanto background image carrega */}
@@ -173,10 +262,10 @@ export const ContainerComponent: UserComponent<Partial<ContainerProps>> = (incom
           zIndex: 1,
           display: 'flex',
           flexDirection: flexDirection as 'row' | 'column',
-          flexWrap: flexDirection === 'row' ? 'wrap' : undefined,
+          flexWrap: resolvedFlexWrap,
           alignItems,
           justifyContent,
-          padding: `${padding}px`,
+          padding: resolvedPadding,
           gap: `${gap}px`,
           minHeight: `${minHeight ?? 60}px`,
           width: '100%',

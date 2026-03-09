@@ -9,8 +9,14 @@ export type ImageProps = {
   width: string
   height: string
   objectFit: 'cover' | 'contain' | 'fill'
-  borderRadius: number
+  borderRadius: number | string
   backgroundColor: string
+  /** Max-width opcional (ex: '550px') */
+  maxWidth?: string
+  /** Box-shadow opcional (ex: '0 -10px 60px rgba(0,0,0,0.3)') */
+  boxShadow?: string
+  /** CSS filter (ex: 'brightness(0) invert(1)' para tornar branco) */
+  filter?: string
 }
 
 const defaultProps: ImageProps = {
@@ -29,9 +35,12 @@ export const ImageComponent: UserComponent<Partial<ImageProps>> = (incomingProps
     connectors: { connect },
   } = useNode()
 
-  const { src, alt, width, height, objectFit, borderRadius, backgroundColor } = props
+  const { src, alt, width, height, objectFit, borderRadius, backgroundColor, maxWidth, boxShadow, filter } = props
   const [imgLoaded, setImgLoaded] = useState(false)
   const [imgError, setImgError] = useState(false)
+
+  // Resolver borderRadius: se for número, adiciona 'px'; se for string, usa direto
+  const resolvedBorderRadius = typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius
 
   if (!src) {
     return (
@@ -40,8 +49,9 @@ export const ImageComponent: UserComponent<Partial<ImageProps>> = (incomingProps
         className="flex flex-col items-center justify-center bg-gray-100 border-2 border-dashed border-gray-300 text-gray-400"
         style={{
           width,
+          maxWidth: maxWidth || undefined,
           height: height === 'auto' ? '200px' : height,
-          borderRadius: `${borderRadius}px`,
+          borderRadius: resolvedBorderRadius,
         }}
       >
         <ImageIcon className="w-10 h-10 mb-2" />
@@ -60,7 +70,7 @@ export const ImageComponent: UserComponent<Partial<ImageProps>> = (incomingProps
       style={{
         position: 'absolute',
         inset: 0,
-        borderRadius: `${borderRadius}px`,
+        borderRadius: resolvedBorderRadius,
         background: 'linear-gradient(110deg, #e5e7eb 30%, #f3f4f6 50%, #e5e7eb 70%)',
         backgroundSize: '200% 100%',
         animation: 'shimmer 1.5s infinite linear',
@@ -78,12 +88,14 @@ export const ImageComponent: UserComponent<Partial<ImageProps>> = (incomingProps
           alignItems: 'center',
           justifyContent: 'center',
           backgroundColor,
-          borderRadius: `${borderRadius}px`,
+          borderRadius: resolvedBorderRadius,
           width,
+          maxWidth: maxWidth || undefined,
           height: height === 'auto' ? undefined : height,
           padding: '4px',
           boxSizing: 'border-box',
           overflow: 'hidden',
+          boxShadow: boxShadow || undefined,
         }}
       >
         {skeletonOverlay}
@@ -99,6 +111,7 @@ export const ImageComponent: UserComponent<Partial<ImageProps>> = (incomingProps
             display: 'block',
             opacity: showSkeleton ? 0 : 1,
             transition: 'opacity 0.4s ease-in-out',
+            filter: filter || undefined,
           }}
         />
       </div>
@@ -111,9 +124,11 @@ export const ImageComponent: UserComponent<Partial<ImageProps>> = (incomingProps
       style={{
         position: 'relative',
         width,
+        maxWidth: maxWidth || undefined,
         height,
-        borderRadius: `${borderRadius}px`,
+        borderRadius: resolvedBorderRadius,
         overflow: 'hidden',
+        boxShadow: boxShadow || undefined,
       }}
     >
       {skeletonOverlay}
@@ -130,6 +145,7 @@ export const ImageComponent: UserComponent<Partial<ImageProps>> = (incomingProps
           display: 'block',
           opacity: showSkeleton ? 0 : 1,
           transition: 'opacity 0.4s ease-in-out',
+          filter: filter || undefined,
         }}
       />
     </div>

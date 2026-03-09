@@ -15,6 +15,18 @@ export type StatsBandProps = {
   /** Separador vertical entre colunas */
   showDivider: boolean
   stats: StatItem[]
+  /** Tamanho da fonte do valor (px). Default: 56 */
+  fontSize?: number
+  /** Tamanho da fonte do label (px). Default: 12 */
+  labelFontSize?: number
+  /** Peso da fonte do valor. Default: '900' */
+  fontWeight?: string
+  /** Transformação do texto do label. Default: 'uppercase' */
+  labelTextTransform?: 'uppercase' | 'capitalize' | 'lowercase' | 'none'
+  /** Espaçamento entre letras do label (px). Default: 2 */
+  labelLetterSpacing?: number
+  /** Efeito glow/text-shadow no valor. Default: true */
+  showGlow?: boolean
 }
 
 const defaultStats: StatItem[] = [
@@ -26,11 +38,17 @@ const defaultStats: StatItem[] = [
 const defaultProps: StatsBandProps = {
   background: '#111827',
   textColor: '#ffffff',
-  accentColor: '#f59e0b',
-  labelColor: '#9ca3af',
-  paddingY: 48,
+  accentColor: '#ffffff',
+  labelColor: 'rgba(255,255,255,0.7)',
+  paddingY: 40,
   showDivider: true,
   stats: defaultStats,
+  fontSize: 56,
+  labelFontSize: 12,
+  fontWeight: '900',
+  labelTextTransform: 'uppercase',
+  labelLetterSpacing: 2,
+  showGlow: true,
 }
 
 export const StatsBandComponent: UserComponent<Partial<StatsBandProps>> = (incomingProps) => {
@@ -39,7 +57,25 @@ export const StatsBandComponent: UserComponent<Partial<StatsBandProps>> = (incom
     connectors: { connect, drag },
   } = useNode()
 
-  const { background, accentColor, labelColor, paddingY, showDivider, stats } = props
+  const {
+    background,
+    accentColor,
+    labelColor,
+    paddingY,
+    showDivider,
+    stats,
+    fontSize = 56,
+    labelFontSize = 12,
+    fontWeight = '900',
+    labelTextTransform = 'uppercase',
+    labelLetterSpacing = 2,
+    showGlow = true,
+  } = props
+
+  // Glow effect como no HTML de referência
+  const glowStyle = showGlow
+    ? { textShadow: '0 0 30px rgba(255, 255, 255, 0.5), 0 0 60px rgba(255, 255, 255, 0.3)' }
+    : {}
 
   return (
     <section
@@ -47,16 +83,16 @@ export const StatsBandComponent: UserComponent<Partial<StatsBandProps>> = (incom
       style={{
         width: '100%',
         background,
-        padding: `${paddingY}px clamp(16px, 5vw, 40px)`,
+        padding: 0,
       }}
     >
       <div
         style={{
-          maxWidth: '1080px',
+          maxWidth: '1200px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: `repeat(auto-fit, minmax(min(140px, 100%), 1fr))`,
-          gap: 'clamp(12px, 3vw, 0px)',
+          gridTemplateColumns: `repeat(${stats.length}, 1fr)`,
+          gap: 0,
         }}
       >
         {stats.map((stat, i) => (
@@ -66,33 +102,47 @@ export const StatsBandComponent: UserComponent<Partial<StatsBandProps>> = (incom
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: 'clamp(4px, 1vw, 10px)',
-              padding: 'clamp(6px, 1.5vw, 8px) clamp(8px, 3vw, 32px)',
-              borderRight:
-                showDivider && i < stats.length - 1
-                  ? `1px solid rgba(255,255,255,0.18)`
-                  : 'none',
+              justifyContent: 'center',
+              gap: '8px',
+              padding: `${paddingY}px 24px`,
+              position: 'relative',
             }}
           >
+            {/* Divider gradiente vertical (exceto último item) */}
+            {showDivider && i < stats.length - 1 && (
+              <div
+                style={{
+                  position: 'absolute',
+                  right: 0,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: '1px',
+                  height: '50%',
+                  background: 'linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.3), transparent)',
+                }}
+              />
+            )}
             <span
               style={{
-                fontSize: 'clamp(28px, 7vw, 72px)',
-                fontWeight: '800',
+                fontSize: `clamp(36px, 6vw, ${fontSize}px)`,
+                fontWeight,
                 color: accentColor,
                 lineHeight: '1',
                 letterSpacing: '-2px',
+                marginBottom: '8px',
+                ...glowStyle,
               }}
             >
               {stat.valor}
             </span>
             <span
               style={{
-                fontSize: 'clamp(10px, 2.2vw, 15px)',
+                fontSize: `clamp(11px, 1.5vw, ${labelFontSize}px)`,
                 fontWeight: '600',
                 color: labelColor,
                 textAlign: 'center',
-                textTransform: 'uppercase',
-                letterSpacing: 'clamp(0.5px, 0.3vw, 1.5px)',
+                textTransform: labelTextTransform as React.CSSProperties['textTransform'],
+                letterSpacing: `${labelLetterSpacing}px`,
                 lineHeight: '1.4',
               }}
             >

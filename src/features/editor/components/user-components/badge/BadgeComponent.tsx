@@ -15,6 +15,12 @@ export type BadgeProps = {
   fontWeight: number
   textTransform: 'none' | 'uppercase' | 'capitalize'
   letterSpacing: number
+  /** Borda customizada (ex: '1px solid rgba(255,255,255,0.1)') */
+  border?: string
+  /** Backdrop filter (ex: 'blur(10px)') */
+  backdropFilter?: string
+  /** Margem inferior em px */
+  marginBottom?: number
 }
 
 const defaultProps: BadgeProps = {
@@ -171,10 +177,13 @@ export const BadgeComponent: UserComponent<Partial<BadgeProps>> = (incomingProps
   const {
     text, badgeStyle, color, backgroundColor, fontSize,
     borderRadius, paddingX, paddingY, fontWeight, textTransform, letterSpacing,
+    border, backdropFilter, marginBottom,
   } = props
 
   const style: React.CSSProperties = {
-    display: 'inline-block',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
     fontSize: `${fontSize}px`,
     fontWeight,
     borderRadius: `${borderRadius}px`,
@@ -183,19 +192,29 @@ export const BadgeComponent: UserComponent<Partial<BadgeProps>> = (incomingProps
     letterSpacing: `${letterSpacing}px`,
     lineHeight: 1.3,
     whiteSpace: 'nowrap',
+    marginBottom: marginBottom ? `${marginBottom}px` : undefined,
+    backdropFilter: backdropFilter || undefined,
+    WebkitBackdropFilter: backdropFilter || undefined,
   }
 
   if (badgeStyle === 'filled') {
     style.backgroundColor = color
     style.color = '#ffffff'
+    // Se há borda customizada, usa ela
+    if (border) {
+      style.border = border
+    }
   } else if (badgeStyle === 'outlined') {
     style.backgroundColor = 'transparent'
     style.color = color
-    style.border = `1.5px solid ${color}`
+    style.border = border || `1.5px solid ${color}`
   } else {
     // soft
     style.backgroundColor = backgroundColor
     style.color = color
+    if (border) {
+      style.border = border
+    }
   }
 
   return (

@@ -16,8 +16,8 @@ export type NavbarProps = {
   logoHeight?: number
   /** Cor de fundo atrás do logo (ex: '#ffffff'). Default: 'transparent' */
   logoBg?: string
-  /** Formato do container do logo: 'pill' (retângulo arredondado) ou 'circle' (avatar). Default: 'pill' */
-  logoShape?: 'pill' | 'circle'
+  /** Formato do container do logo: 'pill' (retângulo arredondado) ou 'circle' (avatar) ou 'dropdown' (estilo pendurado). Default: 'pill' */
+  logoShape?: 'pill' | 'circle' | 'dropdown'
   /** Mostrar nome da empresa ao lado do logo. Default: false */
   showLogoText?: boolean
   links: NavLink[]
@@ -76,8 +76,39 @@ export const NavbarComponent: UserComponent<Partial<NavbarProps>> = (incomingPro
               {(() => {
                 const hasBg = props.logoBg && props.logoBg !== 'transparent'
                 const isCircle = props.logoShape === 'circle'
+                const isDropdown = props.logoShape === 'dropdown'
                 const h = props.logoHeight || 44
                 const containerSize = isCircle ? h + 8 : undefined
+
+                // Estilo "dropdown" — container branco que "pende" do navbar
+                if (isDropdown) {
+                  return (
+                    <div style={{
+                      backgroundColor: props.logoBg || '#ffffff',
+                      borderRadius: '0 0 12px 12px',
+                      padding: '12px 24px',
+                      marginTop: `-${props.paddingY}px`,
+                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      alignSelf: 'flex-start',
+                    }}>
+                      <img
+                        src={props.logoSrc}
+                        alt={props.logoText}
+                        style={{
+                          width: props.logoWidth ? `${props.logoWidth}px` : '180px',
+                          height: 'auto',
+                          maxWidth: '100%',
+                          objectFit: 'contain',
+                          display: 'block',
+                        }}
+                      />
+                    </div>
+                  )
+                }
 
                 return (
                   <div style={{

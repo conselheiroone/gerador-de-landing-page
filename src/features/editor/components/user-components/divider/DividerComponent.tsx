@@ -6,6 +6,8 @@ export type DividerProps = {
   thickness: number
   marginY: number
   style: 'solid' | 'dashed' | 'dotted'
+  /** Largura do divisor (ex: '60px', '100%') */
+  width?: string
 }
 
 const defaultProps: DividerProps = {
@@ -13,6 +15,7 @@ const defaultProps: DividerProps = {
   thickness: 1,
   marginY: 20,
   style: 'solid',
+  width: '100%',
 }
 
 const DividerSettings = () => {
@@ -81,16 +84,34 @@ export const DividerComponent: UserComponent<Partial<DividerProps>> = (incomingP
     connectors: { connect },
   } = useNode()
 
+  const dividerWidth = props.width || '100%'
+  const needsCentering = dividerWidth !== '100%'
+
   return (
-    <hr
+    <div
       ref={(ref) => { if (ref) connect(ref) }}
       style={{
         width: '100%',
-        border: 'none',
-        borderTop: `${props.thickness}px ${props.style} ${props.color}`,
+        display: 'flex',
+        justifyContent: needsCentering ? 'center' : 'flex-start',
         margin: `${props.marginY}px 0`,
       }}
-    />
+    >
+      <div
+        style={{
+          width: dividerWidth,
+          height: `${props.thickness}px`,
+          backgroundColor: props.color,
+          borderRadius: `${props.thickness / 2}px`,
+          ...(props.style === 'dashed' && {
+            background: `repeating-linear-gradient(90deg, ${props.color} 0, ${props.color} 8px, transparent 8px, transparent 16px)`,
+          }),
+          ...(props.style === 'dotted' && {
+            background: `repeating-linear-gradient(90deg, ${props.color} 0, ${props.color} 4px, transparent 4px, transparent 8px)`,
+          }),
+        }}
+      />
+    </div>
   )
 }
 

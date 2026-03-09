@@ -134,6 +134,8 @@ function renderNode(nodeId: string, tree: CraftTree): string {
       return renderBentoFeatures(props)
     case 'QuoteHighlightComponent':
       return renderQuoteHighlight(props)
+    case 'SegmentsComponent':
+      return renderSegments(props)
     default:
       return childrenHtml ? `<div>${childrenHtml}</div>` : ''
   }
@@ -153,10 +155,21 @@ function renderContainer(props: Record<string, unknown>, children: string): stri
   const borderAccentPos = (props.borderAccentPosition as string) || 'none'
   const shadowPreset = (props.boxShadowPreset as string) || 'none'
   const minHeight = props.minHeight as number | undefined
+  const minWidth = props.minWidth as string | undefined
+  const maxWidth = props.maxWidth as string | undefined
   const radius = props.radius as number
   const flexDirection = (props.flexDirection as string) || 'column'
+  const flex = props.flex as string | undefined
+  const flexWrap = props.flexWrap as string | undefined
+  const marginTop = props.marginTop as number | undefined
+  const marginBottom = props.marginBottom as number | undefined
   const hasImage = !!bgImage
   const hasOverlay = hasImage && overlayOpacity > 0
+
+  // Resolve padding (paddingY/paddingX têm prioridade)
+  const basePadding = (props.padding as number) ?? 20
+  const paddingY = (props.paddingY as number) ?? basePadding
+  const paddingX = (props.paddingX as number) ?? basePadding
 
   const shadowMap: Record<string, string> = {
     none: 'none',
@@ -164,21 +177,30 @@ function renderContainer(props: Record<string, unknown>, children: string): stri
     elevated: '0 8px 30px rgba(0,0,0,0.12)',
     dramatic: '0 20px 60px rgba(0,0,0,0.25)',
   }
+  const boxShadowCustom = props.boxShadowCustom as string | undefined
   const resolvedShadow =
-    shadowPreset && shadowPreset !== 'none'
-      ? shadowMap[shadowPreset]
-      : (props.shadow as number) === 0
-        ? 'none'
-        : `0px 3px 100px ${props.shadow}px rgba(0,0,0,0.13)`
+    boxShadowCustom
+      ? boxShadowCustom
+      : shadowPreset && shadowPreset !== 'none'
+        ? shadowMap[shadowPreset]
+        : (props.shadow as number) === 0
+          ? 'none'
+          : `0px 3px 100px ${props.shadow}px rgba(0,0,0,0.13)`
 
   const borderTopStyle = borderAccent && borderAccentPos === 'top' ? `4px solid ${borderAccent}` : undefined
   const borderLeftStyle = borderAccent && borderAccentPos === 'left' ? `4px solid ${borderAccent}` : undefined
 
+  // Resolve flexWrap (default: wrap quando flexDirection='row')
+  const resolvedFlexWrap = flexWrap ?? (flexDirection === 'row' ? 'wrap' : undefined)
+
   const outerStyle = styleObj({
-    position: 'relative',
+    position: (props.position as string) || 'relative',
     width: isPixel ? '100%' : width,
-    maxWidth: isPixel ? width : undefined,
+    maxWidth: maxWidth || (isPixel ? width : undefined),
+    minWidth: minWidth || undefined,
     margin: isPixel ? '0 auto' : undefined,
+    marginTop: marginTop,
+    marginBottom: marginBottom,
     height,
     borderRadius: radius,
     boxShadow: resolvedShadow,
@@ -190,6 +212,7 @@ function renderContainer(props: Record<string, unknown>, children: string): stri
     backgroundPosition: hasImage ? 'center' : undefined,
     background: hasImage ? undefined : (props.background as string),
     fontFamily: props.fontFamily as string | undefined,
+    flex: flex || undefined,
   })
 
   let overlayHtml = ''
@@ -210,12 +233,12 @@ function renderContainer(props: Record<string, unknown>, children: string): stri
     zIndex: 1,
     display: 'flex',
     flexDirection,
-    flexWrap: flexDirection === 'row' ? 'wrap' : undefined,
+    flexWrap: resolvedFlexWrap,
     alignItems: (props.alignItems as string) || 'flex-start',
     justifyContent: (props.justifyContent as string) || 'flex-start',
-    padding: `${props.padding || 20}px`,
-    gap: `${props.gap || 10}px`,
-    minHeight: `${minHeight ?? 60}px`,
+    padding: `${paddingY}px ${paddingX}px`,
+    gap: `${props.gap ?? 10}px`,
+    minHeight: minHeight !== undefined ? `${minHeight}px` : undefined,
     width: '100%',
     height: '100%',
   })
@@ -303,6 +326,7 @@ function renderImage(props: Record<string, unknown>): string {
   const objectFit = (props.objectFit as string) || 'cover'
   const radius = props.borderRadius as number | undefined
   const bg = props.backgroundColor as string | undefined
+  const filter = props.filter as string | undefined
   const hasBg = bg && bg !== 'transparent' && bg !== ''
 
   if (!src) {
@@ -325,6 +349,7 @@ function renderImage(props: Record<string, unknown>): string {
     objectFit,
     borderRadius: hasBg ? undefined : radius,
     display: 'block',
+    filter: filter || undefined,
   })
 
   const imgTag = tag('img', imgStyle, '', {
@@ -674,28 +699,90 @@ function renderFooter(props: Record<string, unknown>, children: string): string 
 // ── Stats Band ──
 // Espelha: StatsBandComponent.tsx — borderRight (não div separado), clamp gaps
 
+// ── Segments ──
+// Espelha: SegmentsComponent.tsx
+
+function renderSegments(props: Record<string, unknown>): string {
+  const bg = (props.background as string) || '#f0faf8'
+  const bgTo = (props.backgroundTo as string) || '#ffffff'
+  const primaryLight = (props.primaryLight as string) || '#f0faf8'
+  const primaryLighter = (props.primaryLighter as string) || '#e0f5f0'
+  const primaryAlpha10 = (props.primaryAlpha10 as string) || 'rgba(14,111,92,0.1)'
+  const titleColor = (props.titleColor as string) || '#0f172a'
+  const textColor = (props.textColor as string) || '#64748b'
+  const accentColor = (props.accentColor as string) || '#123f63'
+  const paddingY = (props.paddingY as number) ?? 80
+  const sectionTag = (props.sectionTag as string) || 'QUEM ATENDEMOS'
+  const sectionTitle = (props.sectionTitle as string) || 'Segmentos de Atuação'
+  const sectionDescription = (props.sectionDescription as string) || 'Experiência comprovada em diversos setores da economia.'
+  const maxWidth = (props.contentMaxWidth as string) || '1000px'
+  const sectionId = props.sectionId as string | undefined
+
+  const segments = (props.segments as Array<{ icon: string; titulo: string; descricao: string }>) || []
+
+  const headerHtml = `<div style="text-align:center;margin-bottom:56px">
+    <span style="display:inline-block;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${escapeHtml(accentColor)};margin-bottom:12px">${escapeHtml(sectionTag)}</span>
+    <h2 style="font-size:clamp(32px,5vw,48px);font-weight:800;color:${escapeHtml(titleColor)};line-height:1.2;letter-spacing:-0.5px;margin-bottom:16px">${escapeHtml(sectionTitle)}</h2>
+    <div style="width:60px;height:4px;background:${escapeHtml(accentColor)};border-radius:2px;margin:0 auto 20px"></div>
+    <p style="font-size:17px;color:${escapeHtml(textColor)};max-width:600px;margin:0 auto">${escapeHtml(sectionDescription)}</p>
+  </div>`
+
+  const cardsHtml = segments.map((seg) => `<div style="background:white;border-radius:20px;padding:36px 28px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.06);transition:transform 0.3s ease,box-shadow 0.3s ease">
+    <div style="width:90px;height:90px;background:linear-gradient(145deg,${escapeHtml(primaryLight)} 0%,${escapeHtml(primaryLighter)} 100%);border-radius:24px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:40px;border:2px solid ${escapeHtml(primaryAlpha10)}">${escapeHtml(seg.icon)}</div>
+    <h3 style="font-size:18px;font-weight:700;color:${escapeHtml(titleColor)};margin-bottom:10px">${escapeHtml(seg.titulo)}</h3>
+    <p style="font-size:14px;color:${escapeHtml(textColor)};line-height:1.6;margin:0">${escapeHtml(seg.descricao)}</p>
+  </div>`).join('\n')
+
+  const bgStyle = bgTo ? `linear-gradient(180deg,${escapeHtml(bg)} 0%,${escapeHtml(bgTo)} 100%)` : bg
+  const idAttr = sectionId ? ` id="${escapeHtml(sectionId)}"` : ''
+
+  return `<section${idAttr} style="width:100%;background:${bgStyle};padding:${paddingY}px clamp(16px,5vw,40px)">
+  <div style="max-width:${escapeHtml(maxWidth)};margin:0 auto">
+    ${headerHtml}
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+      ${cardsHtml}
+    </div>
+  </div>
+</section>`
+}
+
+// ── Stats Band ──
+// Espelha: StatsBandComponent.tsx
+
 function renderStatsBand(props: Record<string, unknown>): string {
   const bg = (props.background as string) || '#111827'
-  const accent = (props.accentColor as string) || '#f59e0b'
-  const labelColor = (props.labelColor as string) || '#9ca3af'
-  const paddingY = (props.paddingY as number) ?? 48
+  const accent = (props.accentColor as string) || '#ffffff'
+  const labelColor = (props.labelColor as string) || 'rgba(255,255,255,0.7)'
+  const paddingY = (props.paddingY as number) ?? 40
   const showDivider = (props.showDivider as boolean) ?? true
+  const showGlow = (props.showGlow as boolean) ?? true
+  const fontSize = (props.fontSize as number) ?? 56
+  const labelFontSize = (props.labelFontSize as number) ?? 12
+  const fontWeight = (props.fontWeight as string) || '900'
+  const labelLetterSpacing = (props.labelLetterSpacing as number) ?? 2
+
   const stats = (props.stats as Array<{ valor: string; label: string }>) || [
     { valor: '10+', label: 'anos de experiência' },
     { valor: '500+', label: 'clientes atendidos' },
     { valor: '98%', label: 'de satisfação' },
   ]
 
+  const glowStyle = showGlow ? 'text-shadow:0 0 30px rgba(255,255,255,0.5),0 0 60px rgba(255,255,255,0.3);' : ''
+
   const itemsHtml = stats.map((s, i) => {
     const hasDivider = showDivider && i < stats.length - 1
-    return `<div style="display:flex;flex-direction:column;align-items:center;gap:clamp(4px,1vw,10px);padding:clamp(6px,1.5vw,8px) clamp(8px,3vw,32px);text-align:center${hasDivider ? ';border-right:1px solid rgba(255,255,255,0.18)' : ''}">
-      <span style="font-size:clamp(28px,7vw,72px);font-weight:800;color:${escapeHtml(accent)};letter-spacing:-2px;line-height:1">${escapeHtml(s.valor)}</span>
-      <span style="font-size:clamp(10px,2.2vw,15px);font-weight:600;color:${escapeHtml(labelColor)};text-transform:uppercase;letter-spacing:clamp(0.5px,0.3vw,1.5px);line-height:1.4">${escapeHtml(s.label)}</span>
+    const dividerHtml = hasDivider
+      ? `<div style="position:absolute;right:0;top:50%;transform:translateY(-50%);width:1px;height:50%;background:linear-gradient(to bottom,transparent,rgba(255,255,255,0.3),transparent)"></div>`
+      : ''
+    return `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:${paddingY}px 24px;position:relative">
+      ${dividerHtml}
+      <span style="font-size:clamp(36px,6vw,${fontSize}px);font-weight:${fontWeight};color:${escapeHtml(accent)};letter-spacing:-2px;line-height:1;margin-bottom:8px;${glowStyle}">${escapeHtml(s.valor)}</span>
+      <span style="font-size:clamp(11px,1.5vw,${labelFontSize}px);font-weight:600;color:${escapeHtml(labelColor)};text-transform:uppercase;letter-spacing:${labelLetterSpacing}px;line-height:1.4;text-align:center">${escapeHtml(s.label)}</span>
     </div>`
   }).join('\n')
 
-  return `<section style="width:100%;background:${escapeHtml(bg)};padding:${paddingY}px clamp(16px,5vw,40px)">
-  <div style="max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(140px,100%),1fr));gap:clamp(12px,3vw,0px)">${itemsHtml}</div>
+  return `<section style="width:100%;background:${escapeHtml(bg)};padding:0">
+  <div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(${stats.length},1fr);gap:0">${itemsHtml}</div>
 </section>`
 }
 

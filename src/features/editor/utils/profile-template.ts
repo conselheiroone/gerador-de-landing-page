@@ -14,48 +14,170 @@
 
 import type { PerfilEmpresa, Socio, Depoimento, ServicoItem } from '@/features/onboarding/types/onboarding.types'
 import { buildCraftJson, type TemplateNode } from './default-templates'
+import {
+  generatePalette,
+  type ColorPalette,
+  // Re-exporta funções de cor para compatibilidade
+  hexToRgb,
+  rgbToHex,
+  lighten,
+  darken,
+  isLightColor,
+} from './color-palette'
 
-// ─── Color utilities ─────────────────────────────────────────
-
-export function hexToRgb(hex: string): [number, number, number] {
-  const h = hex.replace('#', '')
-  return [
-    parseInt(h.substring(0, 2), 16),
-    parseInt(h.substring(2, 4), 16),
-    parseInt(h.substring(4, 6), 16),
-  ]
-}
-
-export function rgbToHex(r: number, g: number, b: number): string {
-  const clamp = (v: number) => Math.max(0, Math.min(255, Math.round(v)))
-  return `#${[r, g, b].map(v => clamp(v).toString(16).padStart(2, '0')).join('')}`
-}
-
-export function lighten(hex: string, amount: number): string {
-  const [r, g, b] = hexToRgb(hex)
-  return rgbToHex(
-    r + (255 - r) * amount,
-    g + (255 - g) * amount,
-    b + (255 - b) * amount,
-  )
-}
-
-export function darken(hex: string, amount: number): string {
-  const [r, g, b] = hexToRgb(hex)
-  return rgbToHex(r * (1 - amount), g * (1 - amount), b * (1 - amount))
-}
-
-/** Verifica se a cor é clara (para decidir cor de texto sobre ela) */
-export function isLightColor(hex: string): boolean {
-  const [r, g, b] = hexToRgb(hex)
-  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.6
-}
+// Re-exporta para compatibilidade com código existente
+export { hexToRgb, rgbToHex, lighten, darken, isLightColor }
 
 /** Largura máxima do conteúdo das seções (bg fica full-width) */
-const CONTENT_MAX_WIDTH = '1080px'
+const CONTENT_MAX_WIDTH = '1200px'
+
+// ─── Descrições específicas para serviços contábeis ──────────
+// Usadas como fallback quando o usuário não preenche descrição
+const SERVICE_DESCRIPTIONS: Record<string, string> = {
+  'Abertura e Encerramento de Empresas': 'Assessoria completa para abertura, alteração e encerramento de empresas, incluindo registro em órgãos competentes e obtenção de licenças.',
+  'Contabilidade Mensal': 'Escrituração contábil completa, balancetes mensais e relatórios gerenciais para acompanhamento da saúde financeira do seu negócio.',
+  'Folha de Pagamento': 'Processamento completo da folha de pagamento, admissões, rescisões, férias e gestão de encargos trabalhistas.',
+  'Escrituração Fiscal': 'Apuração de impostos, escrituração de livros fiscais e cumprimento de todas as obrigações tributárias da sua empresa.',
+  'Declaração de Imposto de Renda': 'Elaboração e transmissão de declarações de IR para pessoas físicas e jurídicas com planejamento para otimização tributária.',
+  'Planejamento Tributário': 'Análise e implementação de estratégias legais para redução da carga tributária e otimização fiscal do seu negócio.',
+  'BPO Financeiro': 'Terceirização completa do departamento financeiro: contas a pagar, a receber, conciliação bancária e gestão de fluxo de caixa.',
+  'Certidões e Regularizações': 'Obtenção de certidões negativas, regularização de pendências fiscais e trabalhistas junto aos órgãos competentes.',
+  'Consultoria Empresarial': 'Orientação estratégica para tomada de decisões, análise de viabilidade e acompanhamento do desempenho empresarial.',
+  'Obrigações Acessórias': 'Transmissão de SPED, EFD, DCTF, DIRF e demais declarações exigidas pelos fiscos federal, estadual e municipal.',
+  'Lucro Real / Presumido / Simples': 'Enquadramento tributário adequado e gestão contábil específica para cada regime de tributação.',
+  'Balanços e Demonstrações': 'Elaboração de balanços patrimoniais, DRE, fluxo de caixa e demais demonstrações contábeis obrigatórias.',
+  'Auditoria Contábil': 'Revisão e validação dos registros contábeis, identificação de inconsistências e recomendações de melhorias.',
+  'Recuperação de Créditos Tributários': 'Identificação e recuperação de tributos pagos a maior, aproveitamento de créditos e compensações fiscais.',
+  // Variações comuns
+  'Abertura de Empresas': 'Assessoria completa para abertura de empresas, incluindo registro em órgãos competentes e obtenção de alvarás e licenças.',
+  'Encerramento de Empresas': 'Processo completo de baixa de empresas junto aos órgãos fiscais, trabalhistas e demais entidades.',
+  'Imposto de Renda': 'Elaboração e transmissão de declarações de IR para pessoas físicas e jurídicas com orientação personalizada.',
+  'Imposto de Renda PF': 'Declaração de Imposto de Renda para pessoas físicas com análise de deduções e planejamento tributário.',
+  'Imposto de Renda PJ': 'Apuração e declaração do IRPJ com planejamento tributário para otimização da carga fiscal.',
+  'Consultoria Tributária': 'Orientação especializada em questões fiscais, análise de cenários e definição de estratégias tributárias.',
+  'Contabilidade Digital': 'Serviços contábeis 100% online com plataformas modernas, agilidade e atendimento personalizado.',
+  'Contabilidade Rural': 'Assessoria contábil especializada para produtores rurais, com foco em benefícios fiscais do setor.',
+  'Departamento Pessoal': 'Gestão completa de rotinas trabalhistas, admissões, rescisões, férias e obrigações acessórias.',
+  'Gestão Fiscal': 'Acompanhamento e controle das obrigações fiscais, evitando multas e otimizando a carga tributária.',
+  'Legalização de Empresas': 'Regularização de empresas junto aos órgãos competentes, obtenção de licenças e alvarás de funcionamento.',
+  'Perícia Contábil': 'Elaboração de laudos periciais contábeis para processos judiciais e extrajudiciais.',
+  'Contabilidade Societária': 'Assessoria em operações societárias, transformações, fusões, cisões e incorporações.',
+}
+
+/**
+ * Retorna a descrição de um serviço.
+ * Prioridade: descrição do usuário > descrição do mapa > fallback genérico baseado no nome
+ */
+function getServiceDescription(nome: string, descricaoUsuario?: string): string {
+  // Se o usuário preencheu descrição, usa ela
+  if (descricaoUsuario && descricaoUsuario.trim()) {
+    return descricaoUsuario
+  }
+
+  // Busca no mapa de descrições (case-insensitive)
+  const nomeNormalizado = nome.trim()
+  const descricaoMapa = SERVICE_DESCRIPTIONS[nomeNormalizado]
+  if (descricaoMapa) {
+    return descricaoMapa
+  }
+
+  // Busca parcial (se o nome contém alguma chave do mapa)
+  const chaveEncontrada = Object.keys(SERVICE_DESCRIPTIONS).find(chave =>
+    nomeNormalizado.toLowerCase().includes(chave.toLowerCase()) ||
+    chave.toLowerCase().includes(nomeNormalizado.toLowerCase())
+  )
+  if (chaveEncontrada) {
+    return SERVICE_DESCRIPTIONS[chaveEncontrada]
+  }
+
+  // Fallback genérico contextualizado com o nome do serviço
+  return `Serviço de ${nome.toLowerCase()} com atendimento especializado, focado em qualidade e resultados para o seu negócio.`
+}
+
+// ─── Ícones Lucide específicos para serviços contábeis ───────
+// Nomes correspondem ao ICON_MAP do IconComponent
+const SERVICE_ICONS: Record<string, string> = {
+  // Abertura/Encerramento
+  'Abertura e Encerramento de Empresas': 'building',
+  'Abertura de Empresas': 'rocket',
+  'Encerramento de Empresas': 'folder',
+  'Legalização de Empresas': 'badgecheck',
+  // Contabilidade
+  'Contabilidade Mensal': 'barchart',
+  'Contabilidade Digital': 'calculator',
+  'Contabilidade Rural': 'spreadsheet',
+  'Contabilidade Societária': 'users',
+  // Fiscal/Tributário
+  'Escrituração Fiscal': 'filepen',
+  'Gestão Fiscal': 'clipboardcheck',
+  'Planejamento Tributário': 'trending',
+  'Consultoria Tributária': 'target',
+  'Recuperação de Créditos Tributários': 'handcoins',
+  // Imposto de Renda
+  'Declaração de Imposto de Renda': 'filetext',
+  'Imposto de Renda': 'filetext',
+  'Imposto de Renda PF': 'usercheck',
+  'Imposto de Renda PJ': 'building2',
+  // Trabalhista
+  'Folha de Pagamento': 'users',
+  'Departamento Pessoal': 'usercog',
+  // Financeiro
+  'BPO Financeiro': 'wallet',
+  // Obrigações
+  'Obrigações Acessórias': 'clipboardlist',
+  'Certidões e Regularizações': 'scroll',
+  // Outros
+  'Consultoria Empresarial': 'briefcase',
+  'Lucro Real / Presumido / Simples': 'scale',
+  'Balanços e Demonstrações': 'piechart',
+  'Auditoria Contábil': 'search',
+  'Perícia Contábil': 'scale',
+}
+
+// Ícones fallback por categoria (usados quando não há match exato)
+const FALLBACK_ICONS = ['barchart', 'filetext', 'briefcase', 'trending', 'building', 'dollar', 'clipboardlist', 'target', 'scale', 'check']
+
+/**
+ * Retorna o nome do ícone Lucide apropriado para um serviço.
+ */
+function getServiceIcon(nome: string, index: number): string {
+  const nomeNormalizado = nome.trim()
+
+  // Busca exata
+  if (SERVICE_ICONS[nomeNormalizado]) {
+    return SERVICE_ICONS[nomeNormalizado]
+  }
+
+  // Busca parcial por palavras-chave
+  const nomeLower = nomeNormalizado.toLowerCase()
+  if (nomeLower.includes('abertura') || nomeLower.includes('encerramento')) return 'building'
+  if (nomeLower.includes('imposto') || nomeLower.includes('irpf') || nomeLower.includes('irpj')) return 'filetext'
+  if (nomeLower.includes('folha') || nomeLower.includes('pagamento') || nomeLower.includes('pessoal')) return 'users'
+  if (nomeLower.includes('fiscal') || nomeLower.includes('escrituração')) return 'filepen'
+  if (nomeLower.includes('tributár') || nomeLower.includes('planejamento')) return 'trending'
+  if (nomeLower.includes('bpo') || nomeLower.includes('financeiro')) return 'wallet'
+  if (nomeLower.includes('certid') || nomeLower.includes('regulariz')) return 'scroll'
+  if (nomeLower.includes('obrigaç') || nomeLower.includes('acessóri')) return 'clipboardlist'
+  if (nomeLower.includes('consultoria')) return 'briefcase'
+  if (nomeLower.includes('auditoria')) return 'search'
+  if (nomeLower.includes('contabil')) return 'barchart'
+  if (nomeLower.includes('balanço') || nomeLower.includes('demonstra')) return 'piechart'
+  if (nomeLower.includes('recupera') || nomeLower.includes('crédito')) return 'handcoins'
+
+  // Fallback baseado no índice
+  return FALLBACK_ICONS[index % FALLBACK_ICONS.length]
+}
+
+// ─── Assets estáticos do template ────────────────────────────
+const ASSETS = {
+  heroBg: '/assets/hero-bg.jpg',
+  heroProfessional: '/assets/hero-professional.png',
+  aboutOffice: '/assets/about-office.jpg',
+  ctaBg: '/assets/cta-bg.jpg',
+}
 
 /** Imagem padrão de contabilidade para o hero (parallax) */
-const DEFAULT_HERO_IMAGE = '/assets/hero/contabilidade-default.svg'
+const DEFAULT_HERO_IMAGE = ASSETS.heroBg
 
 // ─── Template generator ─────────────────────────────────────
 
@@ -69,53 +191,58 @@ export function generateProfileTemplate(
   const primary = perfil.cor_primaria || '#2563eb'
   const secondary = perfil.cor_secundaria || '#1A1A1A'
 
-  // ─── Paleta derivada das cores do perfil ───
-  const tintPri = lighten(primary, 0.88)    // fundo com toque primário visível
-  const tintSec = lighten(secondary, 0.88)  // fundo com toque secundário visível
-  const cardSoft = lighten(primary, 0.92)   // fundo suave para cards
+  // ─── Gera paleta completa de cores harmônicas ───
+  const palette = generatePalette(primary, secondary)
+
+  // Aliases para compatibilidade com código existente
+  const tintPri = palette.primaryTint      // fundo com toque primário visível
+  const tintSec = palette.secondaryTint    // fundo com toque secundário visível
 
   const sections: TemplateNode[] = []
 
   // 0. Navbar — barra de navegação com logo, links e WhatsApp
-  sections.push(buildNavbar(perfil, nome, primary, secondary))
+  sections.push(buildNavbar(perfil, nome, palette))
 
   // 1. Hero — gradiente escuro profissional
-  sections.push(buildHero(perfil, nome, slogan, primary, secondary))
+  sections.push(buildHero(perfil, nome, slogan, palette))
 
   // 1.5. Stats — strip numérico entre hero e serviços
-  const statsSection = buildStats(perfil, socios, primary, secondary)
+  const statsSection = buildStats(perfil, socios, palette)
   if (statsSection) sections.push(statsSection)
 
   // 2. Serviços — fundo branco (respiro após hero escuro)
   if (perfil.servicos && perfil.servicos.length > 0) {
-    sections.push(buildServicos(perfil.servicos, primary, secondary, '#ffffff', tintPri))
+    sections.push(buildServicos(perfil.servicos, palette, '#ffffff'))
   }
 
-  // 3. Sobre — fundo tintPri (seção PRIMARY)
+  // 2.5. Segmentos de Atuação — seção com cards animados (usa segmentos padrão)
+  sections.push(buildSegmentos(palette, tintPri))
+
+  // 3. Sobre — fundo branco
   if (perfil.historia || perfil.missao || perfil.visao || perfil.valores) {
-    sections.push(buildSobre(perfil, nome, primary, secondary, tintPri, cardSoft))
+    sections.push(buildSobre(perfil, nome, palette, '#ffffff'))
   }
 
   // 4. Diferenciais — fundo tintSec (seção SECONDARY)
   if (perfil.diferenciais && perfil.diferenciais.length > 0) {
-    sections.push(buildDiferenciais(perfil.diferenciais, primary, secondary, tintSec))
+    sections.push(buildDiferenciais(perfil.diferenciais, palette, tintSec))
   }
 
   // 5. Equipe — fundo branco (respiro)
   const sociosVisiveis = socios.filter(s => s.exibir_landing_page)
   if (sociosVisiveis.length > 0) {
-    sections.push(buildEquipe(sociosVisiveis, primary, secondary, '#ffffff'))
+    sections.push(buildEquipe(sociosVisiveis, palette, '#ffffff'))
   }
 
   // 5.5. Depoimentos — fundo tintPri (sempre incluído: reais ou placeholders)
   const depoimentosAtivos = depoimentos?.filter(d => d.ativo) ?? []
-  sections.push(buildDepoimentos(depoimentosAtivos, primary, secondary, tintPri))
+  sections.push(buildDepoimentos(depoimentosAtivos, palette, tintPri))
 
   // 6. CTA — fundo primário (destaque intencional)
-  sections.push(buildCta(perfil, primary, secondary))
+  sections.push(buildCta(perfil, palette))
 
   // 7. Footer — escuro padrão com acento da secundária
-  sections.push(buildFooter(perfil, nome, primary, secondary))
+  sections.push(buildFooter(perfil, nome, palette))
 
   return buildCraftJson({
     type: 'ContainerComponent',
@@ -143,40 +270,40 @@ export function generateProfileTemplate(
 function buildNavbar(
   perfil: PerfilEmpresa,
   nome: string,
-  primary: string,
-  secondary: string,
+  palette: ColorPalette,
 ): TemplateNode {
-  // Glass navbar — fundo semi-transparente com backdrop-blur
-  const darkBase = darken(primary, 0.35)
-  const [r, g, b] = hexToRgb(darkBase)
+  const hasLogo = !!perfil.logo_url
 
   return {
     type: 'NavbarComponent',
     displayName: 'Navbar',
     props: {
-      background: `rgba(${r}, ${g}, ${b}, 0.55)`,
-      backdropBlur: 14,
-      borderBottom: '1px solid rgba(255,255,255,0.08)',
+      background: palette.navbarBg,
+      backdropBlur: 0,
+      borderBottom: 'none',
       logoText: nome,
       logoSrc: perfil.logo_url || '',
-      logoHeight: 44,
-      logoBg: perfil.logo_url ? '#ffffff' : 'transparent',
-      logoShape: perfil.logo_url ? 'circle' : 'pill',
-      showLogoText: !!perfil.logo_url,
+      logoWidth: hasLogo ? 180 : undefined,
+      logoHeight: hasLogo ? undefined : 44,
+      logoBg: hasLogo ? palette.cardBackground : 'transparent',
+      // Estilo "dropdown" — logo em container branco que pende do navbar
+      logoShape: hasLogo ? 'dropdown' : 'pill',
+      showLogoText: false,
       links: [
+        { label: 'Início', href: '#' },
         { label: 'Serviços', href: '#servicos' },
+        { label: 'Segmentos', href: '#segmentos' },
         { label: 'Sobre', href: '#sobre' },
         { label: 'Equipe', href: '#equipe' },
-        { label: 'Contato', href: '#contato' },
       ],
       ctaText: 'Fale Conosco',
-      ctaBg: secondary,
-      ctaColor: isLightColor(secondary) ? '#111827' : '#ffffff',
-      ctaBorderRadius: 50,
-      linkColor: '#ffffff',
-      linkFontSize: 15,
-      paddingX: 48,
-      paddingY: 18,
+      ctaBg: palette.primary,
+      ctaColor: palette.textOnPrimary,
+      ctaBorderRadius: 8,
+      linkColor: palette.textOnDark,
+      linkFontSize: 14,
+      paddingX: 40,
+      paddingY: 16,
       contentMaxWidth: CONTENT_MAX_WIDTH,
     },
   }
@@ -188,8 +315,7 @@ function buildHero(
   perfil: PerfilEmpresa,
   nome: string,
   slogan: string,
-  primary: string,
-  secondary: string,
+  palette: ColorPalette,
 ): TemplateNode {
   const whatsappHref = perfil.whatsapp
     ? `https://wa.me/55${perfil.whatsapp.replace(/\D/g, '')}`
@@ -201,61 +327,72 @@ function buildHero(
     : null
 
   if (perfil.logo_url) {
-    return buildHeroSplit(perfil, nome, slogan, primary, secondary, whatsappHref, emailHref, heroImage)
+    return buildHeroSplit(perfil, nome, slogan, palette, whatsappHref, emailHref, heroImage)
   }
-  return buildHeroCentered(nome, slogan, primary, secondary, whatsappHref, emailHref, null, heroImage)
+  return buildHeroCentered(nome, slogan, palette, whatsappHref, emailHref, null, heroImage)
 }
 
 function buildHeroSplit(
   perfil: PerfilEmpresa,
   nome: string,
   slogan: string,
-  primary: string,
-  secondary: string,
+  palette: ColorPalette,
   whatsappHref: string | null,
-  emailHref: string,
-  heroImage: string | null,
+  _emailHref: string,
+  _heroImage: string | null,
 ): TemplateNode {
-  const gradientFrom = darken(primary, 0.65)
-  const gradientTo = darken(primary, 0.40)
+  // Cores do template de referência
+  const gradientFrom = palette.primaryDark
 
-  const contentChildren: TemplateNode[] = []
+  // ─── COLUNA ESQUERDA: Texto ─────────────────────────────────
+  const textChildren: TemplateNode[] = []
 
-  // Badge: "DESDE {ano} · {CIDADE}, {ESTADO}"
+  // Badge: "Desde {ano} · {CIDADE}, {ESTADO}"
   const badgeParts: string[] = []
   if (perfil.ano_fundacao) badgeParts.push(`Desde ${perfil.ano_fundacao}`)
   if (perfil.cidade && perfil.estado) badgeParts.push(`${perfil.cidade}, ${perfil.estado}`)
   if (badgeParts.length > 0) {
-    contentChildren.push({
-      type: 'TextComponent',
+    textChildren.push({
+      type: 'BadgeComponent',
       displayName: 'Badge Hero',
       props: {
-        text: badgeParts.join('  ·  ').toUpperCase(),
-        fontSize: '13',
-        fontWeight: '700',
-        textAlign: 'left',
-        color: secondary,
-        margin: [0, 0, 6, 0],
-        letterSpacing: '2.5',
+        text: badgeParts.join('  ·  '),
+        badgeStyle: 'filled',
+        color: palette.secondaryAlpha90,
+        backgroundColor: palette.secondaryAlpha90,
+        fontSize: 13,
+        fontWeight: 600,
+        borderRadius: 50,
+        paddingX: 20,
+        paddingY: 10,
+        textTransform: 'none',
+        letterSpacing: 0,
+        marginBottom: 28,
+        backdropFilter: 'blur(10px)',
+        border: `1px solid ${palette.borderOnDark}`,
       },
     })
   }
 
-  contentChildren.push({
+  // Título: Nome da empresa
+  textChildren.push({
     type: 'HeadingComponent',
     displayName: 'Nome da Empresa',
     props: {
       text: nome,
       tagName: 'h1',
-      fontSize: '52',
+      fontSize: '56',
       fontWeight: '900',
       textAlign: 'left',
-      color: '#ffffff',
+      color: palette.textOnDark,
       lineHeight: '1.1',
+      letterSpacing: '-2',
+      margin: [0, 0, 20, 0],
     },
   })
 
-  contentChildren.push({
+  // Slogan
+  textChildren.push({
     type: 'TextComponent',
     displayName: 'Slogan',
     props: {
@@ -263,147 +400,423 @@ function buildHeroSplit(
       fontSize: '20',
       fontWeight: '400',
       textAlign: 'left',
-      color: '#e2e8f0',
-      lineHeight: '1.6',
-      margin: [4, 0, 8, 0],
+      color: palette.textMutedOnDark,
+      lineHeight: '1.5',
+      maxWidth: '480px',
+      margin: [0, 0, 16, 0],
     },
   })
 
-  // Meta info: linha clean sem emojis — "telefone · email · horário"
-  const metaParts: string[] = []
-  if (perfil.telefone) metaParts.push(perfil.telefone)
-  if (perfil.email_contato) metaParts.push(perfil.email_contato)
-  if (perfil.horario_atendimento) metaParts.push(perfil.horario_atendimento)
-
-  if (metaParts.length > 0) {
-    contentChildren.push({
+  // Contato: telefone e email
+  const contactParts: TemplateNode[] = []
+  if (perfil.telefone) {
+    contactParts.push({
       type: 'TextComponent',
-      displayName: 'Meta Info Hero',
+      displayName: 'Telefone',
       props: {
-        text: metaParts.join('  ·  '),
+        text: `📞 ${perfil.telefone}`,
         fontSize: '15',
-        fontWeight: '500',
+        fontWeight: '400',
         textAlign: 'left',
-        color: 'rgba(255,255,255,0.75)',
-        margin: [0, 0, 8, 0],
+        color: palette.textMutedOnDark,
+      },
+    })
+  }
+  if (perfil.email_contato) {
+    contactParts.push({
+      type: 'TextComponent',
+      displayName: 'Email',
+      props: {
+        text: `✉️ ${perfil.email_contato}`,
+        fontSize: '15',
+        fontWeight: '400',
+        textAlign: 'left',
+        color: palette.textMutedOnDark,
       },
     })
   }
 
-  // Botões: WhatsApp (primário pill) + Email (ghost pill)
-  const btns: TemplateNode[] = []
+  if (contactParts.length > 0) {
+    textChildren.push({
+      type: 'ContainerComponent',
+      isCanvas: true,
+      displayName: 'Contato Hero',
+      props: {
+        background: 'transparent',
+        padding: 0,
+        gap: 16,
+        width: 'auto',
+        height: 'auto',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        flexWrap: 'wrap',
+        shadow: 0,
+        radius: 0,
+        marginBottom: 32,
+      },
+      children: contactParts,
+    })
+  }
 
+  // Botão WhatsApp
   if (whatsappHref) {
-    btns.push({
+    textChildren.push({
       type: 'ButtonComponent',
       displayName: 'WhatsApp',
       props: {
         text: 'Falar no WhatsApp',
         href: whatsappHref,
-        background: secondary,
-        color: isLightColor(secondary) ? '#111827' : '#ffffff',
+        background: palette.secondary,
+        color: palette.textOnSecondary,
         size: 'lg',
         buttonStyle: 'filled',
         borderRadius: 50,
+        icon: 'whatsapp',
       },
     })
   }
 
-  btns.push({
-    type: 'ButtonComponent',
-    displayName: 'Email',
-    props: {
-      text: 'Enviar e-mail',
-      href: emailHref,
-      background: 'transparent',
-      color: '#ffffff',
-      size: 'lg',
-      buttonStyle: 'outline',
-      borderRadius: 50,
-    },
-  })
+  // Features: badges de destaque com ícone visual
+  const currentYear = new Date().getFullYear()
+  const anosExp = perfil.ano_fundacao ? currentYear - perfil.ano_fundacao : null
+  const features: string[] = []
+  if (anosExp && anosExp > 0) features.push(`${anosExp}+ anos`)
+  features.push('100% digital')
+  features.push('Atendimento nacional')
 
-  contentChildren.push({
+  textChildren.push({
     type: 'ContainerComponent',
     isCanvas: true,
-    displayName: 'Botões Hero',
+    displayName: 'Features Hero',
     props: {
       background: 'transparent',
       padding: 0,
-      gap: 14,
-      width: '100%',
+      gap: 32,
+      width: 'auto',
       height: 'auto',
       flexDirection: 'row',
-      alignItems: 'center',
+      alignItems: 'flex-start',
       justifyContent: 'flex-start',
+      flexWrap: 'wrap',
       shadow: 0,
       radius: 0,
+      marginTop: 40,
     },
-    children: btns,
+    children: features.map((feat, i) => ({
+      type: 'ContainerComponent',
+      isCanvas: false,
+      displayName: `Feature ${i + 1}`,
+      props: {
+        background: 'transparent',
+        padding: 0,
+        gap: 8,
+        width: 'auto',
+        height: 'auto',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        shadow: 0,
+        radius: 0,
+      },
+      children: [
+        {
+          type: 'ContainerComponent',
+          isCanvas: false,
+          displayName: 'Ícone Feature',
+          props: {
+            background: 'rgba(255, 255, 255, 0.15)',
+            padding: 0,
+            gap: 0,
+            width: '32px',
+            height: '32px',
+            minHeight: 32,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            shadow: 0,
+            radius: 8,
+          },
+          children: [
+            {
+              type: 'TextComponent',
+              displayName: 'Check',
+              props: {
+                text: '✓',
+                fontSize: '14',
+                fontWeight: '700',
+                color: palette.textOnDark,
+                textAlign: 'center',
+                lineHeight: '1',
+                margin: [0, 0, 0, 0],
+              },
+            },
+          ],
+        },
+        {
+          type: 'TextComponent',
+          displayName: 'Texto Feature',
+          props: {
+            text: feat,
+            fontSize: '13',
+            fontWeight: '500',
+            textAlign: 'center',
+            color: palette.textMutedOnDark,
+          },
+        },
+      ],
+    })),
   })
 
-  // Hero usa layout full-width (logo já está na navbar)
-  const contentColumn: TemplateNode = {
+  // Coluna de texto
+  const leftColumn: TemplateNode = {
     type: 'ContainerComponent',
     isCanvas: true,
-    displayName: 'Conteúdo Hero',
+    displayName: 'Texto Hero',
     props: {
       background: 'transparent',
-      padding: 16,
-      gap: 14,
-      width: '100%',
+      padding: 0,
+      gap: 16,
+      width: 'auto',
       height: 'auto',
       flexDirection: 'column',
       alignItems: 'flex-start',
       justifyContent: 'center',
       shadow: 0,
       radius: 0,
-      maxWidth: '720px',
+      flex: '1 1 400px',
+      minWidth: '320px',
     },
-    children: contentChildren,
+    children: textChildren,
   }
 
-  const heroRow: TemplateNode = {
+  // ─── COLUNA DIREITA: Imagem com cards flutuantes ────────────
+  // Monta os cards flutuantes para incluir no wrapper
+  const floatingCards: TemplateNode[] = []
+
+  // Card flutuante: Anos de experiência (lado esquerdo/baixo)
+  if (anosExp && anosExp > 0) {
+    floatingCards.push({
+      type: 'ContainerComponent',
+      isCanvas: true,
+      displayName: 'Card Experiência',
+      props: {
+        background: 'rgba(255, 255, 255, 0.95)',
+        padding: 16,
+        paddingX: 20,
+        gap: 4,
+        width: 'auto',
+        height: 'auto',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadow: 0,
+        radius: 12,
+        position: 'absolute',
+        bottom: '60px',
+        left: '-30px',
+        zIndex: 3,
+        backdropFilter: 'blur(10px)',
+        boxShadowCustom: '0 10px 30px rgba(0, 0, 0, 0.15)',
+      },
+      children: [
+        {
+          type: 'TextComponent',
+          displayName: 'Número Experiência',
+          props: {
+            text: `${anosExp}+`,
+            fontSize: '28',
+            fontWeight: '800',
+            textAlign: 'center',
+            color: palette.primary,
+            lineHeight: '1',
+          },
+        },
+        {
+          type: 'TextComponent',
+          displayName: 'Label Experiência',
+          props: {
+            text: 'Anos de experiência',
+            fontSize: '12',
+            fontWeight: '600',
+            textAlign: 'center',
+            color: palette.textMuted,
+            textTransform: 'uppercase',
+            letterSpacing: '0.5',
+          },
+        },
+      ],
+    })
+  }
+
+  // Card flutuante: Clientes atendidos (lado direito/topo)
+  floatingCards.push({
     type: 'ContainerComponent',
     isCanvas: true,
-    displayName: 'Hero Row',
+    displayName: 'Card Clientes',
+    props: {
+      background: 'rgba(255, 255, 255, 0.95)',
+      padding: 16,
+      paddingX: 20,
+      gap: 4,
+      width: 'auto',
+      height: 'auto',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      shadow: 0,
+      radius: 12,
+      position: 'absolute',
+      top: '100px',
+      right: '-20px',
+      zIndex: 3,
+      backdropFilter: 'blur(10px)',
+      boxShadowCustom: '0 10px 30px rgba(0, 0, 0, 0.15)',
+    },
+    children: [
+      {
+        type: 'TextComponent',
+        displayName: 'Número Clientes',
+        props: {
+          text: '500+',
+          fontSize: '28',
+          fontWeight: '800',
+          textAlign: 'center',
+          color: palette.primary,
+          lineHeight: '1',
+        },
+      },
+      {
+        type: 'TextComponent',
+        displayName: 'Label Clientes',
+        props: {
+          text: 'Clientes atendidos',
+          fontSize: '12',
+          fontWeight: '600',
+          textAlign: 'center',
+          color: palette.textMuted,
+          textTransform: 'uppercase',
+          letterSpacing: '0.5',
+        },
+      },
+    ],
+  })
+
+  // Container da imagem com decoração e cards flutuantes
+  const rightColumnChildren: TemplateNode[] = [
+    {
+      type: 'ContainerComponent',
+      isCanvas: false,
+      displayName: 'Wrapper Imagem Hero',
+      props: {
+        background: 'transparent',
+        padding: 0,
+        gap: 0,
+        width: '100%',
+        maxWidth: '550px',
+        height: 'auto',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        shadow: 0,
+        radius: 0,
+        position: 'relative',
+      },
+      children: [
+        // Imagem do profissional
+        {
+          type: 'ImageComponent',
+          displayName: 'Imagem Hero',
+          props: {
+            src: ASSETS.heroProfessional,
+            alt: 'Profissional',
+            width: '100%',
+            maxWidth: '550px',
+            height: 'auto',
+            objectFit: 'contain',
+            borderRadius: '20px 20px 0 0',
+            boxShadow: '0 -10px 60px rgba(0, 0, 0, 0.3)',
+          },
+        },
+        // Frame decorativo ao redor da imagem
+        {
+          type: 'ContainerComponent',
+          isCanvas: false,
+          displayName: 'Frame Decorativo',
+          props: {
+            background: 'transparent',
+            padding: 0,
+            gap: 0,
+            width: '70%',
+            height: '75%',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            shadow: 0,
+            radius: 0,
+            position: 'absolute',
+            bottom: '0',
+            left: '50%',
+            zIndex: 1,
+            border: '3px solid rgba(255, 255, 255, 0.2)',
+            borderBottom: 'none',
+            borderRadiusCustom: '20px 20px 0 0',
+            transform: 'translateX(-50%)',
+          },
+          children: [],
+        },
+        // Cards flutuantes (DENTRO do wrapper para posicionamento correto)
+        ...floatingCards,
+      ],
+    },
+  ]
+
+  // Coluna da imagem
+  const rightColumn: TemplateNode = {
+    type: 'ContainerComponent',
+    isCanvas: true,
+    displayName: 'Imagem Hero',
     props: {
       background: 'transparent',
       padding: 0,
       gap: 0,
+      width: 'auto',
+      height: 'auto',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'flex-end',
+      shadow: 0,
+      radius: 0,
+      position: 'relative',
+      flex: '1 1 400px',
+      minWidth: '320px',
+    },
+    children: rightColumnChildren,
+  }
+
+  // Grid de duas colunas
+  const heroGrid: TemplateNode = {
+    type: 'ContainerComponent',
+    isCanvas: true,
+    displayName: 'Hero Grid',
+    props: {
+      background: 'transparent',
+      padding: 0,
+      gap: 40,
       width: '100%',
       height: 'auto',
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'flex-start',
+      justifyContent: 'space-between',
+      flexWrap: 'wrap',
       shadow: 0,
       radius: 0,
     },
-    children: [contentColumn],
+    children: [leftColumn, rightColumn],
   }
 
-  if (heroImage) {
-    // Hero com imagem de fundo + parallax — usa HeroSectionComponent
-    return {
-      type: 'HeroSectionComponent',
-      isCanvas: true,
-      displayName: 'Hero',
-      props: {
-        background: gradientFrom,
-        gradientFrom: '',
-        gradientTo: '',
-        backgroundImage: heroImage,
-        overlayOpacity: 0.55,
-        overlayColor: '#000000',
-        parallax: true,
-        paddingY: 90,
-        minHeight: 500,
-        textAlign: 'left',
-        contentMaxWidth: CONTENT_MAX_WIDTH,
-      },
-      children: [heroRow],
-    }
-  }
+  // Overlay com gradiente duplo como no HTML de referência
+  const overlayGradient = palette.heroOverlay
 
   return {
     type: 'HeroSectionComponent',
@@ -411,30 +824,36 @@ function buildHeroSplit(
     displayName: 'Hero',
     props: {
       background: gradientFrom,
-      gradientFrom,
-      gradientTo,
+      gradientFrom: '',
+      gradientTo: '',
       gradientDirection: '135deg',
-      paddingY: 90,
-      minHeight: 500,
+      backgroundImage: ASSETS.heroBg,
+      overlayOpacity: 0.85,
+      // Usa gradiente como overlay para efeito visual idêntico ao HTML
+      overlayColor: overlayGradient,
+      paddingY: 70,
+      paddingTop: 70,
+      paddingBottom: 0, // Sem espaçamento para colar na stats band
+      minHeight: 600,
+      minHeightCalc: 'calc(100vh - 156px)', // Hero + Stats = 100vh (stats: 80px padding + ~76px conteúdo)
       textAlign: 'left',
       contentMaxWidth: CONTENT_MAX_WIDTH,
     },
-    children: [heroRow],
+    children: [heroGrid],
   }
 }
 
 function buildHeroCentered(
   nome: string,
   slogan: string,
-  primary: string,
-  secondary: string,
+  palette: ColorPalette,
   whatsappHref: string | null,
   emailHref: string,
   areaAtuacao: string | null,
   heroImage: string | null,
 ): TemplateNode {
-  const gradientFrom = darken(primary, 0.65)
-  const gradientTo = darken(primary, 0.40)
+  const gradientFrom = palette.primaryDarker
+  const gradientTo = palette.primaryDark
 
   const children: TemplateNode[] = [
     {
@@ -445,7 +864,7 @@ function buildHeroCentered(
         fontSize: '12',
         fontWeight: '700',
         textAlign: 'center',
-        color: secondary,
+        color: palette.secondary,
         margin: [0, 0, 0, 0],
       },
     },
@@ -458,13 +877,13 @@ function buildHeroCentered(
         fontSize: '56',
         fontWeight: '900',
         textAlign: 'center',
-        color: '#ffffff',
+        color: palette.textOnDark,
       },
     },
     {
       type: 'DividerComponent',
       displayName: 'Acento',
-      props: { color: secondary, thickness: 4, marginY: 12, style: 'solid' },
+      props: { color: palette.secondary, thickness: 4, marginY: 12, style: 'solid' },
     },
     {
       type: 'TextComponent',
@@ -474,7 +893,7 @@ function buildHeroCentered(
         fontSize: '22',
         fontWeight: '300',
         textAlign: 'center',
-        color: 'rgba(255,255,255,0.72)',
+        color: palette.textMutedOnDark,
         margin: [0, 0, 16, 0],
       },
     },
@@ -486,11 +905,12 @@ function buildHeroCentered(
     props: {
       text: whatsappHref ? 'Falar no WhatsApp' : 'Solicite um Orçamento',
       href: whatsappHref || emailHref,
-      background: secondary,
-      color: isLightColor(secondary) ? '#111827' : '#ffffff',
+      background: palette.secondary,
+      color: palette.textOnSecondary,
       size: 'lg',
       buttonStyle: 'filled',
       borderRadius: 10,
+      icon: whatsappHref ? 'whatsapp' : undefined,
     },
   })
 
@@ -523,43 +943,52 @@ function buildHeroCentered(
 function buildStats(
   perfil: PerfilEmpresa,
   socios: Socio[],
-  primary: string,
-  secondary: string,
+  palette: ColorPalette,
 ): TemplateNode | null {
   const currentYear = new Date().getFullYear()
   const stats: Array<{ valor: string; label: string }> = []
 
   if (perfil.ano_fundacao && perfil.ano_fundacao < currentYear) {
     const anos = currentYear - perfil.ano_fundacao
-    stats.push({ valor: `${anos}+`, label: 'anos de experiência' })
+    stats.push({ valor: `${anos}`, label: 'Anos de Experiência' })
   }
 
   if (perfil.servicos && perfil.servicos.length > 0) {
     const n = perfil.servicos.length
-    stats.push({ valor: `${n}`, label: n === 1 ? 'serviço oferecido' : 'serviços oferecidos' })
+    stats.push({ valor: `${n}`, label: n === 1 ? 'Serviço Oferecido' : 'Serviços Oferecidos' })
   }
 
   const sociosVisiveis = socios.filter(s => s.exibir_landing_page)
   if (sociosVisiveis.length > 0) {
     const n = sociosVisiveis.length
-    stats.push({ valor: `${n}`, label: n === 1 ? 'especialista dedicado' : 'especialistas dedicados' })
+    stats.push({ valor: `${n}`, label: n === 1 ? 'Especialista Dedicado' : 'Especialistas Dedicados' })
   }
 
-  if (stats.length < 2) return null // não vale a seção com 1 item
+  // Sempre adiciona clientes atendidos para manter consistência
+  if (stats.length < 3) {
+    stats.push({ valor: '500+', label: 'Clientes Atendidos' })
+  }
 
-  const bgDark = darken(primary, 0.45)
+  if (stats.length < 2) return null
 
   return {
     type: 'StatsBandComponent',
     displayName: 'Números',
     props: {
-      background: bgDark,
-      textColor: '#ffffff',
-      accentColor: secondary,
-      labelColor: 'rgba(255,255,255,0.85)',
-      paddingY: 56,
+      background: palette.statsBg,
+      textColor: palette.textOnDark,
+      accentColor: palette.textOnDark,
+      labelColor: palette.textMutedOnDark,
+      paddingY: 40,
       showDivider: true,
       stats,
+      fontSize: 56,
+      labelFontSize: 12,
+      fontWeight: '900',
+      labelTextTransform: 'uppercase',
+      labelLetterSpacing: 2,
+      // Efeito glow como no HTML de referência
+      showGlow: true,
     },
   }
 }
@@ -568,10 +997,8 @@ function buildStats(
 
 function buildServicos(
   servicos: PerfilEmpresa['servicos'],
-  _primary: string,
-  secondary: string,
+  palette: ColorPalette,
   sectionBg: string,
-  _tintPri: string,
 ): TemplateNode {
   const items = servicos as ServicoItem[]
   const columns = items.length <= 2 ? 2 : 3
@@ -602,8 +1029,9 @@ function buildServicos(
             fontSize: '12',
             fontWeight: '700',
             textAlign: 'center',
-            color: secondary,
-            margin: [0, 0, 0, 0],
+            color: palette.secondary,
+            letterSpacing: '2',
+            margin: [0, 0, 8, 0],
           },
         },
         {
@@ -615,13 +1043,13 @@ function buildServicos(
             fontSize: '40',
             fontWeight: '800',
             textAlign: 'center',
-            color: '#0f172a',
+            color: palette.textOnLight,
           },
         },
         {
           type: 'DividerComponent',
-          displayName: 'Divisor',
-          props: { color: secondary, thickness: 4, marginY: 8, style: 'solid' },
+          displayName: 'Divisor Serviços',
+          props: { color: palette.secondary, thickness: 4, marginY: 16, style: 'solid', width: '60px' },
         },
         {
           type: 'TextComponent',
@@ -631,7 +1059,7 @@ function buildServicos(
             fontSize: '16',
             fontWeight: '400',
             textAlign: 'center',
-            color: '#64748b',
+            color: palette.textMuted,
             margin: [0, 0, 0, 0],
           },
         },
@@ -644,30 +1072,63 @@ function buildServicos(
     isCanvas: true,
     displayName: `Serviço ${i + 1}`,
     props: {
-      background: '#ffffff',
+      background: palette.cardBackground,
       padding: 28,
       gap: 12,
       width: '100%',
       height: 'auto',
       flexDirection: 'column',
-      alignItems: 'flex-start',
+      alignItems: 'center',
       justifyContent: 'flex-start',
       shadow: 2,
       radius: 16,
-      borderAccent: secondary,
+      borderAccent: palette.secondary,
       borderAccentPosition: 'top',
     },
     children: [
+      {
+        type: 'ContainerComponent',
+        isCanvas: false,
+        displayName: 'Wrapper Ícone',
+        props: {
+          background: 'transparent',
+          padding: 0,
+          gap: 0,
+          width: '100%',
+          height: 'auto',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          shadow: 0,
+          radius: 0,
+          marginBottom: 16,
+        },
+        children: [
+          {
+            type: 'IconComponent',
+            displayName: 'Ícone Serviço',
+            props: {
+              icon: getServiceIcon(servico.nome, i),
+              size: 28,
+              color: palette.textOnSecondary,
+              backgroundColor: palette.secondary,
+              shape: 'rounded',
+              padding: 14,
+              weight: 'regular',
+            },
+          },
+        ],
+      },
       {
         type: 'HeadingComponent',
         displayName: 'Título Serviço',
         props: {
           text: servico.nome,
           tagName: 'h3',
-          fontSize: '17',
+          fontSize: '18',
           fontWeight: '700',
-          textAlign: 'left',
-          color: '#0f172a',
+          textAlign: 'center',
+          color: palette.textOnLight,
           lineHeight: '1.4',
         },
       },
@@ -675,11 +1136,11 @@ function buildServicos(
         type: 'TextComponent',
         displayName: 'Descrição Serviço',
         props: {
-          text: servico.descricao || 'Serviço especializado para atender às necessidades do seu negócio com excelência e agilidade.',
+          text: getServiceDescription(servico.nome, servico.descricao),
           fontSize: '15',
           fontWeight: '400',
-          textAlign: 'left',
-          color: '#64748b',
+          textAlign: 'center',
+          color: palette.textMuted,
           margin: [0, 0, 0, 0],
           lineHeight: '1.6',
         },
@@ -696,95 +1157,433 @@ function buildServicos(
   }
 }
 
-// ─── 3. SOBRE — história + MVV cards modernos ────────────────
+// ─── 2.5. SEGMENTOS — cards animados para segmentos de atuação ─
+
+const DEFAULT_SEGMENTS = [
+  { icon: '🌾', titulo: 'Agronegócios', descricao: 'Produtores rurais, cooperativas e empresas do setor agrícola.' },
+  { icon: '🚀', titulo: 'Startups', descricao: 'Empresas de tecnologia e inovação em fase de crescimento.' },
+  { icon: '💊', titulo: 'Farmácias', descricao: 'Drogarias, farmácias de manipulação e distribuidoras.' },
+  { icon: '⚕️', titulo: 'Médicos e Saúde', descricao: 'Clínicas, consultórios e profissionais da área da saúde.' },
+  { icon: '🏪', titulo: 'Comércio', descricao: 'Lojas, restaurantes e estabelecimentos comerciais.' },
+  { icon: '🏗️', titulo: 'Construção Civil', descricao: 'Construtoras, empreiteiras e prestadores de serviços.' },
+]
+
+function buildSegmentos(
+  palette: ColorPalette,
+  sectionBg: string,
+): TemplateNode {
+  return {
+    type: 'SegmentsComponent',
+    displayName: 'Segmentos',
+    props: {
+      background: sectionBg,
+      backgroundTo: palette.background,
+      primaryColor: palette.primary,
+      primaryLight: palette.primaryTint,
+      primaryLighter: palette.primarySoft,
+      primaryAlpha10: palette.primaryAlpha10,
+      primaryAlpha15: palette.primaryAlpha15,
+      primaryAlpha30: palette.primaryAlpha30,
+      titleColor: palette.textOnLight,
+      textColor: palette.textMuted,
+      accentColor: palette.secondary,
+      paddingY: 80,
+      segments: DEFAULT_SEGMENTS,
+      sectionTag: 'QUEM ATENDEMOS',
+      sectionTitle: 'Segmentos de Atuação',
+      sectionDescription: 'Experiência comprovada em diversos setores da economia.',
+      contentMaxWidth: CONTENT_MAX_WIDTH,
+      sectionId: 'segmentos',
+    },
+  }
+}
+
+// ─── 3. SOBRE — layout com imagem lateral + MVV cards ────────
 
 function buildSobre(
   perfil: PerfilEmpresa,
   nome: string,
-  primary: string,
-  secondary: string,
+  palette: ColorPalette,
   sectionBg: string,
-  _cardSoft: string,
 ): TemplateNode {
-  const children: TemplateNode[] = []
+  const currentYear = new Date().getFullYear()
+  const anosExp = perfil.ano_fundacao ? currentYear - perfil.ano_fundacao : null
 
-  children.push({
-    type: 'TextComponent',
-    displayName: 'Tag Sobre',
-    props: {
-      text: 'CONHEÇA-NOS',
-      fontSize: '12',
-      fontWeight: '700',
-      textAlign: 'center',
-      color: secondary,
-      margin: [0, 0, 0, 0],
+  // ─── HEADER CENTRALIZADO ─────────────────────────────────────
+  const headerChildren: TemplateNode[] = [
+    {
+      type: 'TextComponent',
+      displayName: 'Tag Sobre',
+      props: {
+        text: 'CONHEÇA-NOS',
+        fontSize: '12',
+        fontWeight: '700',
+        textAlign: 'center',
+        color: palette.secondary,
+        letterSpacing: '2',
+        margin: [0, 0, 8, 0],
+      },
     },
-  })
-
-  children.push({
-    type: 'HeadingComponent',
-    displayName: 'Título Sobre',
-    props: {
-      text: `Sobre a ${nome}`,
-      tagName: 'h2',
-      fontSize: '40',
-      fontWeight: '800',
-      textAlign: 'center',
-      color: '#0f172a',
+    {
+      type: 'HeadingComponent',
+      displayName: 'Título Sobre',
+      props: {
+        text: `Sobre a ${nome}`,
+        tagName: 'h2',
+        fontSize: '40',
+        fontWeight: '800',
+        textAlign: 'center',
+        color: palette.textOnLight,
+      },
     },
-  })
+    {
+      type: 'DividerComponent',
+      displayName: 'Divisor Sobre',
+      props: { color: palette.secondary, thickness: 4, marginY: 16, style: 'solid', width: '60px' },
+    },
+    {
+      type: 'TextComponent',
+      displayName: 'Subtítulo Sobre',
+      props: {
+        text: 'Conheça nossa história e os valores que nos guiam.',
+        fontSize: '16',
+        fontWeight: '400',
+        textAlign: 'center',
+        color: palette.textMuted,
+        margin: [0, 0, 0, 0],
+      },
+    },
+  ]
 
-  children.push({
-    type: 'DividerComponent',
-    displayName: 'Divisor Sobre',
-    props: { color: secondary, thickness: 4, marginY: 8, style: 'solid' },
-  })
+  // ─── GRID: IMAGEM + TEXTO ────────────────────────────────────
+  // Coluna esquerda: Imagem com badge de experiência
+  const imageColumnChildren: TemplateNode[] = [
+    {
+      type: 'ImageComponent',
+      displayName: 'Imagem Escritório',
+      props: {
+        src: ASSETS.aboutOffice,
+        alt: `Escritório ${nome}`,
+        width: '100%',
+        height: '400px',
+        objectFit: 'cover',
+        borderRadius: 16,
+      },
+    },
+  ]
 
+  // Badge de anos de experiência sobre a imagem
+  if (anosExp && anosExp > 0) {
+    imageColumnChildren.push({
+      type: 'ContainerComponent',
+      isCanvas: true,
+      displayName: 'Badge Experiência',
+      props: {
+        background: palette.primary,
+        padding: 20,
+        gap: 4,
+        width: 'auto',
+        height: 'auto',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadow: 3,
+        radius: 16,
+        position: 'absolute',
+        bottom: '-24px',
+        right: '-24px',
+      },
+      children: [
+        {
+          type: 'TextComponent',
+          displayName: 'Número Anos',
+          props: {
+            text: `${anosExp}+`,
+            fontSize: '40',
+            fontWeight: '900',
+            textAlign: 'center',
+            color: palette.textOnPrimary,
+            lineHeight: '1',
+          },
+        },
+        {
+          type: 'TextComponent',
+          displayName: 'Label Anos',
+          props: {
+            text: 'Anos',
+            fontSize: '12',
+            fontWeight: '600',
+            textAlign: 'center',
+            color: palette.textMutedOnDark,
+            textTransform: 'uppercase',
+            letterSpacing: '1',
+          },
+        },
+      ],
+    })
+  }
+
+  const imageColumn: TemplateNode = {
+    type: 'ContainerComponent',
+    isCanvas: true,
+    displayName: 'Coluna Imagem',
+    props: {
+      background: 'transparent',
+      padding: 0,
+      gap: 0,
+      width: 'auto',
+      height: 'auto',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      justifyContent: 'flex-start',
+      shadow: 0,
+      radius: 0,
+      position: 'relative',
+      flex: '1 1 350px',
+      minWidth: '300px',
+      maxWidth: '500px',
+    },
+    children: imageColumnChildren,
+  }
+
+  // Coluna direita: Texto + features
+  const textColumnChildren: TemplateNode[] = [
+    {
+      type: 'TextComponent',
+      displayName: 'Tag Texto',
+      props: {
+        text: 'NOSSA HISTÓRIA',
+        fontSize: '12',
+        fontWeight: '700',
+        textAlign: 'left',
+        color: palette.secondary,
+        letterSpacing: '2',
+      },
+    },
+    {
+      type: 'HeadingComponent',
+      displayName: 'Título Texto',
+      props: {
+        text: `Sua contabilidade em boas mãos`,
+        tagName: 'h3',
+        fontSize: '36',
+        fontWeight: '800',
+        textAlign: 'left',
+        color: palette.textOnLight,
+        lineHeight: '1.2',
+      },
+    },
+  ]
+
+  // História
   if (perfil.historia) {
-    children.push({
+    textColumnChildren.push({
       type: 'TextComponent',
       displayName: 'História',
       props: {
         text: perfil.historia,
-        fontSize: '18',
+        fontSize: '16',
         fontWeight: '400',
-        textAlign: 'center',
-        color: '#334155',
-        margin: [8, 0, 24, 0],
+        textAlign: 'left',
+        color: palette.textMuted,
+        lineHeight: '1.8',
+        margin: [8, 0, 16, 0],
       },
     })
   }
 
-  // MVV — cards modernos com borda superior colorida
+  // Features de destaque
+  const features = [
+    'Atendimento 100% digital e personalizado',
+    'Equipe especializada e certificada',
+    'Suporte contínuo e proativo',
+  ]
+
+  textColumnChildren.push({
+    type: 'ContainerComponent',
+    isCanvas: true,
+    displayName: 'Features Sobre',
+    props: {
+      background: 'transparent',
+      padding: 0,
+      gap: 12,
+      width: '100%',
+      height: 'auto',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      justifyContent: 'flex-start',
+      shadow: 0,
+      radius: 0,
+    },
+    children: features.map((feat, i) => ({
+      type: 'ContainerComponent',
+      isCanvas: true,
+      displayName: `Feature ${i + 1}`,
+      props: {
+        background: 'transparent',
+        padding: 0,
+        gap: 12,
+        width: '100%',
+        height: 'auto',
+        flexDirection: 'row',
+        flexWrap: 'nowrap',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        shadow: 0,
+        radius: 0,
+      },
+      children: [
+        {
+          type: 'ContainerComponent',
+          isCanvas: false,
+          displayName: 'Ícone',
+          props: {
+            background: palette.primary,
+            padding: 0,
+            gap: 0,
+            width: '36px',
+            height: '36px',
+            minHeight: 36,
+            minWidth: '36px',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            shadow: 0,
+            radius: 10,
+            flex: '0 0 36px',
+          },
+          children: [
+            {
+              type: 'TextComponent',
+              displayName: 'Check',
+              props: {
+                text: '✓',
+                fontSize: '16',
+                fontWeight: '700',
+                color: palette.textOnPrimary,
+                textAlign: 'center',
+                lineHeight: '1',
+                margin: [0, 0, 0, 0],
+              },
+            },
+          ],
+        },
+        {
+          type: 'TextComponent',
+          displayName: 'Texto Feature',
+          props: {
+            text: feat,
+            fontSize: '15',
+            fontWeight: '600',
+            textAlign: 'left',
+            color: palette.textOnLight,
+            margin: [0, 0, 0, 0],
+          },
+        },
+      ],
+    })),
+  })
+
+  const textColumn: TemplateNode = {
+    type: 'ContainerComponent',
+    isCanvas: true,
+    displayName: 'Coluna Texto',
+    props: {
+      background: 'transparent',
+      padding: 0,
+      gap: 16,
+      width: 'auto',
+      height: 'auto',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      justifyContent: 'center',
+      shadow: 0,
+      radius: 0,
+      flex: '1 1 400px',
+      minWidth: '300px',
+    },
+    children: textColumnChildren,
+  }
+
+  const mainGrid: TemplateNode = {
+    type: 'ContainerComponent',
+    isCanvas: true,
+    displayName: 'Grid Sobre',
+    props: {
+      background: 'transparent',
+      padding: 0,
+      gap: 48,
+      width: '100%',
+      height: 'auto',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexWrap: 'wrap',
+      shadow: 0,
+      radius: 0,
+      marginTop: 48,
+      marginBottom: 60,
+    },
+    children: [imageColumn, textColumn],
+  }
+
+  // ─── MVV CARDS ───────────────────────────────────────────────
   const mvvDefs = [
-    { label: '🎯  Missão', value: perfil.missao, accent: primary },
-    { label: '🔭  Visão', value: perfil.visao, accent: secondary },
-    { label: '💎  Valores', value: perfil.valores, accent: secondary },
+    { label: 'Missão', icon: '🎯', value: perfil.missao, accentLight: palette.primaryLighter },
+    { label: 'Visão', icon: '🔭', value: perfil.visao, accentLight: palette.secondaryLighter },
+    { label: 'Valores', icon: '💎', value: perfil.valores, accentLight: palette.primaryLight },
   ].filter(item => item.value)
 
+  let mvvSection: TemplateNode | null = null
   if (mvvDefs.length > 0) {
     const mvvCards: TemplateNode[] = mvvDefs.map((item) => ({
       type: 'ContainerComponent',
       isCanvas: true,
       displayName: item.label,
       props: {
-        background: '#ffffff',
-        padding: 28,
+        background: palette.cardBackground,
+        padding: 32,
         gap: 12,
-        width: '100%',
+        width: 'auto',
         height: 'auto',
         flexDirection: 'column',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         justifyContent: 'flex-start',
-        shadow: 0,
+        shadow: 1,
         radius: 16,
+        borderAccent: palette.secondary,
+        borderAccentPosition: 'top',
+        flex: '1 1 280px',
+        minWidth: '250px',
+        maxWidth: '380px',
       },
       children: [
-        // Borda superior colorida simulada via DividerComponent
         {
-          type: 'DividerComponent',
-          displayName: 'Acento Topo',
-          props: { color: item.accent, thickness: 4, marginY: 0, style: 'solid' },
+          type: 'ContainerComponent',
+          isCanvas: false,
+          displayName: 'Ícone MVV',
+          props: {
+            background: item.accentLight,
+            padding: 12,
+            gap: 0,
+            width: '56px',
+            height: '56px',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            shadow: 0,
+            radius: 12,
+          },
+          children: [
+            {
+              type: 'TextComponent',
+              displayName: 'Emoji',
+              props: {
+                text: item.icon,
+                fontSize: '24',
+              },
+            },
+          ],
         },
         {
           type: 'HeadingComponent',
@@ -792,10 +1591,10 @@ function buildSobre(
           props: {
             text: item.label,
             tagName: 'h3',
-            fontSize: '17',
+            fontSize: '18',
             fontWeight: '700',
-            textAlign: 'left',
-            color: '#0f172a',
+            textAlign: 'center',
+            color: palette.textOnLight,
           },
         },
         {
@@ -803,29 +1602,93 @@ function buildSobre(
           displayName: 'Texto MVV',
           props: {
             text: item.value!,
-            fontSize: '15',
+            fontSize: '14',
             fontWeight: '400',
-            textAlign: 'left',
-            color: '#334155',
-            margin: [0, 0, 0, 0],
-            lineHeight: '1.6',
+            textAlign: 'center',
+            color: palette.textMuted,
+            lineHeight: '1.7',
           },
         },
       ],
     }))
 
-    children.push({
-      type: 'FeaturesSectionComponent',
+    mvvSection = {
+      type: 'ContainerComponent',
       isCanvas: true,
-      displayName: 'Missão, Visão e Valores',
+      displayName: 'Nossos Pilares',
       props: {
         background: 'transparent',
-        columns: Math.min(mvvCards.length, 3),
-        gap: 20,
-        paddingY: 10,
+        padding: 0,
+        gap: 16,
+        width: '100%',
+        height: 'auto',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadow: 0,
+        radius: 0,
       },
-      children: mvvCards,
-    } as TemplateNode)
+      children: [
+        {
+          type: 'HeadingComponent',
+          displayName: 'Título Pilares',
+          props: {
+            text: 'Nossos Pilares',
+            tagName: 'h3',
+            fontSize: '28',
+            fontWeight: '800',
+            textAlign: 'center',
+            color: palette.textOnLight,
+          },
+        },
+        {
+          type: 'ContainerComponent',
+          isCanvas: true,
+          displayName: 'Grid MVV',
+          props: {
+            background: 'transparent',
+            padding: 0,
+            gap: 24,
+            width: '100%',
+            height: 'auto',
+            flexDirection: 'row',
+            alignItems: 'stretch',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            shadow: 0,
+            radius: 0,
+            marginTop: 24,
+          },
+          children: mvvCards,
+        },
+      ],
+    }
+  }
+
+  const sectionChildren: TemplateNode[] = [
+    {
+      type: 'ContainerComponent',
+      isCanvas: true,
+      displayName: 'Header Sobre',
+      props: {
+        background: 'transparent',
+        padding: 0,
+        gap: 8,
+        width: '100%',
+        height: 'auto',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadow: 0,
+        radius: 0,
+      },
+      children: headerChildren,
+    },
+    mainGrid,
+  ]
+
+  if (mvvSection) {
+    sectionChildren.push(mvvSection)
   }
 
   return {
@@ -836,6 +1699,7 @@ function buildSobre(
       background: sectionBg,
       padding: 0,
       paddingY: 80,
+      paddingX: 40,
       gap: 0,
       width: '100%',
       height: 'auto',
@@ -854,8 +1718,9 @@ function buildSobre(
         props: {
           background: 'transparent',
           padding: 0,
-          gap: 12,
-          width: CONTENT_MAX_WIDTH,
+          gap: 0,
+          width: '100%',
+          maxWidth: CONTENT_MAX_WIDTH,
           height: 'auto',
           flexDirection: 'column',
           alignItems: 'center',
@@ -863,7 +1728,7 @@ function buildSobre(
           shadow: 0,
           radius: 0,
         },
-        children,
+        children: sectionChildren,
       },
     ],
   }
@@ -873,8 +1738,7 @@ function buildSobre(
 
 function buildDiferenciais(
   diferenciais: string[],
-  _primary: string,
-  secondary: string,
+  palette: ColorPalette,
   sectionBg: string,
 ): TemplateNode {
   const cards: TemplateNode[] = diferenciais.slice(0, 6).map((diff, i) => ({
@@ -882,7 +1746,7 @@ function buildDiferenciais(
     isCanvas: true,
     displayName: `Diferencial ${i + 1}`,
     props: {
-      background: '#ffffff',
+      background: palette.cardBackground,
       padding: 28,
       gap: 8,
       width: '100%',
@@ -902,14 +1766,14 @@ function buildDiferenciais(
           fontSize: '36',
           fontWeight: '900',
           textAlign: 'left',
-          color: lighten(secondary, 0.55),
+          color: palette.secondaryLighter,
           margin: [0, 0, 0, 0],
         },
       },
       {
         type: 'DividerComponent',
         displayName: 'Linha Diferencial',
-        props: { color: secondary, thickness: 2, marginY: 4, style: 'solid' },
+        props: { color: palette.secondary, thickness: 2, marginY: 4, style: 'solid' },
       },
       {
         type: 'TextComponent',
@@ -919,7 +1783,7 @@ function buildDiferenciais(
           fontSize: '15',
           fontWeight: '600',
           textAlign: 'left',
-          color: '#111827',
+          color: palette.textOnLight,
           margin: [0, 0, 0, 0],
           lineHeight: '1.5',
         },
@@ -960,8 +1824,9 @@ function buildDiferenciais(
               fontSize: '12',
               fontWeight: '700',
               textAlign: 'center',
-              color: secondary,
-              margin: [0, 0, 0, 0],
+              color: palette.secondary,
+              letterSpacing: '2',
+              margin: [0, 0, 8, 0],
             },
           },
           {
@@ -970,16 +1835,28 @@ function buildDiferenciais(
             props: {
               text: 'Nossos Diferenciais',
               tagName: 'h2',
-              fontSize: '36',
+              fontSize: '40',
               fontWeight: '800',
               textAlign: 'center',
-              color: '#0f172a',
+              color: palette.textOnLight,
             },
           },
           {
             type: 'DividerComponent',
             displayName: 'Divisor',
-            props: { color: secondary, thickness: 4, marginY: 8, style: 'solid' },
+            props: { color: palette.secondary, thickness: 4, marginY: 16, style: 'solid', width: '60px' },
+          },
+          {
+            type: 'TextComponent',
+            displayName: 'Subtítulo Diferenciais',
+            props: {
+              text: 'O que nos torna a escolha certa para o seu negócio.',
+              fontSize: '16',
+              fontWeight: '400',
+              textAlign: 'center',
+              color: palette.textMuted,
+              margin: [0, 0, 0, 0],
+            },
           },
         ],
       },
@@ -992,8 +1869,7 @@ function buildDiferenciais(
 
 function buildEquipe(
   sociosVisiveis: Socio[],
-  primary: string,
-  secondary: string,
+  palette: ColorPalette,
   bgLight: string,
 ): TemplateNode {
   const columns = sociosVisiveis.length >= 3 ? 3 : sociosVisiveis.length
@@ -1025,7 +1901,7 @@ function buildEquipe(
         fontSize: '19',
         fontWeight: '700',
         textAlign: 'center',
-        color: '#0f172a',
+        color: palette.textOnLight,
       },
     })
 
@@ -1038,7 +1914,7 @@ function buildEquipe(
           fontSize: '12',
           fontWeight: '700',
           textAlign: 'center',
-          color: secondary,  // usa cor secundária (laranja/acento)
+          color: palette.secondary,  // usa cor secundária (laranja/acento)
           margin: [0, 0, 4, 0],
         },
       })
@@ -1053,7 +1929,7 @@ function buildEquipe(
           fontSize: '12',
           fontWeight: '500',
           textAlign: 'center',
-          color: '#94a3b8',
+          color: palette.textMuted,
           margin: [0, 0, 8, 0],
         },
       })
@@ -1068,25 +1944,48 @@ function buildEquipe(
           fontSize: '14',
           fontWeight: '400',
           textAlign: 'center',
-          color: '#475569',
+          color: palette.textMuted,
           margin: [4, 0, 8, 0],
         },
       })
     }
 
-    // Especialidades separadas por ponto médio
+    // Especialidades como tags
     if (socio.especialidades && socio.especialidades.length > 0) {
+      const tagChildren: TemplateNode[] = socio.especialidades.map((esp, idx) => ({
+        type: 'BadgeComponent',
+        displayName: `Tag ${idx + 1}`,
+        props: {
+          text: esp,
+          background: palette.primarySoft,
+          color: palette.primary,
+          fontSize: 12,
+          fontWeight: '500',
+          borderRadius: 50,
+          paddingX: 16,
+          paddingY: 6,
+          border: `1px solid ${palette.primaryAlpha15}`,
+        },
+      }))
+
       cardChildren.push({
-        type: 'TextComponent',
+        type: 'ContainerComponent',
+        isCanvas: false,
         displayName: 'Especialidades',
         props: {
-          text: socio.especialidades.join('  ·  '),
-          fontSize: '12',
-          fontWeight: '500',
-          textAlign: 'center',
-          color: primary,
-          margin: [0, 0, 0, 0],
+          background: 'transparent',
+          padding: 0,
+          gap: 8,
+          width: '100%',
+          height: 'auto',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+          shadow: 0,
+          radius: 0,
         },
+        children: tagChildren,
       })
     }
 
@@ -1095,7 +1994,7 @@ function buildEquipe(
       isCanvas: true,
       displayName: `Sócio ${i + 1}`,
       props: {
-        background: '#ffffff',
+        background: palette.cardBackground,
         padding: 32,
         gap: 8,
         width: '100%',
@@ -1141,8 +2040,9 @@ function buildEquipe(
               fontSize: '12',
               fontWeight: '700',
               textAlign: 'center',
-              color: secondary,
-              margin: [0, 0, 0, 0],
+              color: palette.secondary,
+              letterSpacing: '2',
+              margin: [0, 0, 8, 0],
             },
           },
           {
@@ -1154,13 +2054,13 @@ function buildEquipe(
               fontSize: '40',
               fontWeight: '800',
               textAlign: 'center',
-              color: '#0f172a',
+              color: palette.textOnLight,
             },
           },
           {
             type: 'DividerComponent',
             displayName: 'Divisor',
-            props: { color: secondary, thickness: 4, marginY: 8, style: 'solid' },
+            props: { color: palette.secondary, thickness: 4, marginY: 16, style: 'solid', width: '60px' },
           },
           {
             type: 'TextComponent',
@@ -1170,7 +2070,7 @@ function buildEquipe(
               fontSize: '16',
               fontWeight: '400',
               textAlign: 'center',
-              color: '#64748b',
+              color: palette.textMuted,
               margin: [0, 0, 0, 0],
             },
           },
@@ -1181,98 +2081,101 @@ function buildEquipe(
   }
 }
 
-// ─── 6. CTA — call to action com fundo da cor primária ──────
+// ─── 6. CTA — call to action com background image ──────────
 
 function buildCta(
   perfil: PerfilEmpresa,
-  primary: string,
-  secondary: string,
+  palette: ColorPalette,
 ): TemplateNode {
   const whatsappHref = perfil.whatsapp
     ? `https://wa.me/55${perfil.whatsapp.replace(/\D/g, '')}`
     : null
   const emailHref = perfil.email_contato ? `mailto:${perfil.email_contato}` : '#contato'
 
-  // Fundo escuro da primary para maior contraste e separação visual
-  const ctaBg = darken(primary, 0.35)
-  const ctaTextColor = '#ffffff'
-  const ctaSubText = 'rgba(255,255,255,0.75)'
-
   // Texto do botão adapta ao contexto
-  const nomeEmpresa = perfil.nome_empresa || ''
   let ctaBtnText = 'Fale Conosco'
   if (whatsappHref) {
     ctaBtnText = 'Falar pelo WhatsApp'
-  } else {
-    ctaBtnText = 'Falar com um contador'
   }
 
-  // Título CTA adapta ao nome da empresa
-  const ctaTitle = nomeEmpresa
-    ? `Pronto para transformar\nseu negócio com a ${nomeEmpresa}?`
-    : 'Pronto para transformar\nseu negócio?'
 
   const ctaChildren: TemplateNode[] = [
+    // Badge com transparência e blur
     {
-      type: 'TextComponent',
+      type: 'BadgeComponent',
       displayName: 'Tag CTA',
       props: {
-        text: 'FALE CONOSCO',
-        fontSize: '13',
-        fontWeight: '700',
-        textAlign: 'center',
-        color: secondary,
-        margin: [0, 0, 12, 0],
-        letterSpacing: '3',
+        text: 'Fale Conosco',
+        badgeStyle: 'soft',
+        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+        color: palette.textOnDark,
+        fontSize: 13,
+        fontWeight: 600,
+        borderRadius: 50,
+        paddingX: 24,
+        paddingY: 10,
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        backdropFilter: 'blur(10px)',
+        letterSpacing: 1,
+        textTransform: 'uppercase',
+        marginBottom: 24,
       },
     },
+    // Título
     {
       type: 'HeadingComponent',
       displayName: 'Título CTA',
       props: {
-        text: ctaTitle,
+        text: 'Pronto para transformar seu negócio?',
         tagName: 'h2',
-        fontSize: '42',
+        fontSize: '48',
         fontWeight: '800',
         textAlign: 'center',
-        color: ctaTextColor,
-        lineHeight: '1.15',
-        maxWidth: '700',
+        color: palette.textOnDark,
+        lineHeight: '1.2',
+        maxWidth: '700px',
+        textShadow: '0 4px 30px rgba(0, 0, 0, 0.3)',
       },
     },
+    // Subtítulo
     {
       type: 'TextComponent',
       displayName: 'Subtítulo CTA',
       props: {
         text: 'Entre em contato agora e descubra como podemos ajudar o seu negócio a crescer com segurança e eficiência.',
-        fontSize: '17',
+        fontSize: '18',
         fontWeight: '400',
         textAlign: 'center',
-        color: ctaSubText,
-        lineHeight: '1.6',
-        margin: [4, 0, 24, 0],
+        color: palette.textMutedOnDark,
+        lineHeight: '1.7',
+        margin: [8, 0, 28, 0],
+        maxWidth: '550px',
       },
     },
+    // Botão WhatsApp
     {
       type: 'ButtonComponent',
       displayName: 'Botão CTA',
       props: {
         text: ctaBtnText,
         href: whatsappHref || emailHref,
-        background: secondary,
-        color: isLightColor(secondary) ? '#111827' : '#ffffff',
+        background: palette.cardBackground,
+        color: palette.secondary,
         size: 'lg',
         buttonStyle: 'filled',
         borderRadius: 50,
+        paddingX: 36,
+        paddingY: 16,
+        shadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
+        icon: whatsappHref ? 'whatsapp' : undefined,
       },
     },
   ]
 
-  // Informações de contato — itens separados por ponto para melhor leitura
+  // Informações de contato
   const contactParts: string[] = []
   if (perfil.telefone) contactParts.push(perfil.telefone)
   if (perfil.email_contato) contactParts.push(perfil.email_contato)
-  if (perfil.horario_atendimento) contactParts.push(perfil.horario_atendimento)
 
   if (contactParts.length > 0) {
     ctaChildren.push({
@@ -1280,21 +2183,37 @@ function buildCta(
       displayName: 'Informações de Contato',
       props: {
         text: contactParts.join('  ·  '),
-        fontSize: '14',
+        fontSize: '15',
         fontWeight: '500',
         textAlign: 'center',
-        color: 'rgba(255,255,255,0.55)',
-        margin: [20, 0, 0, 0],
-        letterSpacing: '0.5',
+        color: palette.textMutedOnDark,
+        margin: [24, 0, 0, 0],
       },
     })
   }
 
+  // Usa HeroSectionComponent para ter background image com overlay
+  // Gera overlay gradiente usando cores mais escuras para melhor contraste
+  const ctaOverlay = `linear-gradient(135deg, ${palette.primaryDarker} 0%, ${palette.secondaryDarker} 100%)`
+
   return {
-    type: 'CtaSectionComponent',
+    type: 'HeroSectionComponent',
     isCanvas: true,
     displayName: 'CTA',
-    props: { background: ctaBg, paddingY: 80, radius: 0, contentMaxWidth: CONTENT_MAX_WIDTH, sectionId: 'contato' },
+    props: {
+      background: palette.primaryDarker,
+      gradientFrom: '',
+      gradientTo: '',
+      backgroundImage: ASSETS.ctaBg,
+      overlayOpacity: 0.88,
+      overlayColor: ctaOverlay,
+      parallax: true,
+      paddingY: 100,
+      minHeight: 400,
+      textAlign: 'center',
+      contentMaxWidth: CONTENT_MAX_WIDTH,
+      sectionId: 'contato',
+    },
     children: ctaChildren,
   }
 }
@@ -1324,8 +2243,7 @@ const PLACEHOLDER_DEPOIMENTOS: Depoimento[] = [
 
 function buildDepoimentos(
   depoimentos: Depoimento[],
-  _primary: string,
-  secondary: string,
+  palette: ColorPalette,
   sectionBg: string,
 ): TemplateNode {
   const itens = depoimentos.length > 0 ? depoimentos : PLACEHOLDER_DEPOIMENTOS
@@ -1340,17 +2258,18 @@ function buildDepoimentos(
         cargo: d.cargo || 'Cliente',
         citacao: d.citacao,
         nota: d.nota,
-        accentColor: secondary,
+        accentColor: palette.secondary,
       })),
       background: sectionBg,
-      cardBackground: '#ffffff',
-      accentColor: secondary,
-      textColor: '#0f172a',
+      cardBackground: palette.cardBackground,
+      accentColor: palette.secondary,
+      textColor: palette.textOnLight,
       paddingY: 80,
       columns,
       showStars: true,
       sectionTag: 'DEPOIMENTOS',
       sectionTitle: 'O que nossos clientes dizem',
+      sectionDescription: 'A satisfação dos nossos clientes é o nosso maior orgulho.',
     },
   }
 }
@@ -1360,14 +2279,13 @@ function buildDepoimentos(
 function buildFooter(
   perfil: PerfilEmpresa,
   nome: string,
-  primary: string,
-  _secondary: string,
+  palette: ColorPalette,
 ): TemplateNode {
   const year = new Date().getFullYear()
-  const footerBg = darken(primary, 0.65)
-  const gradientTo = darken(primary, 0.40)
-  const mutedText = '#9ca3af'
-  const lightText = '#e2e8f0'
+  const footerBg = palette.primaryDarker
+  const gradientTo = palette.primaryDark
+  const mutedText = palette.textMutedOnDark
+  const lightText = palette.textOnDark
 
   // ════════════════════════════════════════════════════════════════
   // SEÇÃO SUPERIOR — Colunas opcionais (Logo+Nome | Contato | Endereço)
@@ -1385,11 +2303,12 @@ function buildFooter(
       props: {
         src: perfil.logo_url,
         alt: nome,
-        width: '80px',
-        height: '80px',
+        width: '268px',
+        height: 'auto',
         objectFit: 'contain',
-        borderRadius: 8,
+        borderRadius: 0,
         backgroundColor: 'transparent',
+        filter: 'brightness(0) invert(1)',
       },
     })
   }
@@ -1402,7 +2321,7 @@ function buildFooter(
       fontSize: '18',
       fontWeight: '700',
       textAlign: 'left',
-      color: '#ffffff',
+      color: palette.textOnDark,
       margin: [8, 0, 0, 0],
     },
   })
@@ -1624,7 +2543,7 @@ function buildFooter(
       fontSize: '12',
       fontWeight: '400',
       textAlign: 'center',
-      color: 'rgba(255,255,255,0.35)',
+      color: palette.textMutedOnDark,
       margin: [0, 0, 0, 0],
     },
   })
@@ -1638,7 +2557,7 @@ function buildFooter(
       type: 'DividerComponent',
       displayName: 'Divider Footer',
       props: {
-        color: 'rgba(255,255,255,0.1)',
+        color: palette.dividerOnDark,
         thickness: 1,
         marginY: 8,
         style: 'solid',

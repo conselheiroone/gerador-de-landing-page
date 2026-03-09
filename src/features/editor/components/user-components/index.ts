@@ -31,6 +31,7 @@ import { ImageGalleryComponent } from './image-gallery/ImageGalleryComponent'
 import { ImageCarouselComponent } from './image-carousel/ImageCarouselComponent'
 import { LogoGridComponent } from './logo-grid/LogoGridComponent'
 import { BeforeAfterComponent } from './before-after/BeforeAfterComponent'
+import { SegmentsComponent } from './segments/SegmentsComponent'
 
 export {
   ContainerComponent,
@@ -66,6 +67,7 @@ export {
   ImageCarouselComponent,
   LogoGridComponent,
   BeforeAfterComponent,
+  SegmentsComponent,
 }
 
 export const resolverMap = {
@@ -102,4 +104,5 @@ export const resolverMap = {
   ImageCarouselComponent,
   LogoGridComponent,
   BeforeAfterComponent,
+  SegmentsComponent,
 }

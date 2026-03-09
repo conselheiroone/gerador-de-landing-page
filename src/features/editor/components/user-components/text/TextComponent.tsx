@@ -9,6 +9,14 @@ export type TextProps = {
   fontWeight: string
   color: string
   margin: number[]
+  /** Line height (ex: '1.5', '1.8') */
+  lineHeight?: string
+  /** Max width (ex: '480px', '600px') */
+  maxWidth?: string
+  /** Text transform (uppercase, capitalize, none) */
+  textTransform?: 'none' | 'uppercase' | 'capitalize'
+  /** Letter spacing (ex: '0.5', '2') */
+  letterSpacing?: string
 }
 
 const defaultProps: TextProps = {
@@ -30,7 +38,10 @@ export const TextComponent: UserComponent<Partial<TextProps>> = (incomingProps) 
     enabled: state.options.enabled,
   }))
 
-  const { text, fontSize, textAlign, fontWeight, color, margin } = props
+  const {
+    text, fontSize, textAlign, fontWeight, color, margin,
+    lineHeight, maxWidth, textTransform, letterSpacing,
+  } = props
 
   return (
     <ContentEditable
@@ -45,11 +56,15 @@ export const TextComponent: UserComponent<Partial<TextProps>> = (incomingProps) 
       tagName="p"
       style={{
         width: '100%',
+        maxWidth: maxWidth || undefined,
         fontSize: `${fontSize}px`,
         textAlign: textAlign as 'left' | 'center' | 'right',
         fontWeight,
         color,
         margin: `${margin[0]}px ${margin[1]}px ${margin[2]}px ${margin[3]}px`,
+        lineHeight: lineHeight || undefined,
+        textTransform: textTransform || undefined,
+        letterSpacing: letterSpacing ? `${letterSpacing}px` : undefined,
         outline: 'none',
       }}
     />

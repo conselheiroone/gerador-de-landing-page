@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Contabilidade PRO - Contabilidade que previne antes de ter que arrumar. Mais de 33 anos de experiência em Salvador, BA.">
+  <title>Contabilidade PRO | Contabilidade Preventiva em Salvador</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* ========== CSS Reset & Base ========== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* Colors */
+      --primary: #0e6f5c;
+      --primary-dark: #0a5a4a;
+      --primary-light: #16aa8d;
+      --secondary: #123f63;
+      --secondary-dark: #0d2d47;
+
+      --bg-light: #ffffff;
+      --bg-alt: #f0faf8;
+      --bg-dark: #083b31;
+
+      --text-dark: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+
+      /* Spacing */
+      --section-padding: clamp(60px, 10vw, 100px);
+      --container-max: 1200px;
+
+      /* Transitions */
+      --transition-fast: 0.2s ease;
+      --transition-medium: 0.3s ease;
+
+      /* Shadows */
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      color: var(--text-dark);
+      background: var(--bg-light);
+      overflow-x: hidden;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      transition: var(--transition-fast);
+    }
+
+    /* ========== Utilities ========== */
+    .container {
+      width: 100%;
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding: 0 clamp(16px, 5vw, 40px);
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--secondary);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 800;
+      color: var(--text-dark);
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+      margin-bottom: 16px;
+    }
+
+    .section-divider {
+      width: 60px;
+      height: 4px;
+      background: var(--secondary);
+      border-radius: 2px;
+      margin: 0 auto 20px;
+    }
+
+    .section-description {
+      font-size: 17px;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    /* ========== Buttons ========== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 14px 28px;
+      border-radius: 50px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: var(--transition-medium);
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--secondary);
+      color: white;
+      border-color: var(--secondary);
+    }
+
+    .btn-primary:hover {
+      background: var(--secondary-dark);
+      border-color: var(--secondary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: white;
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: white;
+    }
+
+    .btn-white {
+      background: white;
+      color: var(--secondary);
+      border-color: white;
+    }
+
+    .btn-white:hover {
+      background: var(--bg-alt);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* ========== Navigation ========== */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(8, 59, 49, 0.65);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      padding: 6px 0;
+      transition: var(--transition-medium);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .navbar.scrolled {
+      background: rgba(8, 59, 49, 0.85);
+      box-shadow: var(--shadow-md);
+    }
+
+    .navbar .container {
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .navbar-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      padding: 12px 24px;
+      border-radius: 0 0 12px 12px;
+      position: relative;
+      top: 0;
+      margin-top: -6px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      align-self: flex-start;
+    }
+
+    .navbar-logo img {
+      width: 180px;
+      height: auto;
+      max-width: 100%;
+      object-fit: contain;
+    }
+
+    .navbar-name {
+      color: white;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.3px;
+    }
+
+    .navbar-menu {
+      display: flex;
+      align-items: center;
+      align-self: center;
+      gap: clamp(16px, 3vw, 32px);
+    }
+
+    .navbar-link {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 15px;
+      font-weight: 500;
+      padding: 8px 0;
+      position: relative;
+    }
+
+    .navbar-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: white;
+      transition: var(--transition-fast);
+    }
+
+    .navbar-link:hover {
+      color: white;
+    }
+
+    .navbar-link:hover::after {
+      width: 100%;
+    }
+
+    .navbar-cta {
+      padding: 10px 24px;
+      font-size: 14px;
+    }
+
+    /* Mobile Menu Toggle */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .menu-toggle span {
+      width: 24px;
+      height: 2px;
+      background: white;
+      border-radius: 2px;
+      transition: var(--transition-fast);
+    }
+
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: flex;
+      }
+
+      .navbar-menu {
+        position: fixed;
+        top: 80px;
+        left: 0;
+        right: 0;
+        background: var(--primary);
+        flex-direction: column;
+        padding: 24px;
+        gap: 16px;
+        transform: translateY(-100%);
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition-medium);
+      }
+
+      .navbar-menu.active {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .navbar-cta {
+        width: 100%;
+      }
+    }
+
+    /* ========== Hero Section ========== */
+    .hero {
+      position: relative;
+      height: calc(100vh - 140px);
+      min-height: auto;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('assets/hero-bg.jpg');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(14, 111, 92, 0.85) 0%, rgba(18, 63, 99, 0.9) 100%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      padding: 70px 0 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      width: 100%;
+      height: 100%;
+    }
+
+    .hero-text {
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      height: 100%;
+    }
+
+    .hero-image-section {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      height: 100%;
+    }
+
+    .hero-image-wrapper {
+      position: relative;
+      animation: fadeInRight 0.8s ease 0.3s both;
+      margin-bottom: 0;
+    }
+
+    .hero-image {
+      width: 100%;
+      max-width: 550px;
+      height: auto;
+      border-radius: 20px 20px 0 0;
+      box-shadow: 0 -10px 60px rgba(0, 0, 0, 0.3);
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-image-decoration {
+      position: absolute;
+      width: 70%;
+      height: 75%;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px 20px 0 0;
+      border-bottom: none;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+
+    .hero-floating-card {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 16px 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      z-index: 3;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .hero-floating-card.card-experience {
+      bottom: 60px;
+      left: -30px;
+    }
+
+    .hero-floating-card.card-clients {
+      top: 100px;
+      right: -20px;
+    }
+
+    .hero-card-number {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .hero-card-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @keyframes fadeInRight {
+      from {
+        opacity: 0;
+        transform: translateX(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @media (max-width: 968px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        text-align: center;
+        min-height: auto;
+      }
+
+      .hero-text {
+        padding-bottom: 20px;
+      }
+
+      .hero-image-section {
+        order: 1;
+      }
+
+      .hero-image-wrapper {
+        margin-bottom: 0;
+      }
+
+      .hero-image {
+        max-width: 320px;
+      }
+
+      .hero-floating-card.card-experience {
+        left: 10px;
+        bottom: 80px;
+      }
+
+      .hero-floating-card.card-clients {
+        right: 10px;
+        top: 20px;
+      }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(18, 63, 99, 0.9);
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 50px;
+      margin-bottom: 28px;
+      animation: fadeInUp 0.6s ease;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .hero-title {
+      font-size: clamp(40px, 6vw, 64px);
+      font-weight: 900;
+      color: white;
+      line-height: 1.1;
+      letter-spacing: -2px;
+      margin-bottom: 20px;
+      animation: fadeInUp 0.6s ease 0.1s both;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(18px, 2.5vw, 22px);
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 400;
+      max-width: 480px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+      animation: fadeInUp 0.6s ease 0.2s both;
+    }
+
+    .hero-contact {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 32px;
+      animation: fadeInUp 0.6s ease 0.3s both;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .hero-contact-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hero-contact-item svg {
+      opacity: 0.7;
+    }
+
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      animation: fadeInUp 0.6s ease 0.4s both;
+    }
+
+    .hero-features {
+      display: flex;
+      gap: 24px;
+      margin-top: 40px;
+      animation: fadeInUp 0.6s ease 0.5s both;
+    }
+
+    .hero-feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .hero-feature-icon {
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero-text {
+        text-align: center;
+      }
+
+      .hero-subtitle {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-contact {
+        justify-content: center;
+      }
+
+      .hero-buttons {
+        justify-content: center;
+      }
+
+      .hero-features {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+    }
+
+    /* ========== Stats Section ========== */
+    .stats {
+      background: linear-gradient(135deg, var(--secondary-dark) 0%, var(--secondary) 100%);
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stats .container {
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 40px 24px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1px;
+      height: 50%;
+      background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.3), transparent);
+    }
+
+    .stat-number {
+      font-size: clamp(36px, 6vw, 56px);
+      font-weight: 900;
+      color: white;
+      letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 8px;
+      text-shadow: 0 0 30px rgba(255, 255, 255, 0.5), 0 0 60px rgba(255, 255, 255, 0.3);
+    }
+
+    .stat-label {
+      font-size: clamp(11px, 1.5vw, 13px);
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.7);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    @media (max-width: 640px) {
+      .stats {
+        height: auto;
+        padding: 24px 0;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .stat-item:not(:last-child)::after {
+        display: none;
+      }
+    }
+
+    /* ========== Services Section ========== */
+    .services {
+      padding: var(--section-padding) 0;
+      background: var(--bg-light);
+    }
+
+    .services-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .service-card {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      border-top: 4px solid var(--secondary);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition-medium);
+    }
+
+    .service-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .service-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--bg-alt);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .service-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 12px;
+    }
+
+    .service-description {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ========== Segments Section ========== */
+    .segments {
+      padding: var(--section-padding) 0;
+      background: linear-gradient(180deg, var(--bg-alt) 0%, var(--bg-light) 100%);
+    }
+
+    .segments-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .segments-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .segment-card {
+      background: white;
+      border-radius: 20px;
+      padding: 36px 28px;
+      text-align: center;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+      transition: var(--transition-medium);
+      width: calc(33.333% - 14px);
+      min-width: 280px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .segment-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .segment-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .segment-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .segment-icon {
+      width: 90px;
+      height: 90px;
+      background: linear-gradient(145deg, #f0faf8 0%, #e0f5f0 100%);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 40px;
+      position: relative;
+      border: 2px solid rgba(14, 111, 92, 0.1);
+    }
+
+    .segment-icon::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 30px;
+      border: 2px dashed rgba(14, 111, 92, 0.15);
+    }
+
+    .segment-card:hover .segment-icon {
+      background: linear-gradient(145deg, var(--primary) 0%, var(--primary-light) 100%);
+      transform: scale(1.05) rotate(3deg);
+      box-shadow: 0 12px 32px rgba(14, 111, 92, 0.3);
+    }
+
+    .segment-card:hover .segment-icon::before {
+      border-color: rgba(14, 111, 92, 0.3);
+      animation: spin 8s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .segment-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 10px;
+    }
+
+    .segment-description {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 968px) {
+      .segment-card {
+        width: calc(50% - 10px);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .segment-card {
+        width: 100%;
+        min-width: auto;
+      }
+    }
+
+    /* ========== About Section ========== */
+    .about {
+      padding: var(--section-padding) 0;
+      background: var(--bg-light);
+    }
+
+    .about-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .about-main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      margin-bottom: 80px;
+    }
+
+    .about-image-section {
+      position: relative;
+    }
+
+    .about-image {
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .about-image img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .about-experience-badge {
+      position: absolute;
+      bottom: -24px;
+      right: -24px;
+      background: var(--primary);
+      border-radius: 16px;
+      padding: 20px 28px;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+
+    .about-experience-number {
+      font-size: 40px;
+      font-weight: 900;
+      color: white;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .about-experience-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .about-content-section {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .about-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--secondary);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+
+    .about-title {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 800;
+      color: var(--text-dark);
+      line-height: 1.2;
+      margin-bottom: 24px;
+    }
+
+    .about-title span {
+      color: var(--primary);
+    }
+
+    .about-description {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+
+    .about-features {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .about-feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .about-feature-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .about-feature-icon svg {
+      width: 20px;
+      height: 20px;
+      color: white;
+    }
+
+    .about-feature-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    /* Values Section */
+    .values-section {
+      text-align: center;
+    }
+
+    .values-header {
+      margin-bottom: 40px;
+    }
+
+    .values-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-dark);
+    }
+
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .value-card {
+      background: white;
+      border-radius: 16px;
+      padding: 32px 24px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition-medium);
+      box-shadow: var(--shadow-sm);
+      border-top: 4px solid var(--secondary);
+    }
+
+    .value-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .value-card.mission {
+      border-top-color: var(--primary-light);
+    }
+
+    .value-card.vision {
+      border-top-color: var(--secondary);
+    }
+
+    .value-card.values {
+      border-top-color: var(--primary);
+    }
+
+    .value-icon-wrapper {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 24px;
+      background: var(--bg-alt);
+    }
+
+    .value-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 12px;
+    }
+
+    .value-text {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 968px) {
+      .about-main {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+
+      .about-content-section {
+        text-align: center;
+      }
+
+      .about-features {
+        align-items: center;
+      }
+
+      .about-experience-badge {
+        right: 20px;
+        bottom: -20px;
+      }
+
+      .values-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ========== Team Section ========== */
+    .team {
+      padding: var(--section-padding) 0;
+      background: var(--bg-light);
+    }
+
+    .team-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .team-card {
+      background: white;
+      border-radius: 20px;
+      padding: 40px 32px;
+      text-align: center;
+      box-shadow: var(--shadow-md);
+      transition: var(--transition-medium);
+    }
+
+    .team-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .team-photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 24px;
+      border: 4px solid var(--bg-alt);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .team-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+
+    .team-role {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--secondary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .team-crc {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-bottom: 16px;
+    }
+
+    .team-specialties {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .specialty-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--primary);
+      background: var(--bg-alt);
+      padding: 6px 12px;
+      border-radius: 50px;
+    }
+
+    /* ========== Testimonials Section ========== */
+    .testimonials {
+      padding: var(--section-padding) 0;
+      background: var(--bg-alt);
+    }
+
+    .testimonials-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .testimonial-card {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      border-top: 3px solid var(--secondary);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .testimonial-stars {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+    }
+
+    .testimonial-star {
+      color: #fbbf24;
+      font-size: 18px;
+    }
+
+    .testimonial-text {
+      font-size: 15px;
+      font-style: italic;
+      color: var(--text-muted);
+      line-height: 1.7;
+      flex: 1;
+      margin-bottom: 24px;
+    }
+
+    .testimonial-author {
+      padding-top: 20px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .testimonial-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+
+    .testimonial-position {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--secondary);
+    }
+
+    /* ========== CTA Section ========== */
+    .cta {
+      padding: clamp(80px, 12vw, 140px) 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('assets/cta-bg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    .cta-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(10, 90, 74, 0.92) 0%, rgba(18, 63, 99, 0.92) 100%);
+    }
+
+    .cta .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-label {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      padding: 8px 20px;
+      border-radius: 50px;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .cta-title {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      color: white;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      text-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .cta-description {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.85);
+      max-width: 550px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+
+    .cta .btn-white {
+      padding: 16px 36px;
+      font-size: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .cta-contact {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 28px;
+    }
+
+    /* ========== Footer ========== */
+    .footer {
+      background: linear-gradient(135deg, var(--bg-dark) 0%, #0d5545 100%);
+      padding: 56px 0 32px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 40px;
+    }
+
+    .footer-brand img {
+      width: 280px;
+      height: auto;
+      object-fit: contain;
+      margin-bottom: 16px;
+      filter: brightness(0) invert(1);
+    }
+
+    .footer-brand-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 8px;
+    }
+
+    .footer-brand-tagline {
+      font-size: 14px;
+      color: #9ca3af;
+      line-height: 1.5;
+    }
+
+    .footer-column-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 16px;
+    }
+
+    .footer-column-text {
+      font-size: 14px;
+      color: #9ca3af;
+      line-height: 1.8;
+    }
+
+    .footer-divider {
+      border: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 24px;
+    }
+
+    .footer-bottom {
+      text-align: center;
+    }
+
+    .footer-copyright {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    @media (max-width: 768px) {
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        text-align: center;
+      }
+
+      .footer-brand img {
+        margin: 0 auto 16px;
+      }
+    }
+
+    /* ========== Scroll Animations ========== */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ========== Accessibility ========== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="#" class="navbar-brand">
+        <div class="navbar-logo">
+          <img src="assets/logo.png" alt="Contabilidade PRO">
+        </div>
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div class="navbar-menu" id="navbarMenu">
+        <a href="#servicos" class="navbar-link">Servicos</a>
+        <a href="#sobre" class="navbar-link">Sobre</a>
+        <a href="#equipe" class="navbar-link">Equipe</a>
+        <a href="#contato" class="navbar-link">Contato</a>
+        <a href="https://wa.me/5571981859669" class="btn btn-white navbar-cta">Fale Conosco</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="container">
+        <div class="hero-grid">
+          <!-- Texto -->
+          <div class="hero-text">
+            <span class="hero-badge">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 0L10.2 5.8L16 8L10.2 10.2L8 16L5.8 10.2L0 8L5.8 5.8L8 0Z"/>
+              </svg>
+              Desde 1993 · Salvador, BA
+            </span>
+            <h1 class="hero-title"><span>Contabilidade PRO</span></h1>
+            <p class="hero-subtitle">Eficiencia e resultados para seu negocio. Sua empresa segura e em total conformidade.</p>
+            <div class="hero-contact">
+              <span class="hero-contact-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+                </svg>
+                (71) 98185-9669
+              </span>
+              <span class="hero-contact-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                carlospassos93@gmail.com
+              </span>
+            </div>
+            <div class="hero-buttons">
+              <a href="https://wa.me/5571981859669" class="btn btn-primary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
+                Falar no WhatsApp
+              </a>
+            </div>
+            <div class="hero-features">
+              <div class="hero-feature">
+                <div class="hero-feature-icon">✓</div>
+                <span>33+ anos</span>
+              </div>
+              <div class="hero-feature">
+                <div class="hero-feature-icon">✓</div>
+                <span>100% digital</span>
+              </div>
+              <div class="hero-feature">
+                <div class="hero-feature-icon">✓</div>
+                <span>Atendimento nacional</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Imagem -->
+          <div class="hero-image-section">
+            <div class="hero-image-wrapper">
+              <img src="assets/hero-professional.png" alt="Profissional de Contabilidade" class="hero-image">
+              <div class="hero-image-decoration"></div>
+
+              <!-- Cards flutuantes -->
+              <div class="hero-floating-card card-experience">
+                <div class="hero-card-number">33+</div>
+                <div class="hero-card-text">Anos de experiencia</div>
+              </div>
+
+              <div class="hero-floating-card card-clients">
+                <div class="hero-card-number">500+</div>
+                <div class="hero-card-text">Clientes atendidos</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item fade-in">
+          <div class="stat-number">33</div>
+          <div class="stat-label">Anos de Experiencia</div>
+        </div>
+        <div class="stat-item fade-in">
+          <div class="stat-number">14</div>
+          <div class="stat-label">Servicos Oferecidos</div>
+        </div>
+        <div class="stat-item fade-in">
+          <div class="stat-number">500+</div>
+          <div class="stat-label">Clientes Atendidos</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section class="services" id="servicos">
+    <div class="container">
+      <div class="services-header fade-in">
+        <span class="section-label">O Que Fazemos</span>
+        <h2 class="section-title">Nossos Servicos</h2>
+        <div class="section-divider"></div>
+        <p class="section-description">Solucoes contabeis completas para empresas de todos os segmentos e portes.</p>
+      </div>
+
+      <div class="services-grid">
+        <div class="service-card fade-in">
+          <div class="service-icon">📋</div>
+          <h3 class="service-title">Abertura e Encerramento de Empresas</h3>
+          <p class="service-description">Acompanhamento completo em todas as etapas do processo de constituicao ou baixa da sua empresa.</p>
+        </div>
+
+        <div class="service-card fade-in">
+          <div class="service-icon">📊</div>
+          <h3 class="service-title">Declaracao de Imposto de Renda</h3>
+          <p class="service-description">Elaboracao e transmissao da sua declaracao com analise detalhada para maximizar restituicoes.</p>
+        </div>
+
+        <div class="service-card fade-in">
+          <div class="service-icon">📁</div>
+          <h3 class="service-title">Escrituracao Fiscal</h3>
+          <p class="service-description">Registro preciso de todas as operacoes fiscais da sua empresa, garantindo conformidade.</p>
+        </div>
+
+        <div class="service-card fade-in">
+          <div class="service-icon">📑</div>
+          <h3 class="service-title">Obrigacoes Acessorias</h3>
+          <p class="service-description">Gestao completa das obrigacoes acessorias, evitando multas e penalidades.</p>
+        </div>
+
+        <div class="service-card fade-in">
+          <div class="service-icon">💰</div>
+          <h3 class="service-title">BPO Financeiro</h3>
+          <p class="service-description">Terceirizacao do seu departamento financeiro com controle total de contas a pagar e receber.</p>
+        </div>
+
+        <div class="service-card fade-in">
+          <div class="service-icon">✅</div>
+          <h3 class="service-title">Certidoes e Regularizacoes</h3>
+          <p class="service-description">Obtencao de certidoes negativas e regularizacao de pendencias fiscais e tributarias.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Segments Section -->
+  <section class="segments" id="segmentos">
+    <div class="container">
+      <div class="segments-header fade-in">
+        <span class="section-label">Quem Atendemos</span>
+        <h2 class="section-title">Segmentos de Atuacao</h2>
+        <div class="section-divider"></div>
+        <p class="section-description">Experiencia comprovada em diversos setores da economia.</p>
+      </div>
+
+      <div class="segments-grid">
+        <div class="segment-card fade-in">
+          <div class="segment-icon">🌾</div>
+          <h3 class="segment-title">Agronegocios</h3>
+          <p class="segment-description">Produtores rurais, cooperativas e empresas do setor agricola.</p>
+        </div>
+
+        <div class="segment-card fade-in">
+          <div class="segment-icon">🚀</div>
+          <h3 class="segment-title">Startups</h3>
+          <p class="segment-description">Empresas de tecnologia e inovacao em fase de crescimento.</p>
+        </div>
+
+        <div class="segment-card fade-in">
+          <div class="segment-icon">💊</div>
+          <h3 class="segment-title">Farmacias</h3>
+          <p class="segment-description">Drogarias, farmacias de manipulacao e distribuidoras.</p>
+        </div>
+
+        <div class="segment-card fade-in">
+          <div class="segment-icon">⚕️</div>
+          <h3 class="segment-title">Medicos e Saude</h3>
+          <p class="segment-description">Clinicas, consultorios e profissionais da area da saude.</p>
+        </div>
+
+        <div class="segment-card fade-in">
+          <div class="segment-icon">🏪</div>
+          <h3 class="segment-title">Comercio</h3>
+          <p class="segment-description">Lojas, restaurantes e estabelecimentos comerciais.</p>
+        </div>
+
+        <div class="segment-card fade-in">
+          <div class="segment-icon">🏗️</div>
+          <h3 class="segment-title">Construcao Civil</h3>
+          <p class="segment-description">Construtoras, empreiteiras e prestadores de servicos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about" id="sobre">
+    <div class="container">
+      <!-- Header -->
+      <div class="about-header fade-in">
+        <span class="section-label">Conheca-nos</span>
+        <h2 class="section-title">Sobre a Contabilidade PRO</h2>
+        <div class="section-divider"></div>
+      </div>
+
+      <!-- Main About Content -->
+      <div class="about-main fade-in">
+        <!-- Image Side -->
+        <div class="about-image-section">
+          <div class="about-image">
+            <img src="assets/about-office.jpg" alt="Escritorio Contabilidade PRO">
+          </div>
+          <div class="about-experience-badge">
+            <div class="about-experience-number">33+</div>
+            <div class="about-experience-text">Anos</div>
+          </div>
+        </div>
+
+        <!-- Content Side -->
+        <div class="about-content-section">
+          <h3 class="about-title">Sua contabilidade em <span>boas maos</span></h3>
+          <p class="about-description">
+            Ha mais de 33 anos no mercado, fazemos a diferenca na contabilidade de empresas em Salvador e em todo o Brasil. Nossa abordagem preventiva garante que problemas sejam evitados antes de acontecerem.
+          </p>
+          <p class="about-description">
+            Combinamos experiencia, tecnologia e atendimento personalizado para oferecer solucoes contabeis que realmente fazem diferenca no seu negocio.
+          </p>
+
+          <div class="about-features">
+            <div class="about-feature">
+              <div class="about-feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+              <span class="about-feature-text">Atendimento 100% digital e personalizado</span>
+            </div>
+            <div class="about-feature">
+              <div class="about-feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+              <span class="about-feature-text">Equipe especializada e certificada</span>
+            </div>
+            <div class="about-feature">
+              <div class="about-feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+              <span class="about-feature-text">Suporte continuo e proativo</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Values Section -->
+      <div class="values-section fade-in">
+        <div class="values-header">
+          <h3 class="values-title">Nossos Pilares</h3>
+        </div>
+        <div class="values-grid">
+          <div class="value-card mission">
+            <div class="value-icon-wrapper">🎯</div>
+            <h3 class="value-title">Missao</h3>
+            <p class="value-text">Facilitar a contabilidade de empresas e prevenir riscos fiscais e tributarios com excelencia e dedicacao.</p>
+          </div>
+
+          <div class="value-card vision">
+            <div class="value-icon-wrapper">🔭</div>
+            <h3 class="value-title">Visao</h3>
+            <p class="value-text">Atender clientes em todo o Brasil com maestria, sendo referencia em contabilidade preventiva.</p>
+          </div>
+
+          <div class="value-card values">
+            <div class="value-icon-wrapper">💎</div>
+            <h3 class="value-title">Valores</h3>
+            <p class="value-text">Etica, transparencia, compromisso e agilidade em todos os nossos servicos e relacionamentos.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Section -->
+  <section class="team" id="equipe">
+    <div class="container">
+      <div class="team-header fade-in">
+        <span class="section-label">Profissionais</span>
+        <h2 class="section-title">Nossa Equipe</h2>
+        <div class="section-divider"></div>
+        <p class="section-description">Especialistas comprometidos com o sucesso do seu negocio.</p>
+      </div>
+
+      <div class="team-grid">
+        <div class="team-card fade-in">
+          <div class="team-photo" style="background: linear-gradient(135deg, var(--primary-light), var(--secondary)); display: flex; align-items: center; justify-content: center;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="white">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </div>
+          <h3 class="team-name">Carlos Henrique Oliveira Passos</h3>
+          <p class="team-role">Socio-fundador</p>
+          <p class="team-crc">CRC GO 12344</p>
+          <div class="team-specialties">
+            <span class="specialty-tag">Contabilidade Fiscal</span>
+            <span class="specialty-tag">Trabalhista</span>
+            <span class="specialty-tag">Societaria</span>
+            <span class="specialty-tag">Planejamento Tributario</span>
+            <span class="specialty-tag">Pericia Contabil</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials">
+    <div class="container">
+      <div class="testimonials-header fade-in">
+        <span class="section-label">Depoimentos</span>
+        <h2 class="section-title">O Que Nossos Clientes Dizem</h2>
+        <div class="section-divider"></div>
+      </div>
+
+      <div class="testimonials-grid">
+        <div class="testimonial-card fade-in">
+          <div class="testimonial-stars">
+            <span class="testimonial-star">★</span>
+            <span class="testimonial-star">★</span>
+            <span class="testimonial-star">★</span>
+            <span class="testimonial-star">★</span>
+            <span class="testimonial-star">★</span>
+          </div>
+          <p class="testimonial-text">"Excelente atendimento! A equipe resolveu todas as nossas pendencias fiscais com agilidade e transparencia. Recomendo muito."</p>
+          <div class="testimonial-author">
+            <p class="testimonial-name">Carlos Mendes</p>
+            <p class="testimonial-position">Empresario</p>
+          </div>
+        </div>
+
+        <div class="testimonial-card fade-in">
+          <div class="testimonial-stars">
+            <span class="testimonial-star">★</span>
+            <span class="testimonial-star">★</span>
+            <span class="testimonial-star">★</span>
+            <span class="testimonial-star">★</span>
+            <span class="testimonial-star">★</span>
+          </div>
+          <p class="testimonial-text">"Profissionais competentes e sempre disponiveis. Nossa gestao contabil ficou muito mais tranquila desde que contratamos o escritorio."</p>
+          <div class="testimonial-author">
+            <p class="testimonial-name">Fernanda Oliveira</p>
+            <p class="testimonial-position">Diretora Administrativa</p>
+          </div>
+        </div>
+
+        <div class="testimonial-card fade-in">
+          <div class="testimonial-stars">
+            <span class="testimonial-star">★</span>
+            <span class="testimonial-star">★</span>
+            <span class="testimonial-star">★</span>
+            <span class="testimonial-star">★</span>
+            <span class="testimonial-star">★</span>
+          </div>
+          <p class="testimonial-text">"Otima experiencia. O planejamento tributario bem feito resultou em economia real para a empresa. Parceria de anos!"</p>
+          <div class="testimonial-author">
+            <p class="testimonial-name">Roberto Costa</p>
+            <p class="testimonial-position">Socio-proprietario</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta" id="contato">
+    <div class="cta-bg"></div>
+    <div class="cta-overlay"></div>
+    <div class="container">
+      <span class="cta-label">Fale Conosco</span>
+      <h2 class="cta-title">Pronto para transformar seu negocio?</h2>
+      <p class="cta-description">Entre em contato agora e descubra como podemos ajudar o seu negocio a crescer com seguranca e eficiencia.</p>
+      <a href="https://wa.me/5571981859669" class="btn btn-white">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        Falar pelo WhatsApp
+      </a>
+      <p class="cta-contact">(71) 98185-9669 · carlospassos93@gmail.com</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="assets/logo.png" alt="Contabilidade PRO">
+          <p class="footer-brand-tagline">Eficiencia e resultados para seu negocio</p>
+        </div>
+
+        <div class="footer-column">
+          <h4 class="footer-column-title">Contato</h4>
+          <p class="footer-column-text">
+            (71) 98185-9669<br>
+            carlospassos93@gmail.com
+          </p>
+        </div>
+
+        <div class="footer-column">
+          <h4 class="footer-column-title">Endereco</h4>
+          <p class="footer-column-text">
+            Rua Desembargador Jose Maciel dos Santos, 135<br>
+            IAPI - Salvador/BA<br>
+            CEP 40330-475
+          </p>
+        </div>
+      </div>
+
+      <hr class="footer-divider">
+
+      <div class="footer-bottom">
+        <p class="footer-copyright">Contabilidade PRO · CNPJ: 44.831.381/0001-26 · © 2026. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const navbarMenu = document.getElementById('navbarMenu');
+
+    menuToggle.addEventListener('click', () => {
+      navbarMenu.classList.toggle('active');
+    });
+
+    // Close menu when clicking on links
+    document.querySelectorAll('.navbar-link').forEach(link => {
+      link.addEventListener('click', () => {
+        navbarMenu.classList.remove('active');
+      });
+    });
+
+    // Navbar scroll effect
+    const navbar = document.getElementById('navbar');
+
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    // Scroll animations
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-in').forEach(el => {
+      observer.observe(el);
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
