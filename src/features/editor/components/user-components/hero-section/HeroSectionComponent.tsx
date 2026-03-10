@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useNode, type UserComponent } from '@craftjs/core'
 import { HeroSectionSettings } from './HeroSectionSettings'
 
@@ -83,45 +82,28 @@ export const HeroSectionComponent: UserComponent<Partial<HeroSectionProps>> = (i
   const paddingTop = props.paddingTop ?? props.paddingY
   const paddingBottom = props.paddingBottom ?? props.paddingY
 
-  const [bgLoaded, setBgLoaded] = useState(!hasImage)
-
   return (
     <section
+      className="lp-hero"
       ref={(ref) => { if (ref) connect(drag(ref)) }}
       style={{
         position: 'relative',
         width: '100%',
         background: bg,
-        backgroundImage: hasImage && bgLoaded ? `url("${props.backgroundImage}")` : undefined,
+        backgroundImage: hasImage ? `url("${props.backgroundImage}")` : undefined,
         backgroundSize: hasImage ? 'cover' : undefined,
         backgroundPosition: hasImage ? 'center' : undefined,
         backgroundAttachment: hasImage && props.parallax ? 'fixed' : undefined,
-        minHeight: resolvedMinHeight,
-        overflow: 'hidden',
+        // minHeightCalc/minHeightVh → height fixo (filhos com height:100% resolvem porcentagens)
+        // minHeight simples → minHeight CSS (conteúdo pode expandir sem overflow)
+        ...(props.minHeightCalc || props.minHeightVh
+          ? { height: resolvedMinHeight }
+          : { minHeight: resolvedMinHeight }),
+        overflow: 'visible',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
-      {/* Preload da imagem de fundo + skeleton */}
-      {hasImage && !bgLoaded && (
-        <>
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: 'linear-gradient(110deg, #e5e7eb 30%, #f3f4f6 50%, #e5e7eb 70%)',
-              backgroundSize: '200% 100%',
-              animation: 'shimmer 1.5s infinite linear',
-              zIndex: 0,
-            }}
-          />
-          <img
-            src={props.backgroundImage}
-            alt=""
-            onLoad={() => setBgLoaded(true)}
-            onError={() => setBgLoaded(true)}
-            style={{ display: 'none' }}
-          />
-        </>
-      )}
       {/* Overlay sobre imagem de fundo (suporta cor sólida ou gradiente) */}
       {hasOverlay && (
         <div
@@ -137,12 +119,13 @@ export const HeroSectionComponent: UserComponent<Partial<HeroSectionProps>> = (i
           }}
         />
       )}
-      {/* Conteúdo */}
+      {/* Conteúdo — flex:1 preenche a section (espelha .hero-content { height:100% } do HTML ref) */}
       <div
         style={{
           position: 'relative',
           zIndex: 1,
           width: '100%',
+          flex: '1 1 auto',
           paddingTop: `${paddingTop}px`,
           paddingBottom: `${paddingBottom}px`,
           paddingLeft: 'clamp(16px, 5vw, 40px)',
@@ -156,7 +139,6 @@ export const HeroSectionComponent: UserComponent<Partial<HeroSectionProps>> = (i
                 ? 'flex-end'
                 : 'flex-start',
           gap: '20px',
-          minHeight: resolvedMinHeight,
           textAlign: props.textAlign as 'left' | 'center' | 'right',
           ...(props.contentMaxWidth ? { maxWidth: props.contentMaxWidth, margin: '0 auto' } : {}),
         }}

@@ -11,10 +11,11 @@ import {
   salvarStep4,
   salvarStep5,
   salvarStep6,
-  salvarStep7,
+  salvarStep7Segmentos,
+  salvarStep8Redes,
   finalizarOnboarding,
 } from '../api/onboarding'
-import type { DadosEscritorioInput, ContatoLocalizacaoInput, IdentidadeVisualInput, SobreEscritorioInput, ServicosInput, RedesSociaisInput } from '../schemas/onboarding.schemas'
+import type { DadosEscritorioInput, ContatoLocalizacaoInput, IdentidadeVisualInput, SobreEscritorioInput, ServicosInput, SegmentosInput, RedesSociaisInput } from '../schemas/onboarding.schemas'
 
 export function useOnboarding() {
   const { session, signOut } = useAuth()
@@ -191,12 +192,28 @@ export function useOnboarding() {
     }
   }, [perfil])
 
-  const saveStep7 = useCallback(async (dados: RedesSociaisInput) => {
+  const saveStep7 = useCallback(async (dados: SegmentosInput) => {
     if (!perfil) return
     setIsSaving(true)
     setError(null)
     try {
-      const updated = await salvarStep7(perfil.id, {
+      const updated = await salvarStep7Segmentos(perfil.id, dados.segmentos)
+      setPerfil(updated)
+      setCurrentStep(8)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao salvar')
+      throw err
+    } finally {
+      setIsSaving(false)
+    }
+  }, [perfil])
+
+  const saveStep8 = useCallback(async (dados: RedesSociaisInput) => {
+    if (!perfil) return
+    setIsSaving(true)
+    setError(null)
+    try {
+      const updated = await salvarStep8Redes(perfil.id, {
         instagram: dados.instagram || undefined,
         facebook: dados.facebook || undefined,
         linkedin: dados.linkedin || undefined,
@@ -205,7 +222,7 @@ export function useOnboarding() {
         twitter: dados.twitter || undefined,
       })
       setPerfil(updated)
-      setCurrentStep(8)
+      setCurrentStep(9)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao salvar')
       throw err
@@ -230,7 +247,7 @@ export function useOnboarding() {
   }, [perfil])
 
   const goToStep = useCallback((step: number) => {
-    if (step >= 1 && step <= 8) {
+    if (step >= 1 && step <= 9) {
       setCurrentStep(step)
     }
   }, [])
@@ -249,6 +266,7 @@ export function useOnboarding() {
     saveStep5,
     saveStep6,
     saveStep7,
+    saveStep8,
     finalizar,
     goToStep,
   }

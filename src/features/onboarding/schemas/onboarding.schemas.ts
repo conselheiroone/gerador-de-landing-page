@@ -76,6 +76,15 @@ export const servicosSchema = z.object({
   servicos: z.array(servicoItemSchema).default([]),
 })
 
+export const segmentoItemSchema = z.object({
+  nome: z.string().min(1, 'Nome do segmento é obrigatório'),
+  descricao: z.string().optional().or(z.literal('')),
+})
+
+export const segmentosSchema = z.object({
+  segmentos: z.array(segmentoItemSchema).default([]),
+})
+
 export const redesSociaisSchema = z.object({
   instagram: z.string().optional().or(z.literal('')),
   facebook: z.string().optional().or(z.literal('')),
@@ -91,4 +100,5 @@ export type ContatoLocalizacaoInput = z.infer<typeof contatoLocalizacaoSchema>
 export type IdentidadeVisualInput = z.infer<typeof identidadeVisualSchema>
 export type SobreEscritorioInput = z.infer<typeof sobreEscritorioSchema>
 export type ServicosInput = z.infer<typeof servicosSchema>
+export type SegmentosInput = z.infer<typeof segmentosSchema>
 export type RedesSociaisInput = z.infer<typeof redesSociaisSchema>

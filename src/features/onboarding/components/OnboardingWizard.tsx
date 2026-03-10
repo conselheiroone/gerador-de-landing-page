@@ -12,6 +12,7 @@ import { ContatoLocalizacaoStep } from './steps/ContatoLocalizacaoStep'
 import { IdentidadeVisualStep } from './steps/IdentidadeVisualStep'
 import { SobreEscritorioStep } from './steps/SobreEscritorioStep'
 import { ServicosStep } from './steps/ServicosStep'
+import { SegmentosStep } from './steps/SegmentosStep'
 import { RedesSociaisStep } from './steps/RedesSociaisStep'
 import { RevisaoStep } from './steps/RevisaoStep'
 
@@ -34,6 +35,7 @@ export function OnboardingWizard() {
     saveStep5,
     saveStep6,
     saveStep7,
+    saveStep8,
     finalizar,
     goToStep,
   } = useOnboarding()
@@ -159,7 +161,7 @@ export function OnboardingWizard() {
         )
       case 7:
         return (
-          <RedesSociaisStep
+          <SegmentosStep
             key="step-7"
             perfil={perfil}
             onSave={saveStep7}
@@ -169,12 +171,22 @@ export function OnboardingWizard() {
         )
       case 8:
         return (
-          <RevisaoStep
+          <RedesSociaisStep
             key="step-8"
+            perfil={perfil}
+            onSave={saveStep8}
+            onBack={() => goToStep(7)}
+            isSaving={isSaving}
+          />
+        )
+      case 9:
+        return (
+          <RevisaoStep
+            key="step-9"
             perfil={perfil}
             socios={socios}
             onFinalizar={handleFinalizar}
-            onBack={() => goToStep(7)}
+            onBack={() => goToStep(8)}
             onEditStep={goToStep}
             isSaving={isSaving}
           />
@@ -192,7 +204,7 @@ export function OnboardingWizard() {
           <h1 className="text-xl font-bold text-brand-500">LandingGen</h1>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-400">
-              Etapa {currentStep} de 8
+              Etapa {currentStep} de 9
             </span>
             <div className="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-1.5">
               <User className="h-4 w-4 text-gray-400" />

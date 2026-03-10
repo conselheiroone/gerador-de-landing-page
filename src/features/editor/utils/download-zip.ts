@@ -6,6 +6,7 @@
  */
 
 import { craftJsonToHtml } from './export-html'
+import { inlineLocalAssets } from './inline-assets'
 
 interface ZipEntry {
   name: string
@@ -130,21 +131,25 @@ function downloadBlob(blob: Blob, filename: string) {
 
 /**
  * Exporta como arquivo HTML único (inline).
+ * Converte /assets/ locais para base64 data URIs.
  */
-export function downloadHtmlInline(json: string, pageTitle: string) {
+export async function downloadHtmlInline(json: string, pageTitle: string) {
   const { html } = craftJsonToHtml(json, { pageTitle })
-  const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
+  const inlined = await inlineLocalAssets(html)
+  const blob = new Blob([inlined], { type: 'text/html;charset=utf-8' })
   downloadBlob(blob, `${slugify(pageTitle)}.html`)
 }
 
 /**
  * Exporta como ZIP com HTML + CSS separados.
+ * Converte /assets/ locais para base64 data URIs.
  */
-export function downloadZip(json: string, pageTitle: string) {
+export async function downloadZip(json: string, pageTitle: string) {
   const { html, css } = craftJsonToHtml(json, { pageTitle, externalCss: true })
+  const inlined = await inlineLocalAssets(html)
 
   const entries: ZipEntry[] = [
-    { name: 'index.html', content: html },
+    { name: 'index.html', content: inlined },
   ]
 
   if (css) {

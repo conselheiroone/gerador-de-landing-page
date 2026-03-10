@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/features/auth/hooks/use-auth'
-import type { PerfilEmpresa, Socio, ServicoItem, RedesSociais } from '../types/onboarding.types'
+import type { PerfilEmpresa, Socio, ServicoItem, SegmentoItem, RedesSociais } from '../types/onboarding.types'
 import type { Json } from '@/integrations/supabase/types'
 import {
   getPerfilEmpresa,
@@ -232,6 +232,22 @@ export function usePerfilEmpresa() {
     }
   }, [perfil])
 
+  const updateSegmentos = useCallback(async (segmentos: SegmentoItem[]) => {
+    if (!perfil) return
+    setSavingSection('segmentos')
+    setError(null)
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const updated = await updatePerfilEmpresa(perfil.id, { segmentos } as any)
+      setPerfil(updated)
+      showSaved('segmentos')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao salvar')
+    } finally {
+      setSavingSection(null)
+    }
+  }, [perfil])
+
   const updateRedesSociais = useCallback(async (redes: RedesSociais) => {
     if (!perfil) return
     setSavingSection('redes')
@@ -257,12 +273,14 @@ export function usePerfilEmpresa() {
     savingSection,
     savedSection,
     error,
+    clearError: useCallback(() => setError(null), []),
     updateDadosEscritorio,
     updateSocios,
     updateContato,
     updateIdentidadeVisual,
     updateSobre,
     updateServicos,
+    updateSegmentos,
     updateRedesSociais,
     updateGooglePlaceId,
     uploadLogo,

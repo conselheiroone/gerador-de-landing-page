@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, type FormEvent } from 'react'
+import { useState, useRef, useEffect, useCallback, type FormEvent } from 'react'
 import {
   Building2,
   Users,
@@ -6,6 +6,7 @@ import {
   Palette,
   BookOpen,
   Briefcase,
+  Target,
   Globe,
   ChevronDown,
   Check,
@@ -31,29 +32,15 @@ import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { extractColorsFromFile } from '@/utils/extract-colors'
 import { usePerfilEmpresa } from '@/features/onboarding/hooks/usePerfilEmpresa'
-import type { Socio, ServicoItem } from '@/features/onboarding/types/onboarding.types'
+import type { Socio, ServicoItem, SegmentoItem } from '@/features/onboarding/types/onboarding.types'
 import { HorarioSelector } from '@/features/onboarding/components/HorarioSelector'
 import {
   ESPECIALIDADES_CONTABEIS,
   CARGOS_ESCRITORIO,
   ESTADOS_BRASILEIROS,
   SERVICOS_SUGERIDOS,
+  SEGMENTOS_SUGERIDOS,
 } from '@/features/onboarding/types/onboarding.types'
-
-// ==================== SAVE BUTTON WITH FEEDBACK ====================
-
-function SaveButton({ isSaving, isSaved }: { isSaving: boolean; isSaved: boolean }) {
-  return (
-    <div className="flex items-center gap-2">
-      {isSaved && (
-        <span className="flex items-center gap-1 text-xs font-medium text-green-600 animate-in fade-in">
-          <Check className="h-3.5 w-3.5" /> Salvo com sucesso
-        </span>
-      )}
-      <Button type="submit" size="sm" isLoading={isSaving}>Salvar alteracoes</Button>
-    </div>
-  )
-}
 
 // ==================== SECTION WRAPPER ====================
 
@@ -64,8 +51,6 @@ function Section({
   summary,
   isOpen,
   onToggle,
-  isSaving,
-  isSaved,
   children,
 }: {
   id: string
@@ -74,8 +59,6 @@ function Section({
   summary: string
   isOpen: boolean
   onToggle: () => void
-  isSaving: boolean
-  isSaved: boolean
   children: React.ReactNode
 }) {
   return (
@@ -94,22 +77,12 @@ function Section({
             <p className="text-xs text-gray-500 line-clamp-1">{summary}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {isSaved && (
-            <span className="flex items-center gap-1 text-xs font-medium text-green-600">
-              <Check className="h-3.5 w-3.5" /> Salvo
-            </span>
+        <ChevronDown
+          className={cn(
+            'h-5 w-5 text-gray-400 transition-transform',
+            isOpen && 'rotate-180',
           )}
-          {isSaving && (
-            <span className="text-xs text-gray-400">Salvando...</span>
-          )}
-          <ChevronDown
-            className={cn(
-              'h-5 w-5 text-gray-400 transition-transform',
-              isOpen && 'rotate-180',
-            )}
-          />
-        </div>
+        />
       </button>
       {isOpen && (
         <div className="border-t border-gray-100 p-5">{children}</div>
@@ -127,7 +100,6 @@ export function PerfilEmpresaPage() {
     userId,
     isLoading,
     savingSection,
-    savedSection,
     error,
     updateDadosEscritorio,
     updateSocios,
@@ -135,7 +107,9 @@ export function PerfilEmpresaPage() {
     updateIdentidadeVisual,
     updateSobre,
     updateServicos,
+    updateSegmentos,
     updateRedesSociais,
+    clearError,
     updateGooglePlaceId,
     uploadLogo,
     uploadHeroImage,
@@ -144,6 +118,30 @@ export function PerfilEmpresaPage() {
   } = usePerfilEmpresa()
 
   const [openSection, setOpenSection] = useState<string | null>('dados')
+  const [isSavingAll, setIsSavingAll] = useState(false)
+  const [isSavedAll, setIsSavedAll] = useState(false)
+  const saveHandlers = useRef<Record<string, () => Promise<void>>>({})
+
+  const registerSave = useCallback((id: string, fn: () => Promise<void>) => {
+    saveHandlers.current[id] = fn
+  }, [])
+
+  async function saveAll() {
+    setIsSavingAll(true)
+    setIsSavedAll(false)
+    clearError()
+    try {
+      for (const fn of Object.values(saveHandlers.current)) {
+        await fn()
+      }
+      setIsSavedAll(true)
+      setTimeout(() => setIsSavedAll(false), 3000)
+    } catch {
+      // erros individuais já tratados pelo hook
+    } finally {
+      setIsSavingAll(false)
+    }
+  }
 
   function toggleSection(id: string) {
     setOpenSection(prev => (prev === id ? null : id))
@@ -166,12 +164,6 @@ export function PerfilEmpresaPage() {
         </p>
       </div>
 
-      {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
-        </div>
-      )}
-
       {/* 1. Dados do Escritório */}
       <Section
         id="dados"
@@ -180,14 +172,11 @@ export function PerfilEmpresaPage() {
         summary={perfil.nome_empresa || 'Nenhuma informação preenchida'}
         isOpen={openSection === 'dados'}
         onToggle={() => toggleSection('dados')}
-        isSaving={savingSection === 'dados'}
-        isSaved={savedSection === 'dados'}
       >
         <DadosEscritorioForm
           perfil={perfil}
-          isSaving={savingSection === 'dados'}
-          isSaved={savedSection === 'dados'}
           onSave={updateDadosEscritorio}
+          registerSave={registerSave}
         />
       </Section>
 
@@ -199,16 +188,13 @@ export function PerfilEmpresaPage() {
         summary={socios.length > 0 ? `${socios.length} profissional(is)` : 'Nenhum socio cadastrado'}
         isOpen={openSection === 'socios'}
         onToggle={() => toggleSection('socios')}
-        isSaving={savingSection === 'socios'}
-        isSaved={savedSection === 'socios'}
       >
         <SociosForm
           sociosIniciais={socios}
           userId={userId!}
-          isSaving={savingSection === 'socios'}
-          isSaved={savedSection === 'socios'}
           onSave={updateSocios}
           uploadFotoSocio={uploadFotoSocio}
+          registerSave={registerSave}
         />
       </Section>
 
@@ -220,15 +206,12 @@ export function PerfilEmpresaPage() {
         summary={[perfil.cidade, perfil.estado].filter(Boolean).join('/') || 'Nenhum endereço'}
         isOpen={openSection === 'contato'}
         onToggle={() => toggleSection('contato')}
-        isSaving={savingSection === 'contato'}
-        isSaved={savedSection === 'contato'}
       >
         <ContatoForm
           perfil={perfil}
-          isSaving={savingSection === 'contato'}
-          isSaved={savedSection === 'contato'}
           onSave={updateContato}
           buscarCep={buscarCep}
+          registerSave={registerSave}
         />
       </Section>
 
@@ -240,17 +223,14 @@ export function PerfilEmpresaPage() {
         summary={perfil.logo_url ? 'Logo e cores configurados' : 'Sem logo'}
         isOpen={openSection === 'visual'}
         onToggle={() => toggleSection('visual')}
-        isSaving={savingSection === 'visual'}
-        isSaved={savedSection === 'visual'}
       >
         <IdentidadeVisualForm
           perfil={perfil}
           userId={userId!}
-          isSaving={savingSection === 'visual'}
-          isSaved={savedSection === 'visual'}
           onSave={updateIdentidadeVisual}
           uploadLogo={uploadLogo}
           uploadHeroImage={uploadHeroImage}
+          registerSave={registerSave}
         />
       </Section>
 
@@ -262,14 +242,11 @@ export function PerfilEmpresaPage() {
         summary={perfil.historia ? 'História e valores preenchidos' : 'Nenhuma informação'}
         isOpen={openSection === 'sobre'}
         onToggle={() => toggleSection('sobre')}
-        isSaving={savingSection === 'sobre'}
-        isSaved={savedSection === 'sobre'}
       >
         <SobreForm
           perfil={perfil}
-          isSaving={savingSection === 'sobre'}
-          isSaved={savedSection === 'sobre'}
           onSave={updateSobre}
+          registerSave={registerSave}
         />
       </Section>
 
@@ -281,18 +258,31 @@ export function PerfilEmpresaPage() {
         summary={perfil.servicos.length > 0 ? `${perfil.servicos.length} serviço(s)` : 'Nenhum serviço'}
         isOpen={openSection === 'servicos'}
         onToggle={() => toggleSection('servicos')}
-        isSaving={savingSection === 'servicos'}
-        isSaved={savedSection === 'servicos'}
       >
         <ServicosForm
           perfil={perfil}
-          isSaving={savingSection === 'servicos'}
-          isSaved={savedSection === 'servicos'}
           onSave={updateServicos}
+          registerSave={registerSave}
         />
       </Section>
 
-      {/* 7. Redes Sociais */}
+      {/* 7. Segmentos de Atuação */}
+      <Section
+        id="segmentos"
+        icon={<Target className="h-5 w-5" />}
+        title="Segmentos de Atuação"
+        summary={((perfil.segmentos as SegmentoItem[] | null) ?? []).length > 0 ? `${((perfil.segmentos as SegmentoItem[] | null) ?? []).length} segmento(s)` : 'Nenhum segmento'}
+        isOpen={openSection === 'segmentos'}
+        onToggle={() => toggleSection('segmentos')}
+      >
+        <SegmentosForm
+          perfil={perfil}
+          onSave={updateSegmentos}
+          registerSave={registerSave}
+        />
+      </Section>
+
+      {/* 8. Redes Sociais */}
       <Section
         id="redes"
         icon={<Globe className="h-5 w-5" />}
@@ -304,18 +294,15 @@ export function PerfilEmpresaPage() {
         }
         isOpen={openSection === 'redes'}
         onToggle={() => toggleSection('redes')}
-        isSaving={savingSection === 'redes'}
-        isSaved={savedSection === 'redes'}
       >
         <RedesSociaisForm
           perfil={perfil}
-          isSaving={savingSection === 'redes'}
-          isSaved={savedSection === 'redes'}
           onSave={updateRedesSociais}
+          registerSave={registerSave}
         />
       </Section>
 
-      {/* 8. Depoimentos */}
+      {/* 9. Depoimentos */}
       <Section
         id="depoimentos"
         icon={<Star className="h-5 w-5" />}
@@ -323,8 +310,6 @@ export function PerfilEmpresaPage() {
         summary={perfil.google_place_id ? `Google Place ID configurado` : 'Adicione avaliações reais ou manuais'}
         isOpen={openSection === 'depoimentos'}
         onToggle={() => toggleSection('depoimentos')}
-        isSaving={savingSection === 'depoimentos'}
-        isSaved={savedSection === 'depoimentos'}
       >
         <DepoimentosForm
           perfilId={perfil.id}
@@ -333,6 +318,27 @@ export function PerfilEmpresaPage() {
           onSavePlaceId={updateGooglePlaceId}
         />
       </Section>
+
+      {/* Sticky Save Bar */}
+      <div className="sticky bottom-0 -mx-6 mt-4 border-t border-gray-200 bg-white/95 px-6 py-4 backdrop-blur-sm">
+        <div className="flex items-center justify-between">
+          <div>
+            {error && (
+              <span className="flex items-center gap-1.5 text-sm text-red-600">
+                <X className="h-4 w-4" /> {error}
+              </span>
+            )}
+            {isSavedAll && !error && (
+              <span className="flex items-center gap-1.5 text-sm font-medium text-green-600 animate-in fade-in">
+                <Check className="h-4 w-4" /> Todas as alterações foram salvas
+              </span>
+            )}
+          </div>
+          <Button onClick={saveAll} isLoading={isSavingAll} size="lg">
+            Salvar alterações
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }
@@ -341,14 +347,12 @@ export function PerfilEmpresaPage() {
 
 function DadosEscritorioForm({
   perfil,
-  isSaving,
-  isSaved,
   onSave,
+  registerSave,
 }: {
   perfil: { nome_empresa: string | null; cnpj: string | null; tipo_escritorio: 'individual' | 'sociedade' | null; slogan: string | null; ano_fundacao: number | null }
-  isSaving: boolean
-  isSaved: boolean
   onSave: (dados: { nome_empresa: string; cnpj: string; tipo_escritorio: 'individual' | 'sociedade'; slogan: string; ano_fundacao: string }) => Promise<void>
+  registerSave: (id: string, fn: () => Promise<void>) => void
 }) {
   const [nome, setNome] = useState(perfil.nome_empresa ?? '')
   const [cnpj, setCnpj] = useState(perfil.cnpj ?? '')
@@ -356,13 +360,12 @@ function DadosEscritorioForm({
   const [slogan, setSlogan] = useState(perfil.slogan ?? '')
   const [ano, setAno] = useState(perfil.ano_fundacao?.toString() ?? '')
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    await onSave({ nome_empresa: nome, cnpj, tipo_escritorio: tipo, slogan, ano_fundacao: ano })
-  }
+  const _save = useRef<() => Promise<void>>(async () => {})
+  _save.current = async () => { await onSave({ nome_empresa: nome, cnpj, tipo_escritorio: tipo, slogan, ano_fundacao: ano }) }
+  useEffect(() => { registerSave('dados', () => _save.current()) }, [registerSave])
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="mb-1.5 block text-sm font-medium text-gray-700">Nome do Escritório</label>
@@ -394,10 +397,7 @@ function DadosEscritorioForm({
         <label className="mb-1.5 block text-sm font-medium text-gray-700">Slogan</label>
         <Input value={slogan} onChange={(e) => setSlogan(e.target.value)} placeholder="Frase que define seu escritório" />
       </div>
-      <div className="flex justify-end pt-2">
-        <SaveButton isSaving={isSaving} isSaved={isSaved} />
-      </div>
-    </form>
+    </div>
   )
 }
 
@@ -424,17 +424,15 @@ function criarSocioVazio(ordem: number): SocioForm {
 function SociosForm({
   sociosIniciais,
   userId,
-  isSaving,
-  isSaved,
   onSave,
   uploadFotoSocio,
+  registerSave,
 }: {
   sociosIniciais: Socio[]
   userId: string
-  isSaving: boolean
-  isSaved: boolean
   onSave: (socios: Array<Omit<Socio, 'created_at' | 'updated_at' | 'perfil_empresa_id'>>) => Promise<void>
   uploadFotoSocio: (userId: string, file: File) => Promise<string>
+  registerSave: (id: string, fn: () => Promise<void>) => void
 }) {
   const [sociosList, setSociosList] = useState<SocioForm[]>(() => {
     if (sociosIniciais.length > 0) {
@@ -485,13 +483,12 @@ function SociosForm({
     }
   }
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    await onSave(sociosList.map(({ expanded, ...rest }) => rest))
-  }
+  const _save = useRef<() => Promise<void>>(async () => {})
+  _save.current = async () => { await onSave(sociosList.map(({ expanded, ...rest }) => rest)) }
+  useEffect(() => { registerSave('socios', () => _save.current()) }, [registerSave])
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
+    <div className="space-y-3">
       <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
       {sociosList.map((socio, index) => (
         <div key={index} className="rounded-lg border border-gray-200">
@@ -584,10 +581,7 @@ function SociosForm({
       <button type="button" onClick={adicionarSocio} className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-200 p-2.5 text-sm font-medium text-gray-500 hover:border-brand-300 hover:text-brand-600">
         <Plus className="h-4 w-4" /> Adicionar socio
       </button>
-      <div className="flex justify-end pt-2">
-        <SaveButton isSaving={isSaving} isSaved={isSaved} />
-      </div>
-    </form>
+    </div>
   )
 }
 
@@ -595,16 +589,14 @@ function SociosForm({
 
 function ContatoForm({
   perfil,
-  isSaving,
-  isSaved,
   onSave,
   buscarCep,
+  registerSave,
 }: {
   perfil: { telefone: string | null; whatsapp: string | null; email_contato: string | null; horario_atendimento: string | null; cep: string | null; logradouro: string | null; numero: string | null; complemento: string | null; bairro: string | null; cidade: string | null; estado: string | null }
-  isSaving: boolean
-  isSaved: boolean
   onSave: (dados: { telefone: string; whatsapp: string; email_contato: string; horario_atendimento: string; cep: string; logradouro: string; numero: string; complemento: string; bairro: string; cidade: string; estado: string }) => Promise<void>
   buscarCep: (cep: string) => Promise<{ logradouro: string; bairro: string; localidade: string; uf: string } | null>
+  registerSave: (id: string, fn: () => Promise<void>) => void
 }) {
   const [telefone, setTelefone] = useState(perfil.telefone ?? '')
   const [whatsapp, setWhatsapp] = useState(perfil.whatsapp ?? '')
@@ -628,13 +620,12 @@ function ContatoForm({
     }
   }
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    await onSave({ telefone, whatsapp, email_contato: email, horario_atendimento: horario, cep, logradouro, numero, complemento, bairro, cidade, estado })
-  }
+  const _save = useRef<() => Promise<void>>(async () => {})
+  _save.current = async () => { await onSave({ telefone, whatsapp, email_contato: email, horario_atendimento: horario, cep, logradouro, numero, complemento, bairro, cidade, estado }) }
+  useEffect(() => { registerSave('contato', () => _save.current()) }, [registerSave])
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="mb-1.5 block text-sm font-medium text-gray-700">Telefone</label>
@@ -692,10 +683,7 @@ function ContatoForm({
           </select>
         </div>
       </div>
-      <div className="flex justify-end pt-2">
-        <SaveButton isSaving={isSaving} isSaved={isSaved} />
-      </div>
-    </form>
+    </div>
   )
 }
 
@@ -704,19 +692,17 @@ function ContatoForm({
 function IdentidadeVisualForm({
   perfil,
   userId,
-  isSaving,
-  isSaved,
   onSave,
   uploadLogo,
   uploadHeroImage,
+  registerSave,
 }: {
   perfil: { logo_url: string | null; cor_primaria: string; cor_secundaria: string; usar_imagem_hero: boolean; hero_image_url: string | null }
   userId: string
-  isSaving: boolean
-  isSaved: boolean
   onSave: (dados: { logo_url: string; cor_primaria: string; cor_secundaria: string; usar_imagem_hero: boolean; hero_image_url: string }) => Promise<void>
   uploadLogo: (userId: string, file: File) => Promise<string>
   uploadHeroImage: (userId: string, file: File) => Promise<string>
+  registerSave: (id: string, fn: () => Promise<void>) => void
 }) {
   const [logoUrl, setLogoUrl] = useState(perfil.logo_url ?? '')
   const [corPrimaria, setCorPrimaria] = useState(perfil.cor_primaria)
@@ -761,13 +747,12 @@ function IdentidadeVisualForm({
     }
   }
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    await onSave({ logo_url: logoUrl, cor_primaria: corPrimaria, cor_secundaria: corSecundaria, usar_imagem_hero: usarImagemHero, hero_image_url: heroImageUrl })
-  }
+  const _save = useRef<() => Promise<void>>(async () => {})
+  _save.current = async () => { await onSave({ logo_url: logoUrl, cor_primaria: corPrimaria, cor_secundaria: corSecundaria, usar_imagem_hero: usarImagemHero, hero_image_url: heroImageUrl }) }
+  useEffect(() => { registerSave('visual', () => _save.current()) }, [registerSave])
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="space-y-4">
       <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" className="hidden" onChange={handleFileChange} />
       <input ref={heroFileInputRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={handleHeroFileChange} />
       <div>
@@ -853,10 +838,7 @@ function IdentidadeVisualForm({
         )}
       </div>
 
-      <div className="flex justify-end pt-2">
-        <SaveButton isSaving={isSaving} isSaved={isSaved} />
-      </div>
-    </form>
+    </div>
   )
 }
 
@@ -864,14 +846,12 @@ function IdentidadeVisualForm({
 
 function SobreForm({
   perfil,
-  isSaving,
-  isSaved,
   onSave,
+  registerSave,
 }: {
   perfil: { historia: string | null; missao: string | null; visao: string | null; valores: string | null; diferenciais: string[] }
-  isSaving: boolean
-  isSaved: boolean
   onSave: (dados: { historia: string; missao: string; visao: string; valores: string; diferenciais: string[] }) => Promise<void>
+  registerSave: (id: string, fn: () => Promise<void>) => void
 }) {
   const [historia, setHistoria] = useState(perfil.historia ?? '')
   const [missao, setMissao] = useState(perfil.missao ?? '')
@@ -888,13 +868,12 @@ function SobreForm({
     }
   }
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    await onSave({ historia, missao, visao, valores, diferenciais })
-  }
+  const _save = useRef<() => Promise<void>>(async () => {})
+  _save.current = async () => { await onSave({ historia, missao, visao, valores, diferenciais }) }
+  useEffect(() => { registerSave('sobre', () => _save.current()) }, [registerSave])
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="space-y-4">
       <div>
         <label className="mb-1.5 block text-sm font-medium text-gray-700">História</label>
         <Textarea value={historia} onChange={(e) => setHistoria(e.target.value)} rows={3} placeholder="Conte a história do escritório..." />
@@ -932,10 +911,7 @@ function SobreForm({
           </div>
         )}
       </div>
-      <div className="flex justify-end pt-2">
-        <SaveButton isSaving={isSaving} isSaved={isSaved} />
-      </div>
-    </form>
+    </div>
   )
 }
 
@@ -943,14 +919,12 @@ function SobreForm({
 
 function ServicosForm({
   perfil,
-  isSaving,
-  isSaved,
   onSave,
+  registerSave,
 }: {
   perfil: { servicos: ServicoItem[] }
-  isSaving: boolean
-  isSaved: boolean
   onSave: (servicos: ServicoItem[]) => Promise<void>
+  registerSave: (id: string, fn: () => Promise<void>) => void
 }) {
   const [servicos, setServicos] = useState<ServicoItem[]>(perfil.servicos ?? [])
   const [novoServico, setNovoServico] = useState('')
@@ -974,13 +948,12 @@ function ServicosForm({
     else if (editingIndex !== null && editingIndex > index) setEditingIndex(editingIndex - 1)
   }
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    await onSave(servicos)
-  }
+  const _save = useRef<() => Promise<void>>(async () => {})
+  _save.current = async () => { await onSave(servicos) }
+  useEffect(() => { registerSave('servicos', () => _save.current()) }, [registerSave])
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="space-y-4">
       <div>
         <label className="mb-1.5 block text-sm font-medium text-gray-700">Serviços sugeridos</label>
         <div className="flex flex-wrap gap-1.5">
@@ -1042,10 +1015,111 @@ function ServicosForm({
           ))}
         </div>
       )}
-      <div className="flex justify-end pt-2">
-        <SaveButton isSaving={isSaving} isSaved={isSaved} />
+    </div>
+  )
+}
+
+// ==================== FORM: SEGMENTOS ====================
+
+function SegmentosForm({
+  perfil,
+  onSave,
+  registerSave,
+}: {
+  perfil: { segmentos?: SegmentoItem[] | unknown }
+  onSave: (segmentos: SegmentoItem[]) => Promise<void>
+  registerSave: (id: string, fn: () => Promise<void>) => void
+}) {
+  const [segmentos, setSegmentos] = useState<SegmentoItem[]>((perfil.segmentos as SegmentoItem[] | null) ?? [])
+  const [novoSegmento, setNovoSegmento] = useState('')
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
+
+  function addSegmento(nome: string) {
+    const n = nome.trim()
+    if (n && !segmentos.some(s => s.nome === n)) {
+      setSegmentos(prev => [...prev, { nome: n }])
+      setNovoSegmento('')
+    }
+  }
+
+  function updateDescricao(index: number, descricao: string) {
+    setSegmentos(prev => prev.map((s, i) => i === index ? { ...s, descricao } : s))
+  }
+
+  function removeSegmento(index: number) {
+    setSegmentos(prev => prev.filter((_, idx) => idx !== index))
+    if (editingIndex === index) setEditingIndex(null)
+    else if (editingIndex !== null && editingIndex > index) setEditingIndex(editingIndex - 1)
+  }
+
+  const _save = useRef<() => Promise<void>>(async () => {})
+  _save.current = async () => { await onSave(segmentos) }
+  useEffect(() => { registerSave('segmentos', () => _save.current()) }, [registerSave])
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className="mb-1.5 block text-sm font-medium text-gray-700">Segmentos sugeridos</label>
+        <div className="flex flex-wrap gap-1.5">
+          {SEGMENTOS_SUGERIDOS.map(s => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => addSegmento(s)}
+              className={cn(
+                'rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors',
+                segmentos.some(sg => sg.nome === s)
+                  ? 'bg-brand-100 text-brand-700'
+                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200',
+              )}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
       </div>
-    </form>
+      <div>
+        <label className="mb-1.5 block text-sm font-medium text-gray-700">Adicionar segmento personalizado</label>
+        <div className="flex gap-2">
+          <Input value={novoSegmento} onChange={(e) => setNovoSegmento(e.target.value)} placeholder="Nome do segmento" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addSegmento(novoSegmento) } }} />
+          <Button type="button" variant="outline" size="sm" onClick={() => addSegmento(novoSegmento)}>
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+      {segmentos.length > 0 && (
+        <div className="space-y-1.5">
+          {segmentos.map((s, i) => (
+            <div key={i} className="rounded-lg border border-gray-100 bg-white">
+              <div className="flex items-center gap-2 px-3 py-2">
+                <span className="flex-1 text-sm font-medium text-brand-700">{s.nome}</span>
+                <button
+                  type="button"
+                  onClick={() => setEditingIndex(editingIndex === i ? null : i)}
+                  className="rounded px-1.5 py-0.5 text-[10px] text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                >
+                  {s.descricao ? 'editar' : '+ descrição'}
+                </button>
+                <button type="button" onClick={() => removeSegmento(i)} className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500">
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              {editingIndex === i && (
+                <div className="border-t border-gray-50 px-3 pb-3 pt-2">
+                  <textarea
+                    value={s.descricao ?? ''}
+                    onChange={(e) => updateDescricao(i, e.target.value)}
+                    placeholder="Descreva este segmento para a landing page (opcional)"
+                    rows={2}
+                    className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20"
+                  />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -1350,14 +1424,12 @@ function DepoimentosForm({
 
 function RedesSociaisForm({
   perfil,
-  isSaving,
-  isSaved,
   onSave,
+  registerSave,
 }: {
   perfil: { redes_sociais: { instagram?: string; facebook?: string; linkedin?: string; youtube?: string; site?: string; twitter?: string } }
-  isSaving: boolean
-  isSaved: boolean
   onSave: (redes: { instagram?: string; facebook?: string; linkedin?: string; youtube?: string; site?: string; twitter?: string }) => Promise<void>
+  registerSave: (id: string, fn: () => Promise<void>) => void
 }) {
   const redes = perfil.redes_sociais || {}
   const [instagram, setInstagram] = useState(redes.instagram ?? '')
@@ -1367,8 +1439,8 @@ function RedesSociaisForm({
   const [site, setSite] = useState(redes.site ?? '')
   const [twitter, setTwitter] = useState(redes.twitter ?? '')
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
+  const _save = useRef<() => Promise<void>>(async () => {})
+  _save.current = async () => {
     await onSave({
       instagram: instagram || undefined,
       facebook: facebook || undefined,
@@ -1378,9 +1450,10 @@ function RedesSociaisForm({
       twitter: twitter || undefined,
     })
   }
+  useEffect(() => { registerSave('redes', () => _save.current()) }, [registerSave])
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="mb-1.5 block text-sm font-medium text-gray-700">Instagram</label>
@@ -1411,9 +1484,6 @@ function RedesSociaisForm({
           <Input value={twitter} onChange={(e) => setTwitter(e.target.value)} placeholder="@seuescritorio" />
         </div>
       </div>
-      <div className="flex justify-end pt-2">
-        <SaveButton isSaving={isSaving} isSaved={isSaved} />
-      </div>
-    </form>
+    </div>
   )
 }

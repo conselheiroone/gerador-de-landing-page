@@ -2,6 +2,7 @@ import { useEditor } from '@craftjs/core'
 import { useState } from 'react'
 import { Layers, PanelLeft, Settings2, LayoutGrid, Move, X } from 'lucide-react'
 import { EditorHeader } from './EditorHeader'
+import { PreviewAnimations } from './PreviewAnimations'
 import { ToolboxPanel } from '../panels/ToolboxPanel'
 import { SettingsPanel } from '../panels/SettingsPanel'
 import { LayersPanel } from '../panels/LayersPanel'
@@ -115,10 +116,11 @@ export const EditorViewport = ({ children, pageTitle }: EditorViewportProps) => 
               }}
             >
               <div className="relative flex flex-col items-center py-8 min-h-full">
-                {/* Viewport container responsivo */}
+                {/* Viewport container responsivo — container queries para simular breakpoints */}
                 <div
-                  className="transition-all duration-300 w-full"
+                  className="lp-viewport-container transition-all duration-300 w-full"
                   style={{
+                    containerType: 'inline-size',
                     maxWidth: viewportWidths[viewportMode],
                     ...(viewportMode !== 'desktop' ? {
                       boxShadow: '0 0 0 1px rgba(0,0,0,0.08), 0 4px 20px rgba(0,0,0,0.06)',
@@ -160,6 +162,7 @@ export const EditorViewport = ({ children, pageTitle }: EditorViewportProps) => 
         </div>
       </div>
       <MoveModeBanner />
+      <PreviewAnimations />
     </ViewportContext.Provider>
     </MoveModeProvider>
   )

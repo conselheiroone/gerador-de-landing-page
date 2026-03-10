@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client'
 import type { Database, Json } from '@/integrations/supabase/types'
-import type { PerfilEmpresa, Socio, ServicoItem, RedesSociais } from '../types/onboarding.types'
+import type { PerfilEmpresa, Socio, ServicoItem, SegmentoItem, RedesSociais } from '../types/onboarding.types'
 
 type DbPerfilRow = Database['public']['Tables']['perfil_empresa']['Row']
 type DbPerfilUpdate = Database['public']['Tables']['perfil_empresa']['Update']
@@ -9,6 +9,7 @@ function toPerfilEmpresa(row: DbPerfilRow): PerfilEmpresa {
   return {
     ...row,
     servicos: (row.servicos ?? []) as unknown as ServicoItem[],
+    segmentos: ((row as Record<string, unknown>).segmentos ?? []) as unknown as SegmentoItem[],
     redes_sociais: (row.redes_sociais ?? {}) as unknown as RedesSociais,
     // campos adicionados via migration — não estão no tipo gerado ainda
     google_place_id: (row as Record<string, unknown>).google_place_id as string | null ?? null,
@@ -148,10 +149,17 @@ export async function salvarStep6(perfilId: string, servicos: ServicoItem[]) {
   })
 }
 
-export async function salvarStep7(perfilId: string, redes: RedesSociais) {
+export async function salvarStep7Segmentos(perfilId: string, segmentos: SegmentoItem[]) {
+  return updatePerfilEmpresa(perfilId, {
+    ...({ segmentos: segmentos } as Record<string, unknown>),
+    etapa_atual: 8,
+  } as DbPerfilUpdate)
+}
+
+export async function salvarStep8Redes(perfilId: string, redes: RedesSociais) {
   return updatePerfilEmpresa(perfilId, {
     redes_sociais: redes as unknown as Json,
-    etapa_atual: 8,
+    etapa_atual: 9,
   })
 }
 

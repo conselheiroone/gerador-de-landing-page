@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion'
-import { CheckCircle, Building2, Users, MapPin, Palette, BookOpen, Briefcase, Share2, Edit3 } from 'lucide-react'
+import { CheckCircle, Building2, Users, MapPin, Palette, BookOpen, Briefcase, Target, Share2, Edit3 } from 'lucide-react'
 import { slideUp } from '@/lib/motion-variants'
 import { Button } from '@/components/ui/button'
-import type { PerfilEmpresa, Socio, ServicoItem, RedesSociais } from '../../types/onboarding.types'
+import type { PerfilEmpresa, Socio, ServicoItem, SegmentoItem, RedesSociais } from '../../types/onboarding.types'
 
 interface RevisaoStepProps {
   perfil: PerfilEmpresa
@@ -59,6 +59,7 @@ function InfoLine({ label, value }: { label: string; value: string | null | unde
 
 export function RevisaoStep({ perfil, socios, onFinalizar, onBack, onEditStep, isSaving }: RevisaoStepProps) {
   const servicos = (perfil.servicos as ServicoItem[] | null) ?? []
+  const segmentos = (perfil.segmentos as SegmentoItem[] | null) ?? []
   const redes = (perfil.redes_sociais as RedesSociais | null) ?? {}
 
   return (
@@ -185,8 +186,23 @@ export function RevisaoStep({ perfil, socios, onFinalizar, onBack, onEditStep, i
           )}
         </SectionCard>
 
+        {/* Segmentos de Atuação */}
+        <SectionCard icon={Target} title={`Segmentos de Atuação (${segmentos.length})`} step={7} onEdit={onEditStep}>
+          {segmentos.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">
+              {segmentos.map((s, i) => (
+                <span key={i} className="rounded bg-gray-100 px-2 py-1 text-xs">
+                  {s.nome}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-400 italic">Nenhum segmento adicionado</p>
+          )}
+        </SectionCard>
+
         {/* Redes Sociais */}
-        <SectionCard icon={Share2} title="Redes Sociais" step={7} onEdit={onEditStep}>
+        <SectionCard icon={Share2} title="Redes Sociais" step={8} onEdit={onEditStep}>
           <div className="space-y-1">
             {redes.instagram && <InfoLine label="Instagram" value={redes.instagram} />}
             {redes.facebook && <InfoLine label="Facebook" value={redes.facebook} />}

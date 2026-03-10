@@ -26,6 +26,7 @@ export interface PerfilEmpresa {
   valores: string | null
   diferenciais: string[]
   servicos: ServicoItem[]
+  segmentos: SegmentoItem[]
   redes_sociais: RedesSociais
   google_place_id: string | null
   usar_imagem_hero: boolean
@@ -69,6 +70,11 @@ export interface Depoimento {
 }
 
 export interface ServicoItem {
+  nome: string
+  descricao?: string
+}
+
+export interface SegmentoItem {
   nome: string
   descricao?: string
 }
@@ -126,6 +132,10 @@ export interface ServicosForm {
   servicos: ServicoItem[]
 }
 
+export interface SegmentosForm {
+  segmentos: SegmentoItem[]
+}
+
 export interface RedesSociaisForm {
   instagram: string
   facebook: string
@@ -142,8 +152,9 @@ export const ONBOARDING_STEPS = [
   { numero: 4, titulo: 'Identidade Visual', descricao: 'Logo e cores da marca' },
   { numero: 5, titulo: 'Sobre o Escritório', descricao: 'História e valores' },
   { numero: 6, titulo: 'Serviços', descricao: 'O que o escritório oferece' },
-  { numero: 7, titulo: 'Redes Sociais', descricao: 'Presença online' },
-  { numero: 8, titulo: 'Revisão', descricao: 'Confira e finalize' },
+  { numero: 7, titulo: 'Segmentos de Atuação', descricao: 'Quem o escritório atende' },
+  { numero: 8, titulo: 'Redes Sociais', descricao: 'Presença online' },
+  { numero: 9, titulo: 'Revisão', descricao: 'Confira e finalize' },
 ] as const
 
 export const ESPECIALIDADES_CONTABEIS = [
@@ -184,6 +195,25 @@ export const ESTADOS_BRASILEIROS = [
   'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO',
   'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI',
   'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
+] as const
+
+export const SEGMENTOS_SUGERIDOS = [
+  'Agronegócios',
+  'Startups',
+  'Farmácias',
+  'Médicos e Saúde',
+  'Comércio',
+  'Construção Civil',
+  'Indústria',
+  'Transportadoras',
+  'Restaurantes e Alimentação',
+  'E-commerce',
+  'Educação',
+  'Igrejas e Instituições Religiosas',
+  'ONGs e Terceiro Setor',
+  'Prestadores de Serviços',
+  'Profissionais Liberais',
+  'Condomínios',
 ] as const
 
 export const CARGOS_ESCRITORIO = [

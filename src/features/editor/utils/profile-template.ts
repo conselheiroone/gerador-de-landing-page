@@ -12,7 +12,7 @@
  * - Usa as cores do perfil exatamente como o usuário definiu
  */
 
-import type { PerfilEmpresa, Socio, Depoimento, ServicoItem } from '@/features/onboarding/types/onboarding.types'
+import type { PerfilEmpresa, Socio, Depoimento, ServicoItem, SegmentoItem } from '@/features/onboarding/types/onboarding.types'
 import { buildCraftJson, type TemplateNode } from './default-templates'
 import {
   generatePalette,
@@ -215,8 +215,10 @@ export function generateProfileTemplate(
     sections.push(buildServicos(perfil.servicos, palette, '#ffffff'))
   }
 
-  // 2.5. Segmentos de Atuação — seção com cards animados (usa segmentos padrão)
-  sections.push(buildSegmentos(palette, tintPri))
+  // 2.5. Segmentos de Atuação — seção com cards animados (dados do perfil)
+  if (perfil.segmentos && perfil.segmentos.length > 0) {
+    sections.push(buildSegmentos(perfil.segmentos, palette, tintPri))
+  }
 
   // 3. Sobre — fundo branco
   if (perfil.historia || perfil.missao || perfil.visao || perfil.valores) {
@@ -291,8 +293,8 @@ function buildNavbar(
       showLogoText: false,
       links: [
         { label: 'Início', href: '#' },
-        { label: 'Serviços', href: '#servicos' },
-        { label: 'Segmentos', href: '#segmentos' },
+        ...(perfil.servicos?.length ? [{ label: 'Serviços', href: '#servicos' }] : []),
+        ...(perfil.segmentos?.length ? [{ label: 'Segmentos', href: '#segmentos' }] : []),
         { label: 'Sobre', href: '#sobre' },
         { label: 'Equipe', href: '#equipe' },
       ],
@@ -618,6 +620,7 @@ function buildHeroSplit(
         zIndex: 3,
         backdropFilter: 'blur(10px)',
         boxShadowCustom: '0 10px 30px rgba(0, 0, 0, 0.15)',
+        animationPreset: 'float',
       },
       children: [
         {
@@ -672,6 +675,7 @@ function buildHeroSplit(
       zIndex: 3,
       backdropFilter: 'blur(10px)',
       boxShadowCustom: '0 10px 30px rgba(0, 0, 0, 0.15)',
+      animationPreset: 'float',
     },
     children: [
       {
@@ -714,7 +718,7 @@ function buildHeroSplit(
         gap: 0,
         width: '100%',
         maxWidth: '550px',
-        height: 'auto',
+        height: 'auto', // Auto-size to image content (igual ao HTML ref: .hero-image-wrapper sem height explícito)
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'flex-end',
@@ -732,13 +736,14 @@ function buildHeroSplit(
             alt: 'Profissional',
             width: '100%',
             maxWidth: '550px',
-            height: 'auto',
+            height: '690px',
             objectFit: 'contain',
             borderRadius: '20px 20px 0 0',
             boxShadow: '0 -10px 60px rgba(0, 0, 0, 0.3)',
+            zIndex: 2,
           },
         },
-        // Frame decorativo ao redor da imagem
+        // Frame decorativo ao redor da imagem (z-index 1 para ficar ATRÁS da imagem z-index 2)
         {
           type: 'ContainerComponent',
           isCanvas: false,
@@ -762,6 +767,7 @@ function buildHeroSplit(
             borderBottom: 'none',
             borderRadiusCustom: '20px 20px 0 0',
             transform: 'translateX(-50%)',
+            minHeight: 0,
           },
           children: [],
         },
@@ -771,7 +777,7 @@ function buildHeroSplit(
     },
   ]
 
-  // Coluna da imagem
+  // Coluna da imagem (espelha .hero-image-section { height: 100%; align-items: flex-end })
   const rightColumn: TemplateNode = {
     type: 'ContainerComponent',
     isCanvas: true,
@@ -781,7 +787,7 @@ function buildHeroSplit(
       padding: 0,
       gap: 0,
       width: 'auto',
-      height: 'auto',
+      height: '100%', // Preenche a altura do grid (igual ao HTML ref)
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'flex-end',
@@ -804,13 +810,14 @@ function buildHeroSplit(
       padding: 0,
       gap: 40,
       width: '100%',
-      height: 'auto',
+      height: '100%',
       flexDirection: 'row',
-      alignItems: 'center',
+      alignItems: 'stretch', // Estica colunas para altura total (igual ao HTML ref: .hero-grid { height: 100% })
       justifyContent: 'space-between',
       flexWrap: 'wrap',
       shadow: 0,
       radius: 0,
+      flex: '1 1 auto', // Cresce para preencher o hero (igual ao HTML ref: .hero-content { height: 100% })
     },
     children: [leftColumn, rightColumn],
   }
@@ -1159,19 +1166,75 @@ function buildServicos(
 
 // ─── 2.5. SEGMENTOS — cards animados para segmentos de atuação ─
 
-const DEFAULT_SEGMENTS = [
-  { icon: '🌾', titulo: 'Agronegócios', descricao: 'Produtores rurais, cooperativas e empresas do setor agrícola.' },
-  { icon: '🚀', titulo: 'Startups', descricao: 'Empresas de tecnologia e inovação em fase de crescimento.' },
-  { icon: '💊', titulo: 'Farmácias', descricao: 'Drogarias, farmácias de manipulação e distribuidoras.' },
-  { icon: '⚕️', titulo: 'Médicos e Saúde', descricao: 'Clínicas, consultórios e profissionais da área da saúde.' },
-  { icon: '🏪', titulo: 'Comércio', descricao: 'Lojas, restaurantes e estabelecimentos comerciais.' },
-  { icon: '🏗️', titulo: 'Construção Civil', descricao: 'Construtoras, empreiteiras e prestadores de serviços.' },
-]
+const SEGMENT_ICONS: Record<string, string> = {
+  'Agronegócios': '🌾',
+  'Startups': '🚀',
+  'Farmácias': '💊',
+  'Médicos e Saúde': '⚕️',
+  'Comércio': '🏪',
+  'Construção Civil': '🏗️',
+  'Indústria': '🏭',
+  'Transportadoras': '🚛',
+  'Restaurantes e Alimentação': '🍽️',
+  'E-commerce': '🛒',
+  'Educação': '🎓',
+  'Igrejas e Instituições Religiosas': '⛪',
+  'ONGs e Terceiro Setor': '🤝',
+  'Prestadores de Serviços': '🔧',
+  'Profissionais Liberais': '💼',
+  'Condomínios': '🏢',
+}
+
+const FALLBACK_SEGMENT_ICONS = ['🏢', '📊', '🎯', '💡', '🌟', '📈']
+
+const SEGMENT_DESCRIPTIONS: Record<string, string> = {
+  'Agronegócios': 'Produtores rurais, cooperativas e empresas do setor agrícola.',
+  'Startups': 'Empresas de tecnologia e inovação em fase de crescimento.',
+  'Farmácias': 'Drogarias, farmácias de manipulação e distribuidoras.',
+  'Médicos e Saúde': 'Clínicas, consultórios e profissionais da área da saúde.',
+  'Comércio': 'Lojas, restaurantes e estabelecimentos comerciais.',
+  'Construção Civil': 'Construtoras, empreiteiras e prestadores de serviços.',
+  'Indústria': 'Fábricas, manufaturas e empresas do setor industrial.',
+  'Transportadoras': 'Empresas de transporte, logística e distribuição.',
+  'Restaurantes e Alimentação': 'Restaurantes, bares, lanchonetes e serviços de alimentação.',
+  'E-commerce': 'Lojas virtuais, marketplaces e comércio eletrônico.',
+  'Educação': 'Escolas, cursos, universidades e instituições de ensino.',
+  'Igrejas e Instituições Religiosas': 'Igrejas, templos e organizações religiosas.',
+  'ONGs e Terceiro Setor': 'Organizações sem fins lucrativos, associações e fundações.',
+  'Prestadores de Serviços': 'Empresas e profissionais que oferecem serviços especializados.',
+  'Profissionais Liberais': 'Advogados, engenheiros, arquitetos e demais profissionais autônomos.',
+  'Condomínios': 'Condomínios residenciais, comerciais e administradoras.',
+}
+
+function getSegmentIcon(nome: string, index: number): string {
+  if (SEGMENT_ICONS[nome]) return SEGMENT_ICONS[nome]
+  const nomeLower = nome.toLowerCase()
+  const match = Object.entries(SEGMENT_ICONS).find(([k]) => nomeLower.includes(k.toLowerCase()) || k.toLowerCase().includes(nomeLower))
+  if (match) return match[1]
+  return FALLBACK_SEGMENT_ICONS[index % FALLBACK_SEGMENT_ICONS.length]
+}
+
+function getSegmentDescription(nome: string, descricaoUsuario?: string): string {
+  if (descricaoUsuario && descricaoUsuario.trim()) return descricaoUsuario
+  if (SEGMENT_DESCRIPTIONS[nome]) return SEGMENT_DESCRIPTIONS[nome]
+  const match = Object.keys(SEGMENT_DESCRIPTIONS).find(k =>
+    nome.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(nome.toLowerCase())
+  )
+  if (match) return SEGMENT_DESCRIPTIONS[match]
+  return `Atendimento especializado para o segmento de ${nome.toLowerCase()}.`
+}
 
 function buildSegmentos(
+  segmentos: SegmentoItem[],
   palette: ColorPalette,
   sectionBg: string,
 ): TemplateNode {
+  const segments = segmentos.map((seg, i) => ({
+    icon: getSegmentIcon(seg.nome, i),
+    titulo: seg.nome,
+    descricao: getSegmentDescription(seg.nome, seg.descricao),
+  }))
+
   return {
     type: 'SegmentsComponent',
     displayName: 'Segmentos',
@@ -1188,7 +1251,7 @@ function buildSegmentos(
       textColor: palette.textMuted,
       accentColor: palette.secondary,
       paddingY: 80,
-      segments: DEFAULT_SEGMENTS,
+      segments,
       sectionTag: 'QUEM ATENDEMOS',
       sectionTitle: 'Segmentos de Atuação',
       sectionDescription: 'Experiência comprovada em diversos setores da economia.',
@@ -1529,9 +1592,9 @@ function buildSobre(
 
   // ─── MVV CARDS ───────────────────────────────────────────────
   const mvvDefs = [
-    { label: 'Missão', icon: '🎯', value: perfil.missao, accentLight: palette.primaryLighter },
-    { label: 'Visão', icon: '🔭', value: perfil.visao, accentLight: palette.secondaryLighter },
-    { label: 'Valores', icon: '💎', value: perfil.valores, accentLight: palette.primaryLight },
+    { label: 'Missão', icon: '🎯', value: perfil.missao, accentLight: palette.primaryLight },
+    { label: 'Visão', icon: '🔭', value: perfil.visao, accentLight: palette.primaryMid },
+    { label: 'Valores', icon: '💎', value: perfil.valores, accentLight: palette.primaryLighter },
   ].filter(item => item.value)
 
   let mvvSection: TemplateNode | null = null
@@ -2288,22 +2351,19 @@ function buildFooter(
   const lightText = palette.textOnDark
 
   // ════════════════════════════════════════════════════════════════
-  // SEÇÃO SUPERIOR — Colunas opcionais (Logo+Nome | Contato | Endereço)
-  // Só inclui colunas que tenham dados preenchidos
+  // BLOCO 1 — Identidade de Marca (centralizado, full-width)
+  // Logo + Nome + Slogan
   // ════════════════════════════════════════════════════════════════
-  const upperColumns: TemplateNode[] = []
-
-  // ── Col: Logo + Nome + Slogan ──────────────────────────────
-  const col1Children: TemplateNode[] = []
+  const brandChildren: TemplateNode[] = []
 
   if (perfil.logo_url) {
-    col1Children.push({
+    brandChildren.push({
       type: 'ImageComponent',
       displayName: 'Logo Footer',
       props: {
         src: perfil.logo_url,
         alt: nome,
-        width: '268px',
+        width: '160px',
         height: 'auto',
         objectFit: 'contain',
         borderRadius: 0,
@@ -2313,53 +2373,39 @@ function buildFooter(
     })
   }
 
-  col1Children.push({
+  brandChildren.push({
     type: 'TextComponent',
     displayName: 'Nome Footer',
     props: {
       text: nome,
-      fontSize: '18',
+      fontSize: '20',
       fontWeight: '700',
-      textAlign: 'left',
-      color: palette.textOnDark,
-      margin: [8, 0, 0, 0],
+      textAlign: 'center',
+      color: lightText,
+      margin: [perfil.logo_url ? 12 : 0, 0, 0, 0],
     },
   })
 
   if (perfil.slogan) {
-    col1Children.push({
+    brandChildren.push({
       type: 'TextComponent',
       displayName: 'Slogan Footer',
       props: {
         text: perfil.slogan,
         fontSize: '14',
         fontWeight: '400',
-        textAlign: 'left',
+        textAlign: 'center',
         color: mutedText,
         lineHeight: '1.5',
-        margin: [2, 0, 0, 0],
+        margin: [4, 0, 0, 0],
       },
     })
   }
 
-  upperColumns.push({
-    type: 'ContainerComponent',
-    isCanvas: true,
-    displayName: 'Col Footer – Marca',
-    props: {
-      background: 'transparent',
-      padding: 0,
-      gap: 6,
-      width: '100%',
-      height: 'auto',
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      justifyContent: 'flex-start',
-      shadow: 0,
-      radius: 0,
-    },
-    children: col1Children,
-  })
+  // ════════════════════════════════════════════════════════════════
+  // BLOCO 2 — Informações de Contato e Endereço (2 colunas centralizadas)
+  // ════════════════════════════════════════════════════════════════
+  const infoCols: TemplateNode[] = []
 
   // ── Col: Contato (só se houver dados) ──────────────────────
   const contactLines: string[] = []
@@ -2369,7 +2415,7 @@ function buildFooter(
   if (perfil.horario_atendimento) contactLines.push(perfil.horario_atendimento)
 
   if (contactLines.length > 0) {
-    upperColumns.push({
+    infoCols.push({
       type: 'ContainerComponent',
       isCanvas: true,
       displayName: 'Col Footer – Contato',
@@ -2380,7 +2426,7 @@ function buildFooter(
         width: '100%',
         height: 'auto',
         flexDirection: 'column',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         justifyContent: 'flex-start',
         shadow: 0,
         radius: 0,
@@ -2391,12 +2437,13 @@ function buildFooter(
           displayName: 'Título Contato',
           props: {
             text: 'Contato',
-            fontSize: '14',
+            fontSize: '13',
             fontWeight: '700',
-            textAlign: 'left',
+            textAlign: 'center',
             color: lightText,
-            margin: [0, 0, 8, 0],
-            letterSpacing: '1',
+            margin: [0, 0, 10, 0],
+            letterSpacing: '1.5',
+            textTransform: 'uppercase',
           },
         },
         {
@@ -2406,7 +2453,7 @@ function buildFooter(
             text: contactLines.join('\n'),
             fontSize: '13',
             fontWeight: '400',
-            textAlign: 'left',
+            textAlign: 'center',
             color: mutedText,
             lineHeight: '1.8',
             margin: [0, 0, 0, 0],
@@ -2431,7 +2478,7 @@ function buildFooter(
   }
 
   if (addrLines.length > 0) {
-    upperColumns.push({
+    infoCols.push({
       type: 'ContainerComponent',
       isCanvas: true,
       displayName: 'Col Footer – Endereço',
@@ -2442,7 +2489,7 @@ function buildFooter(
         width: '100%',
         height: 'auto',
         flexDirection: 'column',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         justifyContent: 'flex-start',
         shadow: 0,
         radius: 0,
@@ -2453,12 +2500,13 @@ function buildFooter(
           displayName: 'Título Endereço',
           props: {
             text: 'Endereço',
-            fontSize: '14',
+            fontSize: '13',
             fontWeight: '700',
-            textAlign: 'left',
+            textAlign: 'center',
             color: lightText,
-            margin: [0, 0, 8, 0],
-            letterSpacing: '1',
+            margin: [0, 0, 10, 0],
+            letterSpacing: '1.5',
+            textTransform: 'uppercase',
           },
         },
         {
@@ -2468,7 +2516,7 @@ function buildFooter(
             text: addrLines.join('\n'),
             fontSize: '13',
             fontWeight: '400',
-            textAlign: 'left',
+            textAlign: 'center',
             color: mutedText,
             lineHeight: '1.8',
             margin: [0, 0, 0, 0],
@@ -2479,8 +2527,7 @@ function buildFooter(
   }
 
   // ════════════════════════════════════════════════════════════════
-  // SEÇÃO INFERIOR — Dados obrigatórios centralizados
-  // (Redes Sociais + Copyright — sempre presente)
+  // SEÇÃO INFERIOR — Redes Sociais + Copyright (centralizado)
   // ════════════════════════════════════════════════════════════════
   const bottomChildren: TemplateNode[] = []
 
@@ -2549,28 +2596,18 @@ function buildFooter(
   })
 
   // ════════════════════════════════════════════════════════════════
-  // MONTAGEM FINAL — Seção superior (cols) + Divider + Seção inferior (centralizada)
+  // MONTAGEM FINAL — Marca (centrada) + Info (cols) + Divider + Inferior
   // ════════════════════════════════════════════════════════════════
   const footerChildren: TemplateNode[] = [
-    ...upperColumns,
-    {
-      type: 'DividerComponent',
-      displayName: 'Divider Footer',
-      props: {
-        color: palette.dividerOnDark,
-        thickness: 1,
-        marginY: 8,
-        style: 'solid',
-      },
-    },
+    // Bloco Marca — centralizado, full-width
     {
       type: 'ContainerComponent',
       isCanvas: true,
-      displayName: 'Rodapé Inferior',
+      displayName: 'Footer – Marca',
       props: {
         background: 'transparent',
         padding: 0,
-        gap: 12,
+        gap: 4,
         width: '100%',
         height: 'auto',
         flexDirection: 'column',
@@ -2579,12 +2616,64 @@ function buildFooter(
         shadow: 0,
         radius: 0,
       },
-      children: bottomChildren,
+      children: brandChildren,
     },
   ]
 
-  // Colunas adaptativas: depende de quantas colunas opcionais existem
-  const numCols = upperColumns.length
+  // Bloco Info — colunas de Contato + Endereço (se existirem)
+  if (infoCols.length > 0) {
+    footerChildren.push({
+      type: 'ContainerComponent',
+      isCanvas: true,
+      displayName: 'Footer – Info',
+      props: {
+        background: 'transparent',
+        padding: [24, 0, 0, 0],
+        gap: 40,
+        width: '100%',
+        height: 'auto',
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        shadow: 0,
+        radius: 0,
+        flexWrap: 'wrap',
+      },
+      children: infoCols,
+    })
+  }
+
+  // Divider
+  footerChildren.push({
+    type: 'DividerComponent',
+    displayName: 'Divider Footer',
+    props: {
+      color: palette.dividerOnDark,
+      thickness: 1,
+      marginY: 8,
+      style: 'solid',
+    },
+  })
+
+  // Rodapé Inferior
+  footerChildren.push({
+    type: 'ContainerComponent',
+    isCanvas: true,
+    displayName: 'Rodapé Inferior',
+    props: {
+      background: 'transparent',
+      padding: 0,
+      gap: 12,
+      width: '100%',
+      height: 'auto',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      shadow: 0,
+      radius: 0,
+    },
+    children: bottomChildren,
+  })
 
   return {
     type: 'FooterComponent',
@@ -2597,7 +2686,7 @@ function buildFooter(
       gradientType: 'linear' as const,
       gradientDirection: '135deg',
       paddingY: 56,
-      columns: numCols,
+      columns: 1,
       contentMaxWidth: CONTENT_MAX_WIDTH,
     },
     children: footerChildren,

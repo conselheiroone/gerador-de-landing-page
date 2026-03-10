@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { X, Download, FileCode, FolderArchive, Eye, Copy, Check } from 'lucide-react'
 import { craftJsonToHtml } from '../utils/export-html'
 import { downloadHtmlInline, downloadZip } from '../utils/download-zip'
+import { inlineLocalAssets } from '../utils/inline-assets'
 
 interface ExportModalProps {
   open: boolean
@@ -26,26 +27,36 @@ export const ExportModal = ({ open, onClose, pageTitle }: ExportModalProps) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!open) return
-    try {
-      const json = query.serialize()
-      if (!json) { setHtml(''); return }
-      const result = craftJsonToHtml(json, { pageTitle })
-      setHtml(result.html)
-      setHasLocalUrls(/http:\/\/(localhost|127\.0\.0\.1)/.test(result.html))
-    } catch (err) {
-      console.error('[Export] Erro ao gerar HTML:', err)
-      setHtml('')
+    let cancelled = false
+
+    async function generate() {
+      try {
+        const json = query.serialize()
+        if (!json || cancelled) { setHtml(''); return }
+        const result = craftJsonToHtml(json, { pageTitle })
+        // Converte /assets/... para base64 data URIs (funciona no iframe e no HTML exportado)
+        const inlined = await inlineLocalAssets(result.html)
+        if (cancelled) return
+        setHtml(inlined)
+        setHasLocalUrls(/http:\/\/(localhost|127\.0\.0\.1)/.test(inlined))
+      } catch (err) {
+        console.error('[Export] Erro ao gerar HTML:', err)
+        if (!cancelled) setHtml('')
+      }
     }
+
+    generate()
+    return () => { cancelled = true }
   }, [open, pageTitle])
 
-  const handleDownload = (format: ExportFormat) => {
+  const handleDownload = async (format: ExportFormat) => {
     try {
       const json = query.serialize()
       if (!json) return
       if (format === 'html-inline') {
-        downloadHtmlInline(json, pageTitle)
+        await downloadHtmlInline(json, pageTitle)
       } else {
-        downloadZip(json, pageTitle)
+        await downloadZip(json, pageTitle)
       }
     } catch (err) {
       console.error('[Export] Erro ao fazer download:', err)
@@ -107,12 +118,26 @@ export const ExportModal = ({ open, onClose, pageTitle }: ExportModalProps) => {
         <div className="flex-1 overflow-hidden">
           {tab === 'preview' ? (
             html ? (
-              <iframe
-                srcDoc={html}
-                title="Preview da Landing Page"
-                className="w-full h-full border-0"
-                sandbox="allow-same-origin"
-              />
+              <div className="flex justify-center h-full overflow-auto bg-gray-100 py-6">
+                <div
+                  className="h-full flex-shrink-0"
+                  style={{
+                    width: '768px',
+                    maxWidth: '100%',
+                    boxShadow: '0 0 0 1px rgba(0,0,0,0.08), 0 4px 20px rgba(0,0,0,0.06)',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    background: '#ffffff',
+                  }}
+                >
+                  <iframe
+                    srcDoc={html}
+                    title="Preview da Landing Page"
+                    className="w-full h-full border-0"
+                    sandbox="allow-same-origin allow-scripts"
+                  />
+                </div>
+              </div>
             ) : (
               <div className="flex items-center justify-center h-full text-sm text-gray-400">
                 Gerando preview...

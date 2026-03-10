@@ -17,6 +17,8 @@ export type ImageProps = {
   boxShadow?: string
   /** CSS filter (ex: 'brightness(0) invert(1)' para tornar branco) */
   filter?: string
+  /** Z-index para controle de empilhamento */
+  zIndex?: number
 }
 
 const defaultProps: ImageProps = {
@@ -35,12 +37,16 @@ export const ImageComponent: UserComponent<Partial<ImageProps>> = (incomingProps
     connectors: { connect },
   } = useNode()
 
-  const { src, alt, width, height, objectFit, borderRadius, backgroundColor, maxWidth, boxShadow, filter } = props
+  const { src, alt, width, height, objectFit, borderRadius, backgroundColor, maxWidth, boxShadow, filter, zIndex } = props
   const [imgLoaded, setImgLoaded] = useState(false)
   const [imgError, setImgError] = useState(false)
 
   // Resolver borderRadius: se for número, adiciona 'px'; se for string, usa direto
   const resolvedBorderRadius = typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius
+
+  // Classe responsiva para imagens com altura fixa grande (≥ 400px)
+  const isTallFixed = height.endsWith('px') && parseInt(height) >= 400
+  const tallClass = isTallFixed ? 'lp-img-tall' : undefined
 
   if (!src) {
     return (
@@ -82,6 +88,7 @@ export const ImageComponent: UserComponent<Partial<ImageProps>> = (incomingProps
     return (
       <div
         ref={(ref) => { if (ref) connect(ref) }}
+        className={tallClass}
         style={{
           position: 'relative',
           display: 'inline-flex',
@@ -96,6 +103,7 @@ export const ImageComponent: UserComponent<Partial<ImageProps>> = (incomingProps
           boxSizing: 'border-box',
           overflow: 'hidden',
           boxShadow: boxShadow || undefined,
+          zIndex: zIndex || undefined,
         }}
       >
         {skeletonOverlay}
@@ -121,6 +129,7 @@ export const ImageComponent: UserComponent<Partial<ImageProps>> = (incomingProps
   return (
     <div
       ref={(ref) => { if (ref) connect(ref) }}
+      className={tallClass}
       style={{
         position: 'relative',
         width,
@@ -129,6 +138,7 @@ export const ImageComponent: UserComponent<Partial<ImageProps>> = (incomingProps
         borderRadius: resolvedBorderRadius,
         overflow: 'hidden',
         boxShadow: boxShadow || undefined,
+        zIndex: zIndex || undefined,
       }}
     >
       {skeletonOverlay}

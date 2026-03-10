@@ -103,6 +103,7 @@ export interface ColorPalette {
   primaryDark: string       // darken(primary, 0.3)
   primaryDarker: string     // darken(primary, 0.5)
   primaryLight: string      // lighten(primary, 0.3)
+  primaryMid: string        // lighten(primary, 0.38)
   primaryLighter: string    // lighten(primary, 0.6)
   primaryTint: string       // lighten(primary, 0.88) - fundo suave
   primarySoft: string       // lighten(primary, 0.92) - fundo muito suave
@@ -161,6 +162,7 @@ export function generatePalette(primary: string, secondary: string): ColorPalett
     primaryDark: darken(primary, 0.3),
     primaryDarker: darken(primary, 0.5),
     primaryLight: lighten(primary, 0.3),
+    primaryMid: lighten(primary, 0.38),
     primaryLighter: lighten(primary, 0.6),
     primaryTint: lighten(primary, 0.88),
     primarySoft: lighten(primary, 0.92),
@@ -198,7 +200,7 @@ export function generatePalette(primary: string, secondary: string): ColorPalett
     dividerOnDark: 'rgba(255, 255, 255, 0.18)',
 
     // Cores especiais
-    heroOverlay: `linear-gradient(135deg, ${darken(primary, 0.3)} 0%, ${primary} 50%, ${hexToRgba(secondary, 0.9)} 100%)`,
+    heroOverlay: `linear-gradient(135deg, ${darken(primary, 0.5)} 0%, ${darken(primary, 0.25)} 50%, ${hexToRgba(darken(secondary, 0.2), 0.9)} 100%)`,
     navbarBg: darken(secondary, 0.2),
     statsBg: `linear-gradient(135deg, ${darken(secondary, 0.3)} 0%, ${secondary} 100%)`,
     ctaBg: primary,

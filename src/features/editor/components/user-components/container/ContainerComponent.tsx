@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useNode, type UserComponent } from '@craftjs/core'
 import { ContainerSettings } from './ContainerSettings'
 
@@ -73,6 +72,8 @@ export type ContainerProps = {
   backdropFilter?: string
   /** Box-shadow customizado (ex: '0 10px 30px rgba(0,0,0,0.15)') */
   boxShadowCustom?: string
+  /** Preset de animação CSS */
+  animationPreset?: 'none' | 'float' | 'fadeInUp' | 'fadeInRight'
   children?: React.ReactNode
 }
 
@@ -97,6 +98,28 @@ const SHADOW_PRESETS: Record<string, string> = {
   soft: '0 2px 15px rgba(0,0,0,0.06)',
   elevated: '0 8px 30px rgba(0,0,0,0.12)',
   dramatic: '0 20px 60px rgba(0,0,0,0.25)',
+}
+
+const ANIMATION_MAP: Record<string, string> = {
+  none: 'none',
+  float: 'lp-float 3s ease-in-out infinite',
+  fadeInUp: 'lp-fadeInUp 0.6s ease both',
+  fadeInRight: 'lp-fadeInRight 0.8s ease both',
+}
+
+// Injeta keyframes globais (uma única vez)
+const KEYFRAMES_ID = 'lp-container-keyframes'
+function ensureKeyframes() {
+  if (typeof document === 'undefined') return
+  if (document.getElementById(KEYFRAMES_ID)) return
+  const style = document.createElement('style')
+  style.id = KEYFRAMES_ID
+  style.textContent = `
+@keyframes lp-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+@keyframes lp-fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+@keyframes lp-fadeInRight { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+  `
+  document.head.appendChild(style)
 }
 
 export const ContainerComponent: UserComponent<Partial<ContainerProps>> = (incomingProps) => {
@@ -144,13 +167,16 @@ export const ContainerComponent: UserComponent<Partial<ContainerProps>> = (incom
     transform,
     backdropFilter,
     boxShadowCustom,
+    animationPreset,
     children,
   } = props
+
+  // Injeta keyframes CSS se necessário
+  if (animationPreset && animationPreset !== 'none') ensureKeyframes()
 
   const isPixelWidth = width.endsWith('px')
   const hasImage = !!backgroundImage
   const hasOverlay = hasImage && (overlayOpacity ?? 0) > 0
-  const [bgLoaded, setBgLoaded] = useState(!hasImage)
 
   const resolvedShadow =
     boxShadowCustom
@@ -182,80 +208,96 @@ export const ContainerComponent: UserComponent<Partial<ContainerProps>> = (incom
   // Resolve flexWrap (default: wrap quando flexDirection='row')
   const resolvedFlexWrap = flexWrap ?? (flexDirection === 'row' ? 'wrap' : undefined)
 
+  // ── Estilos comuns ──
+  const baseStyles: React.CSSProperties = {
+    position: position || 'relative',
+    width: isPixelWidth ? '100%' : width,
+    maxWidth: maxWidth || (isPixelWidth ? width : undefined),
+    minWidth: minWidth || undefined,
+    margin: isPixelWidth ? '0 auto' : undefined,
+    marginTop: resolvedMarginTop,
+    marginBottom: resolvedMarginBottom,
+    height,
+    borderRadius: borderRadiusCustom || `${radius}px`,
+    boxShadow: resolvedShadow,
+    border: border || undefined,
+    borderTop: borderTopStyle,
+    borderLeft: borderLeftStyle,
+    borderBottom: borderBottom || undefined,
+    fontFamily: fontFamily || undefined,
+    flex: flex || undefined,
+    top: top || undefined,
+    right: right || undefined,
+    bottom: bottom || undefined,
+    left: left || undefined,
+    zIndex: zIndex || undefined,
+    transform: transform || undefined,
+    backdropFilter: backdropFilter || undefined,
+    WebkitBackdropFilter: backdropFilter || undefined,
+    animation: animationPreset && animationPreset !== 'none'
+      ? ANIMATION_MAP[animationPreset]
+      : undefined,
+  }
+
+  // Classes CSS para container queries no editor
+  const cssClasses = flexDirection === 'row' ? 'lp-row' : undefined
+
+  // ── SEM overlay: div único (evita inner div intermediário que quebra
+  //    resolução de height % em filhos position:absolute como Frame Decorativo) ──
+  if (!hasOverlay) {
+    return (
+      <div
+        id={props.sectionId || undefined}
+        className={cssClasses}
+        ref={(ref) => { if (ref) connect(drag(ref)) }}
+        style={{
+          ...baseStyles,
+          overflow: hasImage ? 'hidden' : undefined,
+          backgroundImage: hasImage ? `url("${backgroundImage}")` : undefined,
+          backgroundSize: hasImage ? 'cover' : undefined,
+          backgroundPosition: hasImage ? 'center' : undefined,
+          background: hasImage ? undefined : background,
+          display: 'flex',
+          flexDirection: flexDirection as 'row' | 'column',
+          flexWrap: resolvedFlexWrap,
+          alignItems,
+          justifyContent,
+          padding: resolvedPadding,
+          gap: `${gap}px`,
+          minHeight: position === 'absolute' ? `${minHeight ?? 0}px` : `${minHeight ?? 60}px`,
+        }}
+      >
+        {children}
+      </div>
+    )
+  }
+
+  // ── COM overlay: dois divs (outer para bg/image + overlay div + inner para conteúdo) ──
   return (
     <div
       id={props.sectionId || undefined}
+      className={cssClasses}
       ref={(ref) => { if (ref) connect(drag(ref)) }}
       style={{
-        position: position || 'relative',
-        width: isPixelWidth ? '100%' : width,
-        maxWidth: maxWidth || (isPixelWidth ? width : undefined),
-        minWidth: minWidth || undefined,
-        margin: isPixelWidth ? '0 auto' : undefined,
-        marginTop: resolvedMarginTop,
-        marginBottom: resolvedMarginBottom,
-        height,
-        borderRadius: borderRadiusCustom || `${radius}px`,
-        boxShadow: resolvedShadow,
-        overflow: hasImage ? 'hidden' : undefined,
-        border: border || undefined,
-        borderTop: borderTopStyle,
-        borderLeft: borderLeftStyle,
-        borderBottom: borderBottom || undefined,
-        backgroundImage: hasImage && bgLoaded ? `url("${backgroundImage}")` : undefined,
-        backgroundSize: hasImage ? 'cover' : undefined,
-        backgroundPosition: hasImage ? 'center' : undefined,
-        background: hasImage ? undefined : background,
-        fontFamily: fontFamily || undefined,
-        flex: flex || undefined,
-        top: top || undefined,
-        right: right || undefined,
-        bottom: bottom || undefined,
-        left: left || undefined,
-        zIndex: zIndex || undefined,
-        transform: transform || undefined,
-        backdropFilter: backdropFilter || undefined,
-        WebkitBackdropFilter: backdropFilter || undefined,
+        ...baseStyles,
+        overflow: 'hidden',
+        backgroundImage: `url("${backgroundImage}")`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        background: undefined,
       }}
     >
-      {/* Skeleton enquanto background image carrega */}
-      {hasImage && !bgLoaded && (
-        <>
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              borderRadius: `${radius}px`,
-              background: 'linear-gradient(110deg, #e5e7eb 30%, #f3f4f6 50%, #e5e7eb 70%)',
-              backgroundSize: '200% 100%',
-              animation: 'shimmer 1.5s infinite linear',
-              zIndex: 0,
-            }}
-          />
-          <img
-            src={backgroundImage}
-            alt=""
-            onLoad={() => setBgLoaded(true)}
-            onError={() => setBgLoaded(true)}
-            style={{ display: 'none' }}
-          />
-        </>
-      )}
-      {/* Overlay sobre background image */}
-      {hasOverlay && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundColor: overlayColor || '#000000',
-            opacity: overlayOpacity,
-            borderRadius: `${radius}px`,
-            pointerEvents: 'none',
-            zIndex: 0,
-          }}
-        />
-      )}
-      {/* Conteúdo posicionado acima do overlay */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundColor: overlayColor || '#000000',
+          opacity: overlayOpacity,
+          borderRadius: `${radius}px`,
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
       <div
         style={{
           position: 'relative',

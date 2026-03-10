@@ -80,3 +80,106 @@
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   EDITOR VIEWPORT — Container Queries para responsividade
+   Disparam baseado na largura do container .lp-viewport-container,
+   NÃO no viewport do browser (permite simular tablet/mobile no editor).
+
+   CLASSES RESPONSIVAS (adicionadas pelos componentes React):
+   .lp-hero       → HeroSectionComponent (<section>)
+   .lp-row        → ContainerComponent com flexDirection='row'
+   .lp-img-tall   → ImageComponent com altura fixa ≥ 400px
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Tablet (container ≤ 768px) ─────────────────────────────── */
+@container (max-width: 768px) {
+  /* ① Regra geral: rows empilham vertical */
+  .lp-row {
+    flex-direction: column !important;
+  }
+  .lp-row > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 auto !important;
+    height: auto !important;
+  }
+
+  /* ② Hero section: auto height + fontes menores */
+  .lp-hero {
+    height: auto !important;
+    min-height: 60vh !important;
+  }
+  .lp-hero h1 {
+    font-size: clamp(28px, 5vw, 42px) !important;
+  }
+
+  /* ③ Rows DENTRO do hero: mantêm row (features, contato, etc.) */
+  .lp-hero .lp-row {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+  }
+  /* ④ Reset filhos de rows do hero para comportamento natural */
+  .lp-hero .lp-row > * {
+    width: auto !important;
+    max-width: none !important;
+    flex: 0 1 auto !important;
+    height: auto !important;
+  }
+  /* ⑤ Colunas do HERO GRID: flex-basis para layout 2 colunas */
+  .lp-hero > div > .lp-row {
+    gap: 20px !important;
+  }
+  .lp-hero > div > .lp-row > * {
+    flex: 1 1 240px !important;
+    min-width: 0 !important;
+  }
+
+  /* Imagens altas → restringe */
+  .lp-img-tall {
+    height: auto !important;
+    max-height: 55vh !important;
+  }
+
+  /* Frame decorativo → esconde */
+  [style*="position: absolute"][style*="border: 3px solid"] {
+    display: none !important;
+  }
+}
+
+/* ── Mobile (container ≤ 480px) ─────────────────────────────── */
+@container (max-width: 480px) {
+  /* Hero: tudo empilha no mobile */
+  .lp-hero .lp-row {
+    flex-direction: column !important;
+  }
+  .lp-hero .lp-row > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 auto !important;
+  }
+  .lp-hero > div > .lp-row > * {
+    flex: 1 1 auto !important;
+  }
+
+  /* Imagens altas → mais restrito */
+  .lp-img-tall {
+    max-height: 40vh !important;
+  }
+
+  /* Cards flutuantes → relativos */
+  [style*="position: absolute"][style*="backdrop-filter"] {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+    margin: 8px auto !important;
+  }
+
+  /* Stats band grid → 1 coluna */
+  [style*="grid-template-columns: repeat(3"] {
+    grid-template-columns: 1fr !important;
+  }
+}

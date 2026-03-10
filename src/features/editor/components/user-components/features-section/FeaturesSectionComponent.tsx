@@ -32,7 +32,16 @@ export const FeaturesSectionComponent: UserComponent<Partial<FeaturesSectionProp
 
   const gridCss = `
     .${scopeClass} > :first-child { grid-column: 1 / -1; }
-    @media (max-width: 640px) {
+    @container (max-width: 768px) {
+      .${scopeClass} { grid-template-columns: repeat(2, 1fr) !important; }
+    }
+    @container (max-width: 480px) {
+      .${scopeClass} { grid-template-columns: 1fr !important; }
+    }
+    @media (max-width: 768px) {
+      .${scopeClass} { grid-template-columns: repeat(2, 1fr) !important; }
+    }
+    @media (max-width: 480px) {
       .${scopeClass} { grid-template-columns: 1fr !important; }
     }
   `
