@@ -874,20 +874,24 @@ function renderHeroSection(props: Record<string, unknown>, children: string): st
 function renderFeaturesSection(props: Record<string, unknown>, children: string): string {
   const cols = (props.columns as number) || 3
   const gap = (props.gap as number) || 24
-  const minCol = Math.min(280, Math.max(200, Math.round(600 / cols)))
+  const contentMaxWidth = (props.contentMaxWidth as string) || '1200px'
 
-  const style = styleObj({
+  const sectionStyle = styleObj({
     width: '100%',
     background: (props.background as string) || '#ffffff',
     padding: `${props.paddingY || 60}px clamp(16px, 5vw, 40px)`,
+  })
+  const innerStyle = styleObj({
+    maxWidth: contentMaxWidth,
+    margin: '0 auto',
     display: 'grid',
-    gridTemplateColumns: `repeat(auto-fit, minmax(${minCol}px, 1fr))`,
+    gridTemplateColumns: `repeat(${cols}, 1fr)`,
     gap: `${gap}px`,
     minHeight: '150px',
   })
-  const attrs: Record<string, string> = { class: 'lp-animate lp-stagger' }
+  const attrs: Record<string, string> = { class: 'lp-animate lp-stagger lp-features-grid' }
   if (props.sectionId) attrs.id = String(props.sectionId)
-  return tag('section', style, children, attrs)
+  return tag('section', sectionStyle, `<div class="lp-features-inner" style="${innerStyle}">${children}</div>`, attrs)
 }
 
 // ── Testimonials Section ──
@@ -895,29 +899,40 @@ function renderFeaturesSection(props: Record<string, unknown>, children: string)
 
 function renderTestimonialsSection(props: Record<string, unknown>, children: string): string {
   const cols = (props.columns as number) || 2
-  const minCol = Math.max(250, Math.round(600 / cols))
+  const contentMaxWidth = (props.contentMaxWidth as string) || '1200px'
+  const minColWidth = Math.max(250, Math.round(600 / cols))
 
-  const style = styleObj({
+  const sectionStyle = styleObj({
     width: '100%',
     background: (props.background as string) || '#f8fafc',
     padding: `${props.paddingY || 60}px clamp(16px, 5vw, 40px)`,
+  })
+  const innerStyle = styleObj({
+    maxWidth: contentMaxWidth,
+    margin: '0 auto',
     display: 'grid',
-    gridTemplateColumns: `repeat(auto-fit, minmax(${minCol}px, 1fr))`,
+    gridTemplateColumns: `repeat(auto-fit, minmax(${minColWidth}px, 1fr))`,
     gap: '24px',
     minHeight: '150px',
   })
-  return tag('section', style, children, { class: 'lp-animate lp-stagger' })
+  return tag('section', sectionStyle, `<div style="${innerStyle}">${children}</div>`, { class: 'lp-animate lp-stagger' })
 }
 
 // ── CTA Section ──
 // Espelha: CtaSectionComponent.tsx
 
 function renderCtaSection(props: Record<string, unknown>, children: string): string {
-  const style = styleObj({
+  const contentMaxWidth = (props.contentMaxWidth as string) || '1200px'
+
+  const sectionStyle = styleObj({
     width: '100%',
     background: (props.background as string) || '#2563eb',
     padding: `${props.paddingY || 50}px clamp(16px, 5vw, 40px)`,
     borderRadius: props.radius as number,
+  })
+  const innerStyle = styleObj({
+    maxWidth: contentMaxWidth,
+    margin: '0 auto',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -927,7 +942,7 @@ function renderCtaSection(props: Record<string, unknown>, children: string): str
   })
   const ctaAttrs: Record<string, string> = { class: 'lp-animate lp-stagger' }
   if (props.sectionId) ctaAttrs.id = String(props.sectionId)
-  return tag('section', style, children, ctaAttrs)
+  return tag('section', sectionStyle, `<div style="${innerStyle}">${children}</div>`, ctaAttrs)
 }
 
 // ── Footer ──
@@ -935,7 +950,6 @@ function renderCtaSection(props: Record<string, unknown>, children: string): str
 
 function renderFooter(props: Record<string, unknown>, children: string): string {
   const cols = (props.columns as number) || 3
-  const minCol = Math.min(250, Math.max(180, Math.round(500 / cols)))
 
   const gradientFrom = props.gradientFrom as string
   const gradientTo = props.gradientTo as string
@@ -954,16 +968,24 @@ function renderFooter(props: Record<string, unknown>, children: string): string 
     bg = (props.background as string) || '#111827'
   }
 
-  const style = styleObj({
+  const outerStyle = styleObj({
     width: '100%',
     background: bg,
     padding: `${props.paddingY || 40}px clamp(16px, 5vw, 40px)`,
-    display: 'grid',
-    gridTemplateColumns: `repeat(auto-fit, minmax(min(${minCol}px, 100%), 1fr))`,
-    gap: 'clamp(16px, 3vw, 30px)',
     minHeight: '100px',
   })
-  return tag('footer', style, children)
+
+  const maxW = (props.contentMaxWidth as string) || '1100px'
+  const innerStyle = styleObj({
+    display: 'grid',
+    gridTemplateColumns: `repeat(${cols}, 1fr)`,
+    gap: 'clamp(16px, 3vw, 30px)',
+    maxWidth: maxW,
+    margin: '0 auto',
+    width: '100%',
+  })
+
+  return tag('footer', outerStyle, `<div class="lp-footer-grid" style="${innerStyle}">${children}</div>`)
 }
 
 // ── Stats Band ──

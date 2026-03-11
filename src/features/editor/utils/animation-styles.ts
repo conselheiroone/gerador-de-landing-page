@@ -90,6 +90,12 @@ section:not(:first-of-type) button[style*="border-radius"]:hover {
   .lp-counter-done { animation: none; }
 }
 
+/* ── Features grid — primeiro filho (cabeçalho) sempre full-width ── */
+.lp-features-inner > :first-child { grid-column: 1 / -1; }
+
+/* ── Footer grid — últimos 2 filhos (Divider + Rodapé Inferior) sempre full-width ── */
+.lp-footer-grid > :nth-last-child(-n+2) { grid-column: 1 / -1; }
+
 /* ══════════════════════════════════════════════════════════
    RESPONSIVE — Media Queries para export HTML
    Classes aplicadas pelos render functions do export-html.ts
@@ -151,6 +157,16 @@ section:not(:first-of-type) button[style*="border-radius"]:hover {
   .lp-cols > * {
     flex: 1 1 auto !important;
     width: 100% !important;
+  }
+
+  /* Features grid → 2 colunas em tablet */
+  .lp-features-inner {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Footer grid → single column em mobile */
+  .lp-footer-grid {
+    grid-template-columns: 1fr !important;
   }
 
   /* Stats band grid → 2 colunas */
@@ -241,6 +257,11 @@ section:not(:first-of-type) button[style*="border-radius"]:hover {
     left: auto !important;
     transform: none !important;
     margin: 8px auto !important;
+  }
+
+  /* Features grid → 1 coluna */
+  .lp-features-inner {
+    grid-template-columns: 1fr !important;
   }
 
   /* Stats band → 1 coluna */
