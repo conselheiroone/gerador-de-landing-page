@@ -54,8 +54,6 @@ export const identidadeVisualSchema = z.object({
   logo_url: z.string().optional().or(z.literal('')),
   cor_primaria: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Cor inválida').default('#10B981'),
   cor_secundaria: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Cor inválida').default('#1A1A1A'),
-  usar_imagem_hero: z.boolean().default(false),
-  hero_image_url: z.string().optional().or(z.literal('')),
 })
 
 export const sobreEscritorioSchema = z.object({

@@ -141,8 +141,6 @@ export function useOnboarding() {
         logo_url: dados.logo_url ?? '',
         cor_primaria: dados.cor_primaria,
         cor_secundaria: dados.cor_secundaria,
-        usar_imagem_hero: dados.usar_imagem_hero ?? false,
-        hero_image_url: dados.hero_image_url ?? '',
       })
       setPerfil(updated)
       setCurrentStep(5)

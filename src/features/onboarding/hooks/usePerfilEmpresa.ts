@@ -8,7 +8,6 @@ import {
   updatePerfilEmpresa,
   upsertSociosDirect,
   uploadLogo,
-  uploadHeroImage,
   uploadFotoSocio,
   buscarCep,
 } from '../api/onboarding'
@@ -139,24 +138,16 @@ export function usePerfilEmpresa() {
     logo_url: string
     cor_primaria: string
     cor_secundaria: string
-    usar_imagem_hero?: boolean
-    hero_image_url?: string
   }) => {
     if (!perfil) return
     setSavingSection('visual')
     setError(null)
     try {
-      const payload: Record<string, unknown> = {
+      const updated = await updatePerfilEmpresa(perfil.id, {
         logo_url: dados.logo_url || null,
         cor_primaria: dados.cor_primaria,
         cor_secundaria: dados.cor_secundaria,
-      }
-      if (dados.usar_imagem_hero !== undefined) {
-        payload.usar_imagem_hero = dados.usar_imagem_hero
-        payload.hero_image_url = dados.hero_image_url || null
-      }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const updated = await updatePerfilEmpresa(perfil.id, payload as any)
+      })
       setPerfil(updated)
       showSaved('visual')
     } catch (err) {
@@ -284,7 +275,6 @@ export function usePerfilEmpresa() {
     updateRedesSociais,
     updateGooglePlaceId,
     uploadLogo,
-    uploadHeroImage,
     uploadFotoSocio,
     buscarCep,
     reload: loadData,

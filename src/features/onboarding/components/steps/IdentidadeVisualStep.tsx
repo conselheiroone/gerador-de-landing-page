@@ -4,7 +4,7 @@ import { Palette, Upload } from 'lucide-react'
 import { slideUp } from '@/lib/motion-variants'
 import { Button } from '@/components/ui/button'
 import { extractColorsFromFile } from '@/utils/extract-colors'
-import { uploadLogo, uploadHeroImage } from '../../api/onboarding'
+import { uploadLogo } from '../../api/onboarding'
 import type { PerfilEmpresa } from '../../types/onboarding.types'
 import type { IdentidadeVisualInput } from '../../schemas/onboarding.schemas'
 
@@ -20,13 +20,9 @@ export function IdentidadeVisualStep({ perfil, userId, onSave, onBack, isSaving 
   const [logoUrl, setLogoUrl] = useState(perfil.logo_url ?? '')
   const [corPrimaria, setCorPrimaria] = useState(perfil.cor_primaria || '#10B981')
   const [corSecundaria, setCorSecundaria] = useState(perfil.cor_secundaria || '#1A1A1A')
-  const [usarImagemHero, setUsarImagemHero] = useState(perfil.usar_imagem_hero ?? false)
-  const [heroImageUrl, setHeroImageUrl] = useState(perfil.hero_image_url ?? '')
   const [uploading, setUploading] = useState(false)
-  const [uploadingHero, setUploadingHero] = useState(false)
   const [error, setError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const heroFileInputRef = useRef<HTMLInputElement>(null)
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -52,31 +48,12 @@ export function IdentidadeVisualStep({ perfil, userId, onSave, onBack, isSaving 
     }
   }
 
-  async function handleHeroFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setUploadingHero(true)
-    setError('')
-    try {
-      const url = await uploadHeroImage(userId, file)
-      setHeroImageUrl(url)
-    } catch {
-      setError('Erro ao fazer upload da imagem do hero')
-    } finally {
-      setUploadingHero(false)
-      if (heroFileInputRef.current) heroFileInputRef.current.value = ''
-    }
-  }
-
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     await onSave({
       logo_url: logoUrl,
       cor_primaria: corPrimaria,
       cor_secundaria: corSecundaria,
-      usar_imagem_hero: usarImagemHero,
-      hero_image_url: heroImageUrl,
     })
   }
 
@@ -99,14 +76,6 @@ export function IdentidadeVisualStep({ perfil, userId, onSave, onBack, isSaving 
         className="hidden"
         onChange={handleFileChange}
       />
-      <input
-        ref={heroFileInputRef}
-        type="file"
-        accept="image/png,image/jpeg,image/webp"
-        className="hidden"
-        onChange={handleHeroFileChange}
-      />
-
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Logo */}
         <div>
@@ -170,76 +139,6 @@ export function IdentidadeVisualStep({ perfil, userId, onSave, onBack, isSaving 
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Imagem de Fundo do Hero */}
-        <div className="rounded-lg border border-gray-200 p-4">
-          <label className="mb-3 block text-sm font-medium text-gray-700">
-            Deseja usar uma imagem de fundo no topo da página?
-          </label>
-          <div className="flex gap-3 mb-3">
-            <button
-              type="button"
-              onClick={() => setUsarImagemHero(true)}
-              className={`px-4 py-2 text-sm rounded-lg border transition-colors ${
-                usarImagemHero
-                  ? 'border-brand-500 bg-brand-50 text-brand-700 font-medium'
-                  : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              Sim
-            </button>
-            <button
-              type="button"
-              onClick={() => setUsarImagemHero(false)}
-              className={`px-4 py-2 text-sm rounded-lg border transition-colors ${
-                !usarImagemHero
-                  ? 'border-brand-500 bg-brand-50 text-brand-700 font-medium'
-                  : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              Não
-            </button>
-          </div>
-
-          {usarImagemHero && (
-            <div className="space-y-3 pt-2 border-t border-gray-100">
-              <p className="text-xs text-gray-500">
-                Envie uma imagem personalizada ou use a imagem padrão com tema de contabilidade.
-              </p>
-              <div className="flex items-center gap-4">
-                <img
-                  src={heroImageUrl || '/assets/hero/contabilidade-default.svg'}
-                  alt="Hero background"
-                  className="h-20 w-36 rounded-lg border border-gray-200 object-cover"
-                />
-                <div className="space-y-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => heroFileInputRef.current?.click()}
-                    isLoading={uploadingHero}
-                  >
-                    {heroImageUrl ? 'Trocar imagem' : 'Enviar imagem personalizada'}
-                  </Button>
-                  <p className="text-xs text-gray-400">PNG, JPG ou WebP. Recomendado: 1920x1080.</p>
-                  {!heroImageUrl && (
-                    <p className="text-xs text-blue-500">Usando imagem padrão de contabilidade</p>
-                  )}
-                </div>
-              </div>
-              {heroImageUrl && (
-                <button
-                  type="button"
-                  onClick={() => setHeroImageUrl('')}
-                  className="text-xs text-red-500 hover:text-red-700"
-                >
-                  Remover imagem (usar padrão)
-                </button>
-              )}
-            </div>
-          )}
         </div>
 
         {/* Preview */}

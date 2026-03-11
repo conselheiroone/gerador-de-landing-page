@@ -19,6 +19,8 @@ export type HeadingProps = {
   maxWidth?: string
   /** Margin [top, right, bottom, left] em px */
   margin?: number[]
+  /** Font family override (ex: 'Playfair Display') — herda do container pai se não definido */
+  fontFamily?: string
 }
 
 const defaultProps: HeadingProps = {
@@ -56,6 +58,7 @@ export const HeadingComponent: UserComponent<Partial<HeadingProps>> = (incomingP
     textTransform,
     maxWidth,
     margin,
+    fontFamily,
   } = props
 
   const marginStyle = margin && margin.length === 4
@@ -81,6 +84,7 @@ export const HeadingComponent: UserComponent<Partial<HeadingProps>> = (incomingP
         fontWeight,
         color,
         lineHeight: lineHeight || '1.2',
+        fontFamily: fontFamily || undefined,
         letterSpacing: letterSpacing || 'normal',
         textTransform: textTransform || 'none',
         margin: marginStyle,

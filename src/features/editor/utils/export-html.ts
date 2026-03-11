@@ -367,6 +367,7 @@ function renderHeading(props: Record<string, unknown>): string {
     letterSpacing,
     textTransform: (props.textTransform as string) || 'none',
     maxWidth: (props.maxWidth as string) || undefined,
+    fontFamily: (props.fontFamily as string) || undefined,
     margin: marginStyle,
     width: '100%',
   })
@@ -1680,16 +1681,24 @@ function renderAccordion(props: Record<string, unknown>): string {
 
 // ─── Exportação principal ────────────────────────────────────────
 
-/** Detecta fontFamily no nó ROOT e gera link do Google Fonts se aplicável */
+/** Detecta fontFamily no nó ROOT e em headings, gera links do Google Fonts */
 function buildFontLink(tree: CraftTree): string {
-  const rootFont = tree.ROOT?.props?.fontFamily as string | undefined
-  if (!rootFont) return ''
-  const clean = rootFont.split(',')[0].trim().replace(/['"]/g, '')
-  if (!clean || clean.includes(' ') === false && clean.length > 40) return ''
   const systemFonts = new Set(['system-ui', 'sans-serif', 'serif', 'monospace', 'cursive', 'Arial', 'Verdana', 'Georgia', 'Times', 'Courier'])
-  if (systemFonts.has(clean)) return ''
-  const encoded = encodeURIComponent(clean)
-  return `\n  <link rel="preconnect" href="https://fonts.googleapis.com" />\n  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=${encoded}:wght@400;500;600;700;800&display=swap" />`
+  const fonts = new Set<string>()
+
+  for (const nodeId of Object.keys(tree)) {
+    const node = tree[nodeId]
+    const fontRaw = node?.props?.fontFamily as string | undefined
+    if (!fontRaw) continue
+    const clean = fontRaw.split(',')[0].trim().replace(/['"]/g, '')
+    if (!clean || systemFonts.has(clean)) continue
+    fonts.add(clean)
+  }
+
+  if (fonts.size === 0) return ''
+
+  const families = [...fonts].map(f => `family=${encodeURIComponent(f)}:wght@300;400;500;600;700;800;900`).join('&')
+  return `\n  <link rel="preconnect" href="https://fonts.googleapis.com" />\n  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?${families}&display=swap" />`
 }
 
 /**

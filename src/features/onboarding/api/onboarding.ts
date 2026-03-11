@@ -13,8 +13,6 @@ function toPerfilEmpresa(row: DbPerfilRow): PerfilEmpresa {
     redes_sociais: (row.redes_sociais ?? {}) as unknown as RedesSociais,
     // campos adicionados via migration — não estão no tipo gerado ainda
     google_place_id: (row as Record<string, unknown>).google_place_id as string | null ?? null,
-    usar_imagem_hero: (row as Record<string, unknown>).usar_imagem_hero as boolean ?? false,
-    hero_image_url: (row as Record<string, unknown>).hero_image_url as string | null ?? null,
   }
 }
 
@@ -112,17 +110,13 @@ export async function salvarStep4(perfilId: string, dados: {
   logo_url: string
   cor_primaria: string
   cor_secundaria: string
-  usar_imagem_hero: boolean
-  hero_image_url: string
 }) {
   return updatePerfilEmpresa(perfilId, {
     logo_url: dados.logo_url || null,
     cor_primaria: dados.cor_primaria,
     cor_secundaria: dados.cor_secundaria,
     etapa_atual: 5,
-    // hero image — campos não estão no tipo gerado do Supabase ainda
-    ...({ usar_imagem_hero: dados.usar_imagem_hero, hero_image_url: dados.hero_image_url || null } as Record<string, unknown>),
-  } as DbPerfilUpdate)
+  })
 }
 
 export async function salvarStep5(perfilId: string, dados: {
@@ -320,20 +314,6 @@ export async function upsertSociosDirect(
 export async function uploadLogo(userId: string, file: File): Promise<string> {
   const ext = file.name.split('.').pop()
   const path = `${userId}/logo-${Date.now()}.${ext}`
-
-  const { error } = await supabase.storage
-    .from('logos')
-    .upload(path, file, { upsert: true })
-
-  if (error) throw error
-
-  const { data } = supabase.storage.from('logos').getPublicUrl(path)
-  return data.publicUrl
-}
-
-export async function uploadHeroImage(userId: string, file: File): Promise<string> {
-  const ext = file.name.split('.').pop()
-  const path = `${userId}/hero-${Date.now()}.${ext}`
 
   const { error } = await supabase.storage
     .from('logos')

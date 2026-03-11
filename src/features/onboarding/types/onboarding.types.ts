@@ -29,8 +29,6 @@ export interface PerfilEmpresa {
   segmentos: SegmentoItem[]
   redes_sociais: RedesSociais
   google_place_id: string | null
-  usar_imagem_hero: boolean
-  hero_image_url: string | null
   onboarding_completo: boolean
   etapa_atual: number
   created_at: string
@@ -116,8 +114,6 @@ export interface IdentidadeVisualForm {
   logo_url: string
   cor_primaria: string
   cor_secundaria: string
-  usar_imagem_hero: boolean
-  hero_image_url: string
 }
 
 export interface SobreEscritorioForm {
