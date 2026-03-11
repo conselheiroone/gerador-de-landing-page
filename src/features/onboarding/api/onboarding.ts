@@ -1,13 +1,48 @@
 import { supabase } from '@/integrations/supabase/client'
 import type { Database, Json } from '@/integrations/supabase/types'
-import type { PerfilEmpresa, Socio, ServicoItem, SegmentoItem, RedesSociais } from '../types/onboarding.types'
+import type { PerfilEmpresa, Socio, ServicoItem, SegmentoItem, DiferencialItem, RedesSociais } from '../types/onboarding.types'
 
 type DbPerfilRow = Database['public']['Tables']['perfil_empresa']['Row']
 type DbPerfilUpdate = Database['public']['Tables']['perfil_empresa']['Update']
 
+function normalizeDiferencial(d: unknown): DiferencialItem {
+  // Objeto já no formato correto
+  if (typeof d === 'object' && d !== null && 'nome' in d) {
+    const obj = d as Record<string, unknown>
+    // Protege contra nome que é JSON-stringified (dados corrompidos por text[])
+    if (typeof obj.nome === 'string' && obj.nome.startsWith('{')) {
+      try {
+        const parsed = JSON.parse(obj.nome)
+        if (typeof parsed === 'object' && parsed !== null && 'nome' in parsed) {
+          return parsed as DiferencialItem
+        }
+      } catch { /* não é JSON, usa como está */ }
+    }
+    return d as DiferencialItem
+  }
+  // String que pode ser JSON de DiferencialItem
+  if (typeof d === 'string') {
+    if (d.startsWith('{')) {
+      try {
+        const parsed = JSON.parse(d)
+        if (typeof parsed === 'object' && parsed !== null && 'nome' in parsed) {
+          return parsed as DiferencialItem
+        }
+      } catch { /* não é JSON, trata como nome */ }
+    }
+    return { nome: d }
+  }
+  return { nome: String(d) }
+}
+
 function toPerfilEmpresa(row: DbPerfilRow): PerfilEmpresa {
+  // Normaliza diferenciais: aceita string[], DiferencialItem[], ou dados corrompidos
+  const rawDiferenciais = (row.diferenciais ?? []) as unknown[]
+  const diferenciais: DiferencialItem[] = (Array.isArray(rawDiferenciais) ? rawDiferenciais : []).map(normalizeDiferencial)
+
   return {
     ...row,
+    diferenciais,
     servicos: (row.servicos ?? []) as unknown as ServicoItem[],
     segmentos: ((row as Record<string, unknown>).segmentos ?? []) as unknown as SegmentoItem[],
     redes_sociais: (row.redes_sociais ?? {}) as unknown as RedesSociais,
@@ -124,14 +159,14 @@ export async function salvarStep5(perfilId: string, dados: {
   missao: string
   visao: string
   valores: string
-  diferenciais: string[]
+  diferenciais: DiferencialItem[]
 }) {
   return updatePerfilEmpresa(perfilId, {
     historia: dados.historia || null,
     missao: dados.missao || null,
     visao: dados.visao || null,
     valores: dados.valores || null,
-    diferenciais: dados.diferenciais,
+    diferenciais: dados.diferenciais as unknown as Json,
     etapa_atual: 6,
   })
 }

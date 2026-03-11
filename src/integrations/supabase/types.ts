@@ -218,7 +218,7 @@ export interface Database {
           missao: string | null
           visao: string | null
           valores: string | null
-          diferenciais: string[]
+          diferenciais: Json
           servicos: Json
           redes_sociais: Json
           onboarding_completo: boolean

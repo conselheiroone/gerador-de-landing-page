@@ -127,16 +127,34 @@ export function buildHeroSplit(
   const contactParts: TemplateNode[] = []
   if (perfil.telefone) {
     contactParts.push({
-      type: 'TextComponent',
+      type: 'ContainerComponent',
+      isCanvas: true,
       displayName: 'Telefone',
-      props: { text: `📞 ${perfil.telefone}`, fontSize: '15', fontWeight: '400', textAlign: 'left', color: palette.textMutedOnDark },
+      props: {
+        background: 'transparent', padding: 0, gap: 6, width: '100%', height: 'auto',
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start',
+        shadow: 0, radius: 0, minHeight: 0, flexWrap: 'nowrap',
+      },
+      children: [
+        { type: 'IconComponent', displayName: 'Ícone Telefone', props: { icon: 'phone', size: 15, color: palette.textMutedOnDark, weight: 'regular', backgroundColor: 'transparent', shape: 'none', padding: 0 } },
+        { type: 'TextComponent', displayName: 'Texto Telefone', props: { text: perfil.telefone, fontSize: '15', fontWeight: '400', textAlign: 'left', color: palette.textMutedOnDark } },
+      ],
     })
   }
   if (perfil.email_contato) {
     contactParts.push({
-      type: 'TextComponent',
+      type: 'ContainerComponent',
+      isCanvas: true,
       displayName: 'Email',
-      props: { text: `✉️ ${perfil.email_contato}`, fontSize: '15', fontWeight: '400', textAlign: 'left', color: palette.textMutedOnDark },
+      props: {
+        background: 'transparent', padding: 0, gap: 6, width: '100%', height: 'auto',
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start',
+        shadow: 0, radius: 0, minHeight: 0, flexWrap: 'nowrap',
+      },
+      children: [
+        { type: 'IconComponent', displayName: 'Ícone Email', props: { icon: 'mail', size: 15, color: palette.textMutedOnDark, weight: 'regular', backgroundColor: 'transparent', shape: 'none', padding: 0 } },
+        { type: 'TextComponent', displayName: 'Texto Email', props: { text: perfil.email_contato, fontSize: '15', fontWeight: '400', textAlign: 'left', color: palette.textMutedOnDark } },
+      ],
     })
   }
   if (contactParts.length > 0) {
@@ -145,9 +163,9 @@ export function buildHeroSplit(
       isCanvas: true,
       displayName: 'Contato Hero',
       props: {
-        background: 'transparent', padding: 0, gap: 16, width: 'auto', height: 'auto',
-        flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start',
-        flexWrap: 'wrap', shadow: 0, radius: 0, marginBottom: 32,
+        background: 'transparent', padding: 0, gap: 8, width: 'auto', height: 'auto',
+        flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start',
+        shadow: 0, radius: 0, marginBottom: 32,
       },
       children: contactParts,
     })

@@ -24,7 +24,7 @@ export interface PerfilEmpresa {
   missao: string | null
   visao: string | null
   valores: string | null
-  diferenciais: string[]
+  diferenciais: DiferencialItem[]
   servicos: ServicoItem[]
   segmentos: SegmentoItem[]
   redes_sociais: RedesSociais
@@ -65,6 +65,11 @@ export interface Depoimento {
   ordem: number
   created_at: string
   updated_at: string
+}
+
+export interface DiferencialItem {
+  nome: string
+  descricao?: string
 }
 
 export interface ServicoItem {
@@ -121,7 +126,7 @@ export interface SobreEscritorioForm {
   missao: string
   visao: string
   valores: string
-  diferenciais: string[]
+  diferenciais: DiferencialItem[]
 }
 
 export interface ServicosForm {

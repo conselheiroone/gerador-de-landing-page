@@ -32,7 +32,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { extractColorsFromFile } from '@/utils/extract-colors'
 import { usePerfilEmpresa } from '@/features/onboarding/hooks/usePerfilEmpresa'
-import type { Socio, ServicoItem, SegmentoItem } from '@/features/onboarding/types/onboarding.types'
+import type { Socio, ServicoItem, SegmentoItem, DiferencialItem } from '@/features/onboarding/types/onboarding.types'
 import { HorarioSelector } from '@/features/onboarding/components/HorarioSelector'
 import {
   ESPECIALIDADES_CONTABEIS,
@@ -777,23 +777,34 @@ function SobreForm({
   onSave,
   registerSave,
 }: {
-  perfil: { historia: string | null; missao: string | null; visao: string | null; valores: string | null; diferenciais: string[] }
-  onSave: (dados: { historia: string; missao: string; visao: string; valores: string; diferenciais: string[] }) => Promise<void>
+  perfil: { historia: string | null; missao: string | null; visao: string | null; valores: string | null; diferenciais: DiferencialItem[] }
+  onSave: (dados: { historia: string; missao: string; visao: string; valores: string; diferenciais: DiferencialItem[] }) => Promise<void>
   registerSave: (id: string, fn: () => Promise<void>) => void
 }) {
   const [historia, setHistoria] = useState(perfil.historia ?? '')
   const [missao, setMissao] = useState(perfil.missao ?? '')
   const [visao, setVisao] = useState(perfil.visao ?? '')
   const [valores, setValores] = useState(perfil.valores ?? '')
-  const [diferenciais, setDiferenciais] = useState<string[]>(perfil.diferenciais ?? [])
+  const [diferenciais, setDiferenciais] = useState<DiferencialItem[]>(perfil.diferenciais ?? [])
   const [novoDif, setNovoDif] = useState('')
+  const [editingDifIndex, setEditingDifIndex] = useState<number | null>(null)
 
   function addDiferencial() {
     const d = novoDif.trim()
-    if (d && !diferenciais.includes(d)) {
-      setDiferenciais(prev => [...prev, d])
+    if (d && !diferenciais.some(dif => dif.nome === d)) {
+      setDiferenciais(prev => [...prev, { nome: d }])
       setNovoDif('')
     }
+  }
+
+  function updateDifDescricao(index: number, descricao: string) {
+    setDiferenciais(prev => prev.map((d, i) => i === index ? { ...d, descricao } : d))
+  }
+
+  function removeDiferencial(index: number) {
+    setDiferenciais(prev => prev.filter((_, idx) => idx !== index))
+    if (editingDifIndex === index) setEditingDifIndex(null)
+    else if (editingDifIndex !== null && editingDifIndex > index) setEditingDifIndex(editingDifIndex - 1)
   }
 
   const _save = useRef<() => Promise<void>>(async () => {})
@@ -829,12 +840,34 @@ function SobreForm({
           </Button>
         </div>
         {diferenciais.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1.5">
+          <div className="mt-2 space-y-1.5">
             {diferenciais.map((d, i) => (
-              <span key={i} className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
-                {d}
-                <button type="button" onClick={() => setDiferenciais(prev => prev.filter((_, idx) => idx !== i))} className="hover:text-red-500">&times;</button>
-              </span>
+              <div key={i} className="rounded-lg border border-gray-100 bg-white">
+                <div className="flex items-center gap-2 px-3 py-2">
+                  <span className="flex-1 text-sm font-medium text-brand-700">{d.nome}</span>
+                  <button
+                    type="button"
+                    onClick={() => setEditingDifIndex(editingDifIndex === i ? null : i)}
+                    className="rounded px-1.5 py-0.5 text-[10px] text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                  >
+                    {d.descricao ? 'editar descrição' : '+ descrição'}
+                  </button>
+                  <button type="button" onClick={() => removeDiferencial(i)} className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500">
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                {editingDifIndex === i && (
+                  <div className="border-t border-gray-50 px-3 pb-3 pt-2">
+                    <textarea
+                      value={d.descricao ?? ''}
+                      onChange={(e) => updateDifDescricao(i, e.target.value)}
+                      placeholder="Descreva este diferencial para a landing page (opcional)"
+                      rows={2}
+                      className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20"
+                    />
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         )}
@@ -922,7 +955,7 @@ function ServicosForm({
                   onClick={() => setEditingIndex(editingIndex === i ? null : i)}
                   className="rounded px-1.5 py-0.5 text-[10px] text-gray-400 hover:bg-gray-100 hover:text-gray-600"
                 >
-                  {s.descricao ? 'editar' : '+ descrição'}
+                  {s.descricao ? 'editar descrição' : '+ descrição'}
                 </button>
                 <button type="button" onClick={() => removeServico(i)} className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500">
                   <X className="h-3.5 w-3.5" />
@@ -1026,7 +1059,7 @@ function SegmentosForm({
                   onClick={() => setEditingIndex(editingIndex === i ? null : i)}
                   className="rounded px-1.5 py-0.5 text-[10px] text-gray-400 hover:bg-gray-100 hover:text-gray-600"
                 >
-                  {s.descricao ? 'editar' : '+ descrição'}
+                  {s.descricao ? 'editar descrição' : '+ descrição'}
                 </button>
                 <button type="button" onClick={() => removeSegmento(i)} className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500">
                   <X className="h-3.5 w-3.5" />

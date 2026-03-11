@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/features/auth/hooks/use-auth'
-import type { PerfilEmpresa, Socio, ServicoItem, SegmentoItem, RedesSociais } from '../types/onboarding.types'
+import type { PerfilEmpresa, Socio, ServicoItem, SegmentoItem, DiferencialItem, RedesSociais } from '../types/onboarding.types'
 import type { Json } from '@/integrations/supabase/types'
 import {
   getPerfilEmpresa,
@@ -162,7 +162,7 @@ export function usePerfilEmpresa() {
     missao: string
     visao: string
     valores: string
-    diferenciais: string[]
+    diferenciais: DiferencialItem[]
     google_place_id?: string
   }) => {
     if (!perfil) return

@@ -73,7 +73,7 @@ UPDATE perfil_empresa SET
   missao = 'Simplificar a gestao contabil e financeira dos nossos clientes, permitindo que foquem no crescimento dos seus negocios.',
   visao = 'Ser referencia nacional em contabilidade consultiva para PMEs ate 2028.',
   valores = 'Transparencia, Inovacao, Proximidade, Excelencia',
-  diferenciais = ARRAY['Atendimento personalizado', 'Dashboard em tempo real', 'Consultoria tributaria proativa', 'Equipe especializada por segmento'],
+  diferenciais = '[{"nome":"Atendimento personalizado"},{"nome":"Dashboard em tempo real"},{"nome":"Consultoria tributaria proativa"},{"nome":"Equipe especializada por segmento"}]'::jsonb,
 
   -- Step 6: Servicos
   servicos = '[
@@ -135,7 +135,7 @@ SELECT
   'Oferecer servicos contabeis de excelencia com atendimento humanizado.',
   'Ser o escritorio de contabilidade mais confiavel do Rio de Janeiro.',
   'Etica, Compromisso, Agilidade, Confianca',
-  ARRAY['Mais de 14 anos de experiencia', 'Atendimento humanizado', 'Tecnologia de ponta', 'Especialistas em MEI e Simples Nacional'],
+  '[{"nome":"Mais de 14 anos de experiencia"},{"nome":"Atendimento humanizado"},{"nome":"Tecnologia de ponta"},{"nome":"Especialistas em MEI e Simples Nacional"}]'::jsonb,
   '[
     {"nome": "Contabilidade Geral", "descricao": "Servicos contabeis completos para sua empresa, do MEI ao Lucro Real.", "icone": "building"},
     {"nome": "Imposto de Renda", "descricao": "Declaracao de IRPF e IRPJ com planejamento para pagar menos impostos.", "icone": "calculator"},

@@ -56,12 +56,17 @@ export const identidadeVisualSchema = z.object({
   cor_secundaria: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Cor inválida').default('#1A1A1A'),
 })
 
+export const diferencialItemSchema = z.object({
+  nome: z.string().min(1, 'Nome do diferencial é obrigatório'),
+  descricao: z.string().optional().or(z.literal('')),
+})
+
 export const sobreEscritorioSchema = z.object({
   historia: z.string().optional().or(z.literal('')),
   missao: z.string().optional().or(z.literal('')),
   visao: z.string().optional().or(z.literal('')),
   valores: z.string().optional().or(z.literal('')),
-  diferenciais: z.array(z.string()).default([]),
+  diferenciais: z.array(diferencialItemSchema).default([]),
   google_place_id: z.string().optional().or(z.literal('')),
 })
 
