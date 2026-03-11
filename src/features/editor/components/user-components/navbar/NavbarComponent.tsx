@@ -166,7 +166,7 @@ export const NavbarComponent: UserComponent<Partial<NavbarProps>> = (incomingPro
       )}
 
       {/* Nav links */}
-      <div style={{
+      <div className="nav-links" style={{
         display: 'flex',
         alignItems: 'center',
         flexWrap: 'wrap',
@@ -196,6 +196,7 @@ export const NavbarComponent: UserComponent<Partial<NavbarProps>> = (incomingPro
       {/* CTA button */}
       {props.ctaText && (
         <button
+          className="nav-cta"
           style={{
             background: props.ctaBg,
             color: props.ctaColor,
@@ -225,21 +226,41 @@ export const NavbarComponent: UserComponent<Partial<NavbarProps>> = (incomingPro
     gap: `clamp(6px, 1.5vw, ${props.paddingY}px) clamp(10px, 3vw, ${hasLogo ? 16 : 40}px)`,
   }
 
+  // Unique id for scoped container-query styles
+  const navId = 'nav-cq'
+
   return (
     <nav
       ref={(ref) => { if (ref) connect(ref) }}
+      data-nav={navId}
       style={{
         width: '100%',
         background: props.background,
         padding: `clamp(10px, 2vw, ${props.paddingY}px) clamp(12px, 4vw, ${props.paddingX}px)`,
         boxSizing: 'border-box',
+        containerType: 'inline-size' as React.CSSProperties['containerType'],
         ...(hasBlur ? { backdropFilter: `blur(${props.backdropBlur}px)`, WebkitBackdropFilter: `blur(${props.backdropBlur}px)` } : {}),
         borderBottom: props.borderBottom,
         ...(props.contentMaxWidth ? {} : flexStyles),
       }}
     >
+      <style>{`
+        @container (max-width: 840px) {
+          [data-nav="${navId}"] .nav-inner { gap: 8px !important; flex-wrap: nowrap !important; }
+          [data-nav="${navId}"] .nav-links { gap: 10px !important; }
+          [data-nav="${navId}"] .nav-links a { font-size: 11px !important; }
+          [data-nav="${navId}"] .nav-cta { font-size: 11px !important; padding: 6px 12px !important; }
+        }
+        @container (max-width: 600px) {
+          [data-nav="${navId}"] .nav-inner { flex-wrap: wrap !important; }
+          [data-nav="${navId}"] .nav-links { display: none !important; }
+        }
+        @container (max-width: 380px) {
+          [data-nav="${navId}"] .nav-cta { display: none !important; }
+        }
+      `}</style>
       {props.contentMaxWidth ? (
-        <div style={{ ...flexStyles, maxWidth: props.contentMaxWidth, margin: '0 auto', width: '100%' }}>
+        <div className="nav-inner" style={{ ...flexStyles, maxWidth: props.contentMaxWidth, margin: '0 auto', width: '100%' }}>
           {content}
         </div>
       ) : content}

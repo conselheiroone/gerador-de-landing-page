@@ -73,7 +73,7 @@ export const ExportModal = ({ open, onClose, pageTitle }: ExportModalProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-xl shadow-2xl w-[90vw] max-w-5xl h-[85vh] flex flex-col overflow-hidden">
+      <div className="bg-white rounded-xl shadow-2xl w-[95vw] max-w-6xl h-[85vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
           <div>
@@ -118,11 +118,11 @@ export const ExportModal = ({ open, onClose, pageTitle }: ExportModalProps) => {
         <div className="flex-1 overflow-hidden">
           {tab === 'preview' ? (
             html ? (
-              <div className="flex justify-center h-full overflow-auto bg-gray-100 py-6">
+              <div className="flex justify-center h-full overflow-auto bg-gray-100 py-6 px-4">
                 <div
                   className="h-full flex-shrink-0"
                   style={{
-                    width: '768px',
+                    width: '1080px',
                     maxWidth: '100%',
                     boxShadow: '0 0 0 1px rgba(0,0,0,0.08), 0 4px 20px rgba(0,0,0,0.06)',
                     borderRadius: '12px',

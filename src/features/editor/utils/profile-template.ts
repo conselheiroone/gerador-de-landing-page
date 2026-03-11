@@ -285,11 +285,10 @@ function buildNavbar(
       borderBottom: 'none',
       logoText: nome,
       logoSrc: perfil.logo_url || '',
-      logoWidth: hasLogo ? 180 : undefined,
-      logoHeight: hasLogo ? undefined : 44,
+      logoWidth: hasLogo ? 140 : undefined,
+      logoHeight: hasLogo ? 48 : 44,
       logoBg: hasLogo ? palette.cardBackground : 'transparent',
-      // Estilo "dropdown" — logo em container branco que pende do navbar
-      logoShape: hasLogo ? 'dropdown' : 'pill',
+      logoShape: hasLogo ? 'pill' : 'pill',
       showLogoText: false,
       links: [
         { label: 'Início', href: '#' },

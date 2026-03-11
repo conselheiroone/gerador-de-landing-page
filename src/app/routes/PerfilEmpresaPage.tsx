@@ -112,7 +112,6 @@ export function PerfilEmpresaPage() {
     clearError,
     updateGooglePlaceId,
     uploadLogo,
-    uploadHeroImage,
     uploadFotoSocio,
     buscarCep,
   } = usePerfilEmpresa()
@@ -229,7 +228,6 @@ export function PerfilEmpresaPage() {
           userId={userId!}
           onSave={updateIdentidadeVisual}
           uploadLogo={uploadLogo}
-          uploadHeroImage={uploadHeroImage}
           registerSave={registerSave}
         />
       </Section>
@@ -694,25 +692,19 @@ function IdentidadeVisualForm({
   userId,
   onSave,
   uploadLogo,
-  uploadHeroImage,
   registerSave,
 }: {
-  perfil: { logo_url: string | null; cor_primaria: string; cor_secundaria: string; usar_imagem_hero: boolean; hero_image_url: string | null }
+  perfil: { logo_url: string | null; cor_primaria: string; cor_secundaria: string }
   userId: string
-  onSave: (dados: { logo_url: string; cor_primaria: string; cor_secundaria: string; usar_imagem_hero: boolean; hero_image_url: string }) => Promise<void>
+  onSave: (dados: { logo_url: string; cor_primaria: string; cor_secundaria: string }) => Promise<void>
   uploadLogo: (userId: string, file: File) => Promise<string>
-  uploadHeroImage: (userId: string, file: File) => Promise<string>
   registerSave: (id: string, fn: () => Promise<void>) => void
 }) {
   const [logoUrl, setLogoUrl] = useState(perfil.logo_url ?? '')
   const [corPrimaria, setCorPrimaria] = useState(perfil.cor_primaria)
   const [corSecundaria, setCorSecundaria] = useState(perfil.cor_secundaria)
-  const [usarImagemHero, setUsarImagemHero] = useState(perfil.usar_imagem_hero ?? false)
-  const [heroImageUrl, setHeroImageUrl] = useState(perfil.hero_image_url ?? '')
   const [uploading, setUploading] = useState(false)
-  const [uploadingHero, setUploadingHero] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const heroFileInputRef = useRef<HTMLInputElement>(null)
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -734,27 +726,13 @@ function IdentidadeVisualForm({
     }
   }
 
-  async function handleHeroFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setUploadingHero(true)
-    try {
-      const url = await uploadHeroImage(userId, file)
-      setHeroImageUrl(url)
-    } finally {
-      setUploadingHero(false)
-      if (heroFileInputRef.current) heroFileInputRef.current.value = ''
-    }
-  }
-
   const _save = useRef<() => Promise<void>>(async () => {})
-  _save.current = async () => { await onSave({ logo_url: logoUrl, cor_primaria: corPrimaria, cor_secundaria: corSecundaria, usar_imagem_hero: usarImagemHero, hero_image_url: heroImageUrl }) }
+  _save.current = async () => { await onSave({ logo_url: logoUrl, cor_primaria: corPrimaria, cor_secundaria: corSecundaria }) }
   useEffect(() => { registerSave('visual', () => _save.current()) }, [registerSave])
 
   return (
     <div className="space-y-4">
       <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" className="hidden" onChange={handleFileChange} />
-      <input ref={heroFileInputRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={handleHeroFileChange} />
       <div>
         <label className="mb-1.5 block text-sm font-medium text-gray-700">Logo da Empresa</label>
         <div className="flex items-center gap-4">
@@ -787,56 +765,6 @@ function IdentidadeVisualForm({
         </div>
       </div>
 
-      {/* Imagem de Fundo do Hero */}
-      <div className="rounded-lg border border-gray-200 p-4">
-        <label className="mb-3 block text-sm font-medium text-gray-700">
-          Imagem de fundo no topo da pagina
-        </label>
-        <div className="flex gap-3 mb-3">
-          <button
-            type="button"
-            onClick={() => setUsarImagemHero(true)}
-            className={cn('px-4 py-2 text-sm rounded-lg border transition-colors', usarImagemHero ? 'border-blue-500 bg-blue-50 text-blue-700 font-medium' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50')}
-          >
-            Sim
-          </button>
-          <button
-            type="button"
-            onClick={() => setUsarImagemHero(false)}
-            className={cn('px-4 py-2 text-sm rounded-lg border transition-colors', !usarImagemHero ? 'border-blue-500 bg-blue-50 text-blue-700 font-medium' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50')}
-          >
-            Nao
-          </button>
-        </div>
-        {usarImagemHero && (
-          <div className="space-y-3 pt-2 border-t border-gray-100">
-            <p className="text-xs text-gray-500">
-              Envie uma imagem personalizada ou use a imagem padrao com tema de contabilidade.
-            </p>
-            <div className="flex items-center gap-4">
-              <img
-                src={heroImageUrl || '/assets/hero/contabilidade-default.svg'}
-                alt="Hero background"
-                className="h-16 w-28 rounded-lg border border-gray-200 object-cover"
-              />
-              <div className="space-y-1">
-                <Button type="button" variant="outline" size="sm" isLoading={uploadingHero} onClick={() => heroFileInputRef.current?.click()}>
-                  {heroImageUrl ? 'Trocar imagem' : 'Enviar imagem personalizada'}
-                </Button>
-                <p className="text-xs text-gray-400">PNG, JPG ou WebP. 1920x1080 recomendado.</p>
-                {!heroImageUrl && (
-                  <p className="text-xs text-blue-500">Usando imagem padrao de contabilidade</p>
-                )}
-              </div>
-            </div>
-            {heroImageUrl && (
-              <button type="button" onClick={() => setHeroImageUrl('')} className="text-xs text-red-500 hover:text-red-700">
-                Remover imagem (usar padrao)
-              </button>
-            )}
-          </div>
-        )}
-      </div>
 
     </div>
   )

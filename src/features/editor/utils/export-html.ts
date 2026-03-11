@@ -49,6 +49,12 @@ input,button,textarea,select{font:inherit}
 p,h1,h2,h3,h4,h5,h6{overflow-wrap:break-word}
 a{color:inherit;text-decoration:none}
 hr{border:none}
+@container (max-width:840px){.lp-nav-inner{gap:8px!important}.lp-nav-links{gap:10px!important}.lp-nav-links a{font-size:11px!important}.lp-nav-cta{font-size:11px!important;padding:6px 12px!important}}
+@container (max-width:600px){.lp-nav-inner{flex-wrap:wrap!important}.lp-nav-links{display:none!important}}
+@container (max-width:380px){.lp-nav-cta{display:none!important}}
+@media (max-width:840px){.lp-nav-inner{gap:8px!important}.lp-nav-links{gap:10px!important}.lp-nav-links a{font-size:11px!important}.lp-nav-cta{font-size:11px!important;padding:6px 12px!important}}
+@media (max-width:600px){.lp-nav-inner{flex-wrap:wrap!important}.lp-nav-links{display:none!important}}
+@media (max-width:380px){.lp-nav-cta{display:none!important}}
 `
 
 // ─── Helpers ─────────────────────────────────────────────────────
@@ -667,7 +673,7 @@ function renderNavbar(props: Record<string, unknown>): string {
   ).join('\n')
 
   const ctaHtml = ctaText
-    ? `<button style="background:${escapeHtml(ctaBg)};color:${escapeHtml(ctaColor)};border:none;border-radius:${ctaBorderRadius}px;padding:clamp(7px,1.8vw,11px) clamp(12px,3vw,24px);font-size:clamp(11px,2.5vw,${linkFontSize}px);font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;letter-spacing:0.2px">${escapeHtml(ctaText)}</button>`
+    ? `<button class="lp-nav-cta" style="background:${escapeHtml(ctaBg)};color:${escapeHtml(ctaColor)};border:none;border-radius:${ctaBorderRadius}px;padding:clamp(7px,1.8vw,11px) clamp(12px,3vw,24px);font-size:clamp(11px,2.5vw,${linkFontSize}px);font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;letter-spacing:0.2px">${escapeHtml(ctaText)}</button>`
     : ''
 
   const blurStyles = hasBlur
@@ -675,8 +681,8 @@ function renderNavbar(props: Record<string, unknown>): string {
     : ''
 
   const contentMaxWidth = props.contentMaxWidth as string | undefined
-  const flexStyles = `display:flex;align-items:center;justify-content:${hasLogo ? 'space-between' : 'center'};flex-wrap:wrap;gap:clamp(6px,1.5vw,${paddingY}px) clamp(10px,3vw,${hasLogo ? 16 : 40}px)`
-  const navStyle = `width:100%;background:${escapeHtml(bg)};padding:clamp(10px,2vw,${paddingY}px) clamp(12px,4vw,${paddingX}px);box-sizing:border-box;border-bottom:${escapeHtml(borderBottom)}${blurStyles}${contentMaxWidth ? '' : `;${flexStyles}`}`
+  const flexStyles = `display:flex;align-items:center;justify-content:${hasLogo ? 'space-between' : 'center'};flex-wrap:nowrap;gap:clamp(6px,1.5vw,${paddingY}px) clamp(10px,3vw,${hasLogo ? 16 : 40}px)`
+  const navStyle = `width:100%;background:${escapeHtml(bg)};padding:clamp(10px,2vw,${paddingY}px) clamp(12px,4vw,${paddingX}px);box-sizing:border-box;border-bottom:${escapeHtml(borderBottom)};container-type:inline-size${blurStyles}${contentMaxWidth ? '' : `;${flexStyles}`}`
   const linksContainerStyle = `display:flex;align-items:center;flex-wrap:wrap;gap:clamp(8px,2.5vw,32px);justify-content:center${hasLogo ? ';flex:1 1 auto;min-width:0' : ''}`
 
   const innerContent = `${hasLogo ? `<div style="display:flex;align-items:center;flex-shrink:0;gap:10px">${logoHtml}</div>` : ''}
@@ -817,10 +823,8 @@ function renderHeroSection(props: Record<string, unknown>, children: string): st
     backgroundSize: hasImage ? 'cover' : undefined,
     backgroundPosition: hasImage ? 'center' : undefined,
     backgroundAttachment: hasImage && parallax ? 'fixed' : undefined,
-    ...(minHeightCalc || minHeightVh
-      ? { height: resolvedMinHeight }
-      : { minHeight: resolvedMinHeight }),
-    overflow: 'hidden',
+    minHeight: resolvedMinHeight,
+    overflow: 'visible',
     display: 'flex',
     flexDirection: 'column',
   })
