@@ -23,12 +23,24 @@ export type FontCombination = {
 export type BorderRadiusStyle = 'sharp' | 'rounded' | 'pill'
 export type ShadowStyle = 'flat' | 'soft' | 'elevated'
 export type SpacingScale = 'compact' | 'normal' | 'spacious'
+export type AnimationPreset = 'none' | 'float' | 'fadeInUp' | 'fadeInRight'
+export type BoxShadowPreset = 'none' | 'soft' | 'elevated' | 'dramatic'
+
+export interface VisualEffects {
+  /** Animação aplicada a cards dentro de seções */
+  cardAnimation: AnimationPreset
+  /** Efeito de sombra decorativa em cards */
+  cardBoxShadow: BoxShadowPreset
+  /** Animação aplicada a seções inteiras */
+  sectionAnimation: AnimationPreset
+}
 
 export interface MicroVariations {
   font: FontCombination
   borderRadius: BorderRadiusStyle
   shadowStyle: ShadowStyle
   spacing: SpacingScale
+  effects: VisualEffects
 }
 
 // ─── Combinações de Tipografia ───────────────────────────────
@@ -127,11 +139,22 @@ function pickRandom<T>(arr: T[], rng: () => number): T {
 export function generateMicroVariations(seed?: number): MicroVariations {
   const rng = seed !== undefined ? seededRandom(seed) : Math.random
 
+  // Gera efeitos visuais com combinações coerentes
+  const cardAnimation = pickRandom<AnimationPreset>(['none', 'none', 'float', 'fadeInUp', 'fadeInRight'], rng)
+  const sectionAnimation = cardAnimation === 'none'
+    ? pickRandom<AnimationPreset>(['none', 'fadeInUp'], rng)
+    : 'none' // evita excesso de animação se cards já animam
+
   return {
     font: pickRandom(FONT_COMBINATIONS, rng),
     borderRadius: pickRandom<BorderRadiusStyle>(['sharp', 'rounded', 'pill'], rng),
     shadowStyle: pickRandom<ShadowStyle>(['flat', 'soft', 'elevated'], rng),
     spacing: pickRandom<SpacingScale>(['compact', 'normal', 'spacious'], rng),
+    effects: {
+      cardAnimation,
+      cardBoxShadow: pickRandom<BoxShadowPreset>(['none', 'soft', 'elevated', 'dramatic'], rng),
+      sectionAnimation,
+    },
   }
 }
 
@@ -149,6 +172,7 @@ export function applyMicroVariations(
   const radii = BORDER_RADIUS_VALUES[variations.borderRadius]
   const shadows = SHADOW_VALUES[variations.shadowStyle]
   const spacing = SPACING_VALUES[variations.spacing]
+  const effects = variations.effects
 
   for (const nodeId of Object.keys(tree)) {
     const node = tree[nodeId]
@@ -161,19 +185,49 @@ export function applyMicroVariations(
       node.props.fontFamily = variations.font.body
     }
 
-    // Ajusta border-radius em cards (ContainerComponent com shadow > 0)
+    // ─── ContainerComponent ──────────────────────────────────
     if (componentName === 'ContainerComponent') {
-      if (node.props.shadow > 0 || node.props.borderAccent) {
+      const bg = (node.props.background || '') as string
+      const hasGradientBg = bg.includes('gradient')
+      const isFeatureContainer = hasGradientBg || node.props.shadow >= 3 || node.props.overlayColor
+      const isCard = (node.props.shadow > 0 || node.props.borderAccent) && !isFeatureContainer
+      const isSection = node.props.paddingY && node.props.paddingY >= 60
+
+      // Ajusta border-radius e shadow em cards normais (NÃO em feature containers)
+      if (isCard) {
         node.props.radius = radii.card
         node.props.shadow = shadows.card
+
+        // Aplica animação e boxShadowPreset em cards
+        if (effects.cardAnimation !== 'none') {
+          node.props.animationPreset = effects.cardAnimation
+        }
+        if (effects.cardBoxShadow !== 'none') {
+          node.props.boxShadowPreset = effects.cardBoxShadow
+        }
       }
-      // Ajusta padding de seções (paddingY em containers com sectionId ou paddingY >= 60)
-      if (node.props.paddingY && node.props.paddingY >= 60) {
+
+      // Ajusta padding de seções (exceto feature containers)
+      if (isSection && !isFeatureContainer) {
         node.props.paddingY = spacing.sectionPaddingY
+
+        // Aplica animação em seções
+        if (effects.sectionAnimation !== 'none') {
+          node.props.animationPreset = effects.sectionAnimation
+        }
       }
-      // Ajusta padding de cards (padding 20-36)
-      if (node.props.padding >= 20 && node.props.padding <= 36 && node.props.shadow >= 0) {
+
+      // Ajusta padding de cards normais (padding 20-36)
+      if (node.props.padding >= 20 && node.props.padding <= 36 && isCard) {
         node.props.padding = spacing.cardPadding
+      }
+    }
+
+    // ─── FeaturesSectionComponent ────────────────────────────
+    if (componentName === 'FeaturesSectionComponent') {
+      node.props.gap = spacing.gap
+      if (node.props.paddingY) {
+        node.props.paddingY = spacing.sectionPaddingY
       }
     }
 
@@ -197,12 +251,10 @@ export function applyMicroVariations(
       node.props.borderRadius = radii.image
     }
 
-    // Ajusta gap em FeaturesSectionComponent
-    if (componentName === 'FeaturesSectionComponent') {
-      node.props.gap = spacing.gap
-      if (node.props.paddingY) {
-        node.props.paddingY = spacing.sectionPaddingY
-      }
+    // ─── StatsBandComponent: randomiza glow ──────────────────
+    if (componentName === 'StatsBandComponent') {
+      // showGlow varia com o estilo de shadow geral
+      node.props.showGlow = effects.cardBoxShadow === 'dramatic' || effects.cardBoxShadow === 'elevated'
     }
   }
 

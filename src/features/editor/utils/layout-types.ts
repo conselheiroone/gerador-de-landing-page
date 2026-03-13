@@ -22,16 +22,20 @@ export type SectionType =
 
 // ─── Variantes de Componente ────────────────────────────────
 
+export type NavbarVariant = 'default' | 'minimal-white' | 'bold-dark'
 export type HeroVariant = 'split' | 'centered' | 'full-image' | 'minimal'
+export type StatsVariant = 'band' | 'floating-cards' | 'inline-minimal'
 export type ServicesVariant = 'cards-grid' | 'bento' | 'icon-list'
+export type SegmentsVariant = 'default' | 'pills' | 'icon-grid'
 export type TestimonialsVariant = 'grid' | 'quote-highlight'
 export type AboutVariant = 'mvv-cards' | 'compact'
-export type CtaVariant = 'default' | 'simple'
+export type TeamVariant = 'default' | 'horizontal' | 'minimal'
+export type CtaVariant = 'default' | 'simple' | 'boxed' | 'inline-strip'
 export type FooterVariant = 'centered' | 'columns' | 'compact'
 
 // ─── Background de Seção ────────────────────────────────────
 
-export type SectionBackground = 'white' | 'tintPri' | 'tintSec' | 'transparent'
+export type SectionBackground = 'white' | 'tintPri' | 'tintSec' | 'transparent' | 'dark' | 'cream' | 'creamSec' | 'primarySolid'
 
 // ─── Blueprint Section ──────────────────────────────────────
 
@@ -49,6 +53,8 @@ export interface LayoutBlueprint {
   name: string
   description: string
   sections: BlueprintSection[]
+  /** Padding vertical padrão das seções (override do padrão 80). */
+  sectionPaddingY?: number
 }
 
 // ─── Parâmetros compartilhados pelos builders ───────────────

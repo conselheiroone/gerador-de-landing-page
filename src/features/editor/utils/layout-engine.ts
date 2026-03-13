@@ -8,7 +8,7 @@
 import type { PerfilEmpresa, Socio, Depoimento } from '@/features/onboarding/types/onboarding.types'
 import { buildCraftJson, type TemplateNode } from './default-templates'
 import { generatePalette, type ColorPalette } from './color-palette'
-import type { LayoutBlueprint, SectionBackground, HeroVariant, ServicesVariant, TestimonialsVariant, AboutVariant, CtaVariant, FooterVariant } from './layout-types'
+import type { LayoutBlueprint, SectionBackground, NavbarVariant, HeroVariant, StatsVariant, ServicesVariant, SegmentsVariant, TestimonialsVariant, AboutVariant, TeamVariant, CtaVariant, FooterVariant } from './layout-types'
 import { BLUEPRINTS, getBlueprintById } from './layout-blueprints'
 import {
   buildNavbar,
@@ -32,9 +32,135 @@ function resolveSectionBg(style: SectionBackground, palette: ColorPalette): stri
     case 'tintPri': return palette.primaryTint
     case 'tintSec': return palette.secondaryTint
     case 'transparent': return 'transparent'
+    case 'dark': return palette.secondaryDarker
+    case 'cream': return palette.primarySoft
+    case 'creamSec': return palette.secondarySoft
+    case 'primarySolid': return palette.primary
     case 'white':
     default: return '#ffffff'
   }
+}
+
+// ─── Transições de cor entre seções ──────────────────────────
+
+/** Altura padrão das faixas de transição entre seções (px). */
+const TRANSITION_HEIGHT = '157px'
+
+/**
+ * Extrai a cor de fundo efetiva de uma seção para calcular transições.
+ * Retorna null apenas para navbar (fica colado ao hero).
+ */
+function extractEffectiveBg(node: TemplateNode, palette: ColorPalette): string | null {
+  const props = node.props as Record<string, unknown>
+  const type = node.type
+  const displayName = node.displayName || ''
+
+  // Navbar: pular — fica visualmente colado ao hero
+  if (displayName === 'Navbar') return null
+
+  // Hero/CTA (HeroSectionComponent): aproximar pela cor do overlay
+  if (type === 'HeroSectionComponent') {
+    const overlayColor = props?.overlayColor as string | undefined
+    if (overlayColor) {
+      // Extrair última cor hex do gradiente do overlay
+      const hexMatches = overlayColor.match(/#[0-9a-fA-F]{6}/g)
+      if (hexMatches && hexMatches.length > 0) {
+        return hexMatches[hexMatches.length - 1]
+      }
+    }
+    return palette.secondaryDarker
+  }
+
+  // Stats band: gradiente escuro, cor dominante na borda inferior ≈ secondary
+  if (type === 'StatsBandComponent') return palette.secondary
+
+  const bg = props?.background as string | undefined
+  if (!bg) return null
+
+  // Pular backgrounds com gradientes internos (ex: CTA boxed)
+  if (bg.includes('gradient')) return null
+
+  return bg
+}
+
+/**
+ * Injeta faixas de transição gradiente entre seções com cores de fundo diferentes.
+ * Cria uma transição visual suave entre toda a página.
+ *
+ * Regras:
+ * - Injeta entre TODAS as seções com backgrounds diferentes
+ * - Navbar retorna null (sem transição navbar↔hero)
+ * - Hero/CTA: usa cor aproximada do overlay gradient
+ * - Stats band: usa palette.secondary como cor de borda
+ * - Seções com mesmo bg: sem transição (já são viualmente contínuas)
+ */
+function injectColorTransitions(sections: TemplateNode[], palette: ColorPalette): TemplateNode[] {
+  if (sections.length < 2) return sections
+
+  const result: TemplateNode[] = [sections[0]]
+
+  for (let i = 1; i < sections.length; i++) {
+    const prevBg = extractEffectiveBg(sections[i - 1], palette)
+    const nextBg = extractEffectiveBg(sections[i], palette)
+
+    // Pular transição hero↔stats (ambos escuros, visualmente contínuos)
+    const prevType = sections[i - 1].type
+    const nextType = sections[i].type
+    const isHeroStats = (prevType === 'HeroSectionComponent' && nextType === 'StatsBandComponent')
+      || (prevType === 'StatsBandComponent' && nextType === 'HeroSectionComponent')
+
+    // Insere transição sempre que ambos têm bg resolvido
+    // Cores diferentes → gradiente suave; mesma cor → spacer sólido (espaçamento consistente)
+    if (prevBg && nextBg && !isHeroStats) {
+      const bg = prevBg === nextBg
+        ? prevBg
+        : `linear-gradient(to bottom, ${prevBg}, ${nextBg})`
+
+      result.push({
+        type: 'ContainerComponent',
+        isCanvas: false,
+        displayName: 'Transição',
+        props: {
+          background: bg,
+          padding: 0,
+          paddingY: 0,
+          paddingX: 0,
+          gap: 0,
+          width: '100%',
+          height: TRANSITION_HEIGHT,
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          shadow: 0,
+          radius: 0,
+        },
+      })
+    }
+
+    result.push(sections[i])
+  }
+
+  return result
+}
+
+// ─── Aplica paddingY override nas seções ─────────────────────
+
+/**
+ * Percorre as seções de primeiro nível e ajusta paddingY.
+ * Seções com paddingY >= 60 (seções de conteúdo) recebem o override.
+ * Seções compactas (stats band, inline-strip) são preservadas.
+ */
+function applySectionPaddingY(sections: TemplateNode[], paddingY: number): TemplateNode[] {
+  return sections.map(section => {
+    const props = section.props as Record<string, unknown> | undefined
+    if (!props) return section
+    const currentPY = props.paddingY as number | undefined
+    // Só ajusta seções com paddingY padrão (80) — preserva seções compactas e CTA hero
+    if (currentPY === 80) {
+      return { ...section, props: { ...props, paddingY } }
+    }
+    return section
+  })
 }
 
 // ─── Seleciona blueprint aleatório ───────────────────────────
@@ -87,7 +213,7 @@ export function generateVariedTemplate(
     ? (getBlueprintById(options.blueprintId) ?? selectRandomBlueprint(options?.seed))
     : selectRandomBlueprint(options?.seed)
 
-  const sections = buildSectionsFromBlueprint(
+  let sections = buildSectionsFromBlueprint(
     blueprint,
     perfil,
     nome,
@@ -96,6 +222,14 @@ export function generateVariedTemplate(
     depoimentos,
     palette,
   )
+
+  // Aplica sectionPaddingY do blueprint (override do padrão 80)
+  if (blueprint.sectionPaddingY) {
+    sections = applySectionPaddingY(sections, blueprint.sectionPaddingY)
+  }
+
+  // Injeta faixas de transição gradiente entre seções com cores diferentes
+  sections = injectColorTransitions(sections, palette)
 
   // Resolve micro-variações
   const shouldApplyMicro = options?.microVariations !== undefined
@@ -206,7 +340,7 @@ function buildSectionsFromBlueprint(
 
     switch (sectionDef.type) {
       case 'navbar':
-        sections.push(buildNavbar(perfil, nome, palette))
+        sections.push(buildNavbar(perfil, nome, palette, sectionDef.variant as NavbarVariant))
         break
 
       case 'hero':
@@ -214,7 +348,7 @@ function buildSectionsFromBlueprint(
         break
 
       case 'stats': {
-        const statsSection = buildStats(perfil, socios, palette)
+        const statsSection = buildStats(perfil, socios, palette, sectionDef.variant as StatsVariant)
         if (statsSection) sections.push(statsSection)
         break
       }
@@ -227,7 +361,7 @@ function buildSectionsFromBlueprint(
 
       case 'segments':
         if (perfil.segmentos && perfil.segmentos.length > 0) {
-          sections.push(buildSegmentos(perfil.segmentos, palette, bg))
+          sections.push(buildSegmentos(perfil.segmentos, palette, bg, sectionDef.variant as SegmentsVariant))
         }
         break
 
@@ -245,7 +379,7 @@ function buildSectionsFromBlueprint(
 
       case 'team':
         if (sociosVisiveis.length > 0) {
-          sections.push(buildEquipe(sociosVisiveis, palette, bg))
+          sections.push(buildEquipe(sociosVisiveis, palette, bg, sectionDef.variant as TeamVariant))
         }
         break
 

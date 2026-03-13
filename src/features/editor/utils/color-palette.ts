@@ -119,6 +119,7 @@ export interface ColorPalette {
   secondaryLight: string    // lighten(secondary, 0.3)
   secondaryLighter: string  // lighten(secondary, 0.55)
   secondaryTint: string     // lighten(secondary, 0.88)
+  secondarySoft: string     // lighten(secondary, 0.94) - fundo muito suave
   secondaryAlpha10: string  // rgba(secondary, 0.1)
   secondaryAlpha30: string  // rgba(secondary, 0.3)
   secondaryAlpha90: string  // rgba(secondary, 0.9)
@@ -178,6 +179,7 @@ export function generatePalette(primary: string, secondary: string): ColorPalett
     secondaryLight: lighten(secondary, 0.3),
     secondaryLighter: lighten(secondary, 0.55),
     secondaryTint: lighten(secondary, 0.88),
+    secondarySoft: lighten(secondary, 0.94),
     secondaryAlpha10: hexToRgba(secondary, 0.1),
     secondaryAlpha30: hexToRgba(secondary, 0.3),
     secondaryAlpha90: hexToRgba(secondary, 0.9),
