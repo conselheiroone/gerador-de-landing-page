@@ -42,25 +42,23 @@ function buildTeamHeader(palette: ColorPalette): TemplateNode {
 
 // ─── Avatar helper ──────────────────────────────────────────
 
+/** Gera SVG data URI com as iniciais do sócio como placeholder. */
+function buildInitialsSvg(name: string, primary: string, secondary: string, textColor: string, size: number): string {
+  const initials = name.split(' ').filter(p => p.length > 0).slice(0, 2).map(p => p[0].toUpperCase()).join('')
+  const fontSize = Math.round(size * 0.32)
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${primary}"/><stop offset="100%" stop-color="${secondary}"/></linearGradient></defs><rect width="${size}" height="${size}" fill="url(#g)"/><text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" fill="${textColor}" font-size="${fontSize}" font-weight="800" font-family="sans-serif">${initials}</text></svg>`
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`
+}
+
+/**
+ * Sempre retorna ImageComponent — com foto real ou placeholder SVG.
+ * Isso permite que o usuário clique e use o ImageSettings para fazer upload.
+ */
 function buildAvatar(socio: Socio, palette: ColorPalette, size: number, borderRadius: number): TemplateNode {
-  if (socio.foto_url) {
-    return {
-      type: 'ImageComponent', displayName: 'Foto',
-      props: { src: socio.foto_url, alt: socio.nome_completo, width: `${size}px`, height: `${size}px`, objectFit: 'cover', borderRadius },
-    }
-  }
-  const initials = socio.nome_completo.split(' ').filter(p => p.length > 0).slice(0, 2).map(p => p[0].toUpperCase()).join('')
+  const src = socio.foto_url || buildInitialsSvg(socio.nome_completo, palette.primary, palette.secondary, palette.textOnSecondary, size)
   return {
-    type: 'ContainerComponent', isCanvas: false, displayName: 'Avatar',
-    props: {
-      background: `linear-gradient(135deg, ${palette.primary}, ${palette.secondary})`,
-      padding: 0, gap: 0, width: `${size}px`, height: `${size}px`, minHeight: size, minWidth: `${size}px`,
-      flexDirection: 'row', alignItems: 'center', justifyContent: 'center', shadow: 0, radius: borderRadius,
-    },
-    children: [{
-      type: 'TextComponent', displayName: 'Iniciais',
-      props: { text: initials, fontSize: `${Math.round(size * 0.32)}`, fontWeight: '800', textAlign: 'center', color: palette.textOnSecondary, lineHeight: '1', margin: [0, 0, 0, 0] },
-    }],
+    type: 'ImageComponent', displayName: 'Foto',
+    props: { src, alt: socio.nome_completo, width: `${size}px`, height: `${size}px`, objectFit: 'cover', borderRadius },
   }
 }
 

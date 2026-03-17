@@ -26,6 +26,34 @@ export async function generateImage(request: GenerateImageRequest): Promise<Gene
   return data as GenerateImageResponse
 }
 
+const MAX_UPLOAD_SIZE = 5 * 1024 * 1024 // 5MB
+
+/**
+ * Faz upload de um arquivo de imagem do editor para o Supabase Storage.
+ * Valida tipo (image/*) e tamanho (5MB max).
+ * Retorna a URL pública.
+ */
+export async function uploadEditorImage(userId: string, file: File): Promise<string> {
+  if (!file.type.startsWith('image/')) {
+    throw new Error('Arquivo deve ser uma imagem.')
+  }
+  if (file.size > MAX_UPLOAD_SIZE) {
+    throw new Error('Imagem deve ter no máximo 5MB.')
+  }
+
+  const ext = file.name.split('.').pop() || 'png'
+  const path = `${userId}/editor-${Date.now()}.${ext}`
+
+  const { error } = await supabase.storage
+    .from('logos')
+    .upload(path, file, { upsert: true, contentType: file.type })
+
+  if (error) throw new Error(`Falha ao enviar imagem: ${error.message}`)
+
+  const { data } = supabase.storage.from('logos').getPublicUrl(path)
+  return data.publicUrl
+}
+
 /**
  * Baixa uma imagem gerada (URL remota ou data URL) e faz upload para o Supabase Storage.
  * Retorna a URL pública persistente.

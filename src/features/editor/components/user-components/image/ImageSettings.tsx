@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useNode } from '@craftjs/core'
-import { Sparkles, Loader2 } from 'lucide-react'
+import { Sparkles, Loader2, Upload } from 'lucide-react'
 import { useAuth } from '@/features/auth/hooks/use-auth'
-import { generateImage, uploadGeneratedImage, type ImageSize } from '@/features/editor/api/generate-image-api'
+import { generateImage, uploadGeneratedImage, uploadEditorImage, type ImageSize } from '@/features/editor/api/generate-image-api'
 
 const SIZE_OPTIONS: { label: string; value: ImageSize }[] = [
   { label: 'Quadrada', value: '1024x1024' },
@@ -17,10 +17,30 @@ export const ImageSettings = () => {
   const { session } = useAuth()
   const userId = session?.user?.id
 
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadError, setUploadError] = useState('')
+
   const [prompt, setPrompt] = useState('')
   const [size, setSize] = useState<ImageSize>('1024x1024')
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState('')
+
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file || !userId) return
+    setIsUploading(true)
+    setUploadError('')
+    try {
+      const publicUrl = await uploadEditorImage(userId, file)
+      setProp((p: Record<string, unknown>) => { p.src = publicUrl })
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Erro ao enviar imagem')
+    } finally {
+      setIsUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
 
   async function handleGenerate() {
     if (!prompt.trim() || !userId) return
@@ -43,6 +63,41 @@ export const ImageSettings = () => {
 
   return (
     <div className="space-y-4">
+      {/* Upload de arquivo */}
+      <div>
+        <h4 className="text-xs font-medium text-gray-500 uppercase mb-2 flex items-center gap-1">
+          <Upload className="h-3 w-3" />
+          Enviar Imagem
+        </h4>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileUpload}
+          className="hidden"
+        />
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading || !userId}
+          className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-blue-400 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          {isUploading ? (
+            <>
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              Enviando...
+            </>
+          ) : (
+            <>
+              <Upload className="h-3.5 w-3.5" />
+              Escolher arquivo
+            </>
+          )}
+        </button>
+        <p className="text-xs text-gray-400 mt-1">JPG, PNG ou WebP. Máx 5MB.</p>
+        {uploadError && <p className="text-xs text-red-500 mt-1">{uploadError}</p>}
+      </div>
+
       <div>
         <h4 className="text-xs font-medium text-gray-500 uppercase mb-2">Imagem</h4>
         <div className="space-y-2">
