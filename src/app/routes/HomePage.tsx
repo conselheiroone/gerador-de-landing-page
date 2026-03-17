@@ -1,8 +1,7 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Paintbrush, Sparkles, Loader2, RefreshCw, ArrowLeft, Check } from 'lucide-react'
-import { staggerContainer, staggerItem } from '@/lib/motion-variants'
+import { motion } from 'framer-motion'
+import { Sparkles, Loader2, RefreshCw, Check } from 'lucide-react'
 import { useAuth } from '@/features/auth/hooks/use-auth'
 import { getPerfilEmpresa, getSocios } from '@/features/onboarding/api/onboarding'
 import { generateVariedTemplate, BLUEPRINTS } from '@/features/editor/utils/profile-template'
@@ -18,7 +17,7 @@ interface LayoutOption {
 
 export function HomePage() {
   const navigate = useNavigate()
-  const { session, isAvancado, isAdmin } = useAuth()
+  const { session } = useAuth()
   const [generating, setGenerating] = useState(false)
 
   // Estado para seleção de layout
@@ -110,11 +109,13 @@ export function HomePage() {
     navigate('/editor/novo', { state: { templateJson: selected.templateJson, templateNome, fromProfile: true } })
   }
 
-  // Volta para o menu inicial
-  function handleBack() {
-    setLayoutOptions(null)
-    setProfileData(null)
-  }
+  // Dispara geração automaticamente ao montar
+  useEffect(() => {
+    if (!layoutOptions && !generating && session?.user?.id) {
+      handleGenerateVariations()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user?.id])
 
   // ─── Tela de seleção de layout ───────────────────────────────
 
@@ -125,21 +126,13 @@ export function HomePage() {
         animate={{ opacity: 1, y: 0 }}
         className="flex min-h-[60vh] flex-col items-center justify-center gap-6 px-4"
       >
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleBack}
-            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Escolha o Estilo
-            </h1>
-            <p className="text-sm text-gray-500">
-              Selecione o layout que mais combina com seu escritório
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 text-center">
+            Escolha o Estilo
+          </h1>
+          <p className="text-sm text-gray-500 text-center">
+            Selecione o layout que mais combina com seu escritório
+          </p>
         </div>
 
         {/* Grid de opções com preview */}
@@ -205,92 +198,24 @@ export function HomePage() {
     )
   }
 
-  // ─── Tela inicial ────────────────────────────────────────────
+  // ─── Loading enquanto gera variações ─────────────────────────
 
   return (
     <motion.div
-      variants={staggerContainer}
-      initial="hidden"
-      animate="visible"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       className="flex min-h-[60vh] flex-col items-center justify-center gap-6"
     >
-      <AnimatePresence />
-      <h1 className="text-3xl font-bold text-gray-900">
-        Crie sua Landing Page
-      </h1>
-      <p className="text-gray-500">
-        {isAvancado ? 'Escolha como deseja começar' : 'Gere automaticamente com os dados do seu escritório'}
-      </p>
-
-      <div className="mt-4 grid w-full max-w-lg gap-4">
-        {/* Gerar do perfil — sempre disponível */}
-        <motion.button
-          variants={staggerItem}
-          onClick={handleGenerateVariations}
-          disabled={generating}
-          className="relative flex items-center gap-4 rounded-xl border-2 border-brand-500 bg-brand-50 p-6 text-left transition-colors hover:bg-brand-100 disabled:opacity-70"
-        >
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-500 text-white">
-            {generating ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <Sparkles className="h-5 w-5" />
-            )}
-          </div>
-          <div>
-            <h3 className="text-sm font-medium text-gray-900">
-              {generating ? 'Gerando variações...' : 'Gerar do meu perfil'}
-            </h3>
-            <p className="text-xs text-gray-500">
-              Escolha entre estilos diferentes gerados com seus dados
-            </p>
-          </div>
-          <span className="absolute right-4 top-4 rounded-full bg-brand-500 px-2 py-0.5 text-[10px] font-semibold text-white">
-            Recomendado
-          </span>
-        </motion.button>
-
-        {/* Começar do zero — apenas avancado e admin */}
-        {isAvancado && (
-          <motion.button
-            variants={staggerItem}
-            onClick={() => navigate('/editor/novo')}
-            className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-6 text-left transition-colors hover:border-brand-500 hover:bg-brand-50"
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-100 text-brand-500">
-              <Plus className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="text-sm font-medium text-gray-900">
-                Comece do zero
-              </h3>
-              <p className="text-xs text-gray-500">
-                Projete seu site do zero com nossos componentes
-              </p>
-            </div>
-          </motion.button>
-        )}
-
-        {/* Templates — apenas admin */}
-        {isAdmin && (
-          <motion.button
-            variants={staggerItem}
-            onClick={() => navigate('/templates')}
-            className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-6 text-left transition-colors hover:border-brand-500 hover:bg-brand-50"
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-100 text-brand-500">
-              <Paintbrush className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="text-sm font-medium text-gray-900">
-                Comece com um modelo
-              </h3>
-              <p className="text-xs text-gray-500">
-                Use modelos cadastrados por administradores
-              </p>
-            </div>
-          </motion.button>
-        )}
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500 text-white shadow-lg">
+        <Loader2 className="h-7 w-7 animate-spin" />
+      </div>
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900">
+          Gerando layouts...
+        </h1>
+        <p className="mt-1 text-sm text-gray-500">
+          Criando variações personalizadas com os dados do seu escritório
+        </p>
       </div>
     </motion.div>
   )
