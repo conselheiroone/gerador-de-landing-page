@@ -291,24 +291,20 @@ export function buildHeroSplit(
       type: 'ContainerComponent', isCanvas: false, displayName: 'Wrapper Imagem Hero',
       props: {
         background: 'transparent', padding: 0, gap: 0, width: '100%', maxWidth: '550px',
-        height: 'auto', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end',
+        height: '690px', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end',
         shadow: 0, radius: 0, position: 'relative',
+        decorativeFrame: {
+          width: '70%',
+          height: '75%',
+          border: '3px solid rgba(255, 255, 255, 0.2)',
+          borderRadius: '20px 20px 0 0',
+          borderBottom: 'none',
+        },
       },
       children: [
         {
           type: 'ImageComponent', displayName: 'Imagem Hero',
           props: { src: ASSETS.heroProfessional, alt: 'Profissional', width: '100%', maxWidth: '550px', height: '690px', objectFit: 'contain', borderRadius: '20px 20px 0 0', boxShadow: '0 -10px 60px rgba(0, 0, 0, 0.3)', zIndex: 2 },
-        },
-        {
-          type: 'ContainerComponent', isCanvas: false, displayName: 'Frame Decorativo',
-          props: {
-            background: 'transparent', padding: 0, gap: 0, width: '70%', height: '75%',
-            flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            shadow: 0, radius: 0, position: 'absolute', bottom: '0', left: '50%', zIndex: 1,
-            border: '3px solid rgba(255, 255, 255, 0.2)', borderBottom: 'none',
-            borderRadiusCustom: '20px 20px 0 0', transform: 'translateX(-50%)', minHeight: 0,
-          },
-          children: [],
         },
         ...floatingCards,
       ],
@@ -723,8 +719,14 @@ export function buildHeroMinimal(
         type: 'ContainerComponent', isCanvas: false, displayName: 'Wrapper Imagem Hero',
         props: {
           background: 'transparent', padding: 0, gap: 0, width: '100%', maxWidth: '500px',
-          height: 'auto', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end',
+          height: '650px', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end',
           shadow: 0, radius: 0, position: 'relative',
+          decorativeFrame: {
+            width: '80%',
+            height: '70%',
+            border: `2px solid ${palette.secondaryAlpha30}`,
+            borderRadius: '24px',
+          },
         },
         children: [
           {
@@ -734,19 +736,6 @@ export function buildHeroMinimal(
               width: '100%', maxWidth: '500px', height: '650px',
               objectFit: 'contain', zIndex: 2,
             },
-          },
-          // Decoração geométrica: retângulo accent atrás da imagem
-          {
-            type: 'ContainerComponent', isCanvas: false, displayName: 'Decoração Geométrica',
-            props: {
-              background: palette.secondaryAlpha30, padding: 0, gap: 0,
-              width: '80%', height: '70%',
-              flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              shadow: 0, radius: 24, position: 'absolute', bottom: '0', left: '50%',
-              zIndex: 1, transform: 'translateX(-50%)',
-              border: `2px solid ${palette.secondaryAlpha30}`, minHeight: 0,
-            },
-            children: [],
           },
         ],
       },

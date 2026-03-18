@@ -67,6 +67,7 @@ export const ImageComponent: UserComponent<Partial<ImageProps>> = (incomingProps
   }
 
   const hasBg = backgroundColor && backgroundColor !== 'transparent'
+  const hasBoxShadow = !!boxShadow
 
   const showSkeleton = !imgLoaded && !imgError
 
@@ -101,7 +102,7 @@ export const ImageComponent: UserComponent<Partial<ImageProps>> = (incomingProps
           height: height === 'auto' ? undefined : height,
           padding: '4px',
           boxSizing: 'border-box',
-          overflow: 'hidden',
+          overflow: hasBoxShadow ? 'visible' : 'hidden',
           boxShadow: boxShadow || undefined,
           zIndex: zIndex || undefined,
         }}
@@ -126,6 +127,9 @@ export const ImageComponent: UserComponent<Partial<ImageProps>> = (incomingProps
     )
   }
 
+  // Quando há boxShadow, não podemos usar overflow:hidden no wrapper
+  // porque isso corta a sombra. Nesse caso, aplicamos borderRadius
+  // diretamente no <img> e deixamos o wrapper sem overflow clipping.
   return (
     <div
       ref={(ref) => { if (ref) connect(ref) }}
@@ -136,7 +140,7 @@ export const ImageComponent: UserComponent<Partial<ImageProps>> = (incomingProps
         maxWidth: maxWidth || undefined,
         height,
         borderRadius: resolvedBorderRadius,
-        overflow: 'hidden',
+        overflow: hasBoxShadow ? 'visible' : 'hidden',
         boxShadow: boxShadow || undefined,
         zIndex: zIndex || undefined,
       }}
@@ -151,7 +155,7 @@ export const ImageComponent: UserComponent<Partial<ImageProps>> = (incomingProps
           width: '100%',
           height: '100%',
           objectFit,
-          borderRadius: `${borderRadius}px`,
+          borderRadius: resolvedBorderRadius,
           display: 'block',
           opacity: showSkeleton ? 0 : 1,
           transition: 'opacity 0.4s ease-in-out',

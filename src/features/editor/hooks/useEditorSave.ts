@@ -8,7 +8,7 @@ interface UseEditorSaveOptions {
   templateId?: string | null
   usuarioId: string | null
   debounceMs?: number
-  allowAutoCreate?: boolean
+  nomeProjeto?: string
 }
 
 interface UseEditorSaveReturn {
@@ -24,7 +24,7 @@ export function useEditorSave({
   templateId,
   usuarioId,
   debounceMs = 3000,
-  allowAutoCreate = true,
+  nomeProjeto = 'Novo Projeto',
 }: UseEditorSaveOptions): UseEditorSaveReturn {
   const { query } = useEditor()
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
@@ -50,18 +50,11 @@ export function useEditorSave({
         await atualizarTemplate(templateId, { dados_template: json })
       } else if (currentProjetoId) {
         await salvarProjeto(currentProjetoId, json)
-      } else if (allowAutoCreate) {
-        const projeto = await criarProjeto('Novo Projeto', usuarioId, json)
+      } else {
+        const projeto = await criarProjeto(nomeProjeto, usuarioId, json)
         setCurrentProjetoId(projeto.id)
         // Atualizar URL sem reload
         window.history.replaceState(null, '', `/editor/${projeto.id}`)
-      } else {
-        // allowAutoCreate = false: salvar apenas em localStorage sem criar projeto
-        localStorage.setItem('editor_backup', json)
-        lastJsonRef.current = json
-        setLastSavedAt(new Date())
-        setStatus('saved')
-        return
       }
 
       lastJsonRef.current = json
@@ -81,7 +74,7 @@ export function useEditorSave({
         // silenciar erro de localStorage
       }
     }
-  }, [currentProjetoId, templateId, usuarioId, query])
+  }, [currentProjetoId, templateId, usuarioId, query, nomeProjeto])
 
   const saveNow = useCallback(async () => {
     if (debounceTimerRef.current) {

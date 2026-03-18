@@ -21,7 +21,7 @@ interface EditorSaveProviderProps {
   projetoId: string | null
   templateId?: string | null
   usuarioId: string | null
-  allowAutoCreate?: boolean
+  nomeProjeto?: string
   children: ReactNode
 }
 
@@ -29,7 +29,7 @@ export function EditorSaveProvider({
   projetoId,
   templateId,
   usuarioId,
-  allowAutoCreate = true,
+  nomeProjeto = 'Novo Projeto',
   children,
 }: EditorSaveProviderProps) {
   const save = useEditorSave({
@@ -37,7 +37,7 @@ export function EditorSaveProvider({
     templateId,
     usuarioId,
     debounceMs: 3000,
-    allowAutoCreate,
+    nomeProjeto,
   })
 
   return (

@@ -74,6 +74,16 @@ export type ContainerProps = {
   boxShadowCustom?: string
   /** Preset de animação CSS */
   animationPreset?: 'none' | 'float' | 'fadeInUp' | 'fadeInRight'
+  /** Pointer-events CSS (ex: 'none' para elementos decorativos que não devem interceptar cliques) */
+  pointerEvents?: 'auto' | 'none'
+  /** Moldura decorativa renderizada como div HTML puro (z-index: 1, atrás dos filhos Craft.js) */
+  decorativeFrame?: {
+    width: string
+    height: string
+    border: string
+    borderRadius: string
+    borderBottom?: string
+  }
   children?: React.ReactNode
 }
 
@@ -168,6 +178,8 @@ export const ContainerComponent: UserComponent<Partial<ContainerProps>> = (incom
     backdropFilter,
     boxShadowCustom,
     animationPreset,
+    pointerEvents,
+    decorativeFrame,
     children,
   } = props
 
@@ -221,9 +233,9 @@ export const ContainerComponent: UserComponent<Partial<ContainerProps>> = (incom
     borderRadius: borderRadiusCustom || `${radius}px`,
     boxShadow: resolvedShadow,
     border: border || undefined,
-    borderTop: borderTopStyle,
-    borderLeft: borderLeftStyle,
-    borderBottom: borderBottom || undefined,
+    ...(borderTopStyle ? { borderTop: borderTopStyle } : {}),
+    ...(borderLeftStyle ? { borderLeft: borderLeftStyle } : {}),
+    ...(borderBottom ? { borderBottom } : {}),
     fontFamily: fontFamily || undefined,
     flex: flex || undefined,
     top: top || undefined,
@@ -237,10 +249,31 @@ export const ContainerComponent: UserComponent<Partial<ContainerProps>> = (incom
     animation: animationPreset && animationPreset !== 'none'
       ? ANIMATION_MAP[animationPreset]
       : undefined,
+    pointerEvents: pointerEvents || undefined,
   }
 
   // Classes CSS para container queries no editor
   const cssClasses = flexDirection === 'row' ? 'lp-row' : undefined
+
+  // Elemento de moldura decorativa (renderizado como div HTML puro, fora do Craft.js,
+  // garantindo z-index correto — moldura atrás, filhos Craft.js na frente)
+  const frameElement = decorativeFrame ? (
+    <div
+      style={{
+        position: 'absolute' as const,
+        width: decorativeFrame.width,
+        height: decorativeFrame.height,
+        border: decorativeFrame.border,
+        borderRadius: decorativeFrame.borderRadius,
+        borderBottom: decorativeFrame.borderBottom || undefined,
+        bottom: 0,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 1,
+        pointerEvents: 'none' as const,
+      }}
+    />
+  ) : null
 
   // ── SEM overlay: div único (evita inner div intermediário que quebra
   //    resolução de height % em filhos position:absolute como Frame Decorativo) ──
@@ -267,6 +300,7 @@ export const ContainerComponent: UserComponent<Partial<ContainerProps>> = (incom
           minHeight: position === 'absolute' ? `${minHeight ?? 0}px` : `${minHeight ?? 60}px`,
         }}
       >
+        {frameElement}
         {children}
       </div>
     )
@@ -314,6 +348,7 @@ export const ContainerComponent: UserComponent<Partial<ContainerProps>> = (incom
           height: '100%',
         }}
       >
+        {frameElement}
         {children}
       </div>
     </div>

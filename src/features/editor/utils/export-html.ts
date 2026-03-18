@@ -254,6 +254,24 @@ function renderContainer(props: Record<string, unknown>, children: string): stri
   const isAbsolute = (props.position as string) === 'absolute'
   const idAttr = props.sectionId ? ` id="${escapeHtml(String(props.sectionId))}"` : ''
 
+  // Moldura decorativa (renderizada como div HTML puro, atrás dos filhos)
+  const decFrame = props.decorativeFrame as { width: string; height: string; border: string; borderRadius: string; borderBottom?: string } | undefined
+  const frameHtml = decFrame
+    ? `<div style="${styleObj({
+        position: 'absolute',
+        width: decFrame.width,
+        height: decFrame.height,
+        border: decFrame.border,
+        borderRadius: decFrame.borderRadius,
+        borderBottom: decFrame.borderBottom || undefined,
+        bottom: '0',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 1,
+        pointerEvents: 'none',
+      })}"></div>`
+    : ''
+
   // Estilos base compartilhados (posição, tamanho, bordas, sombra, etc.)
   const baseStyleProps: Record<string, string | number | undefined> = {
     position: (props.position as string) || 'relative',
@@ -280,6 +298,7 @@ function renderContainer(props: Record<string, unknown>, children: string): stri
     transform: transform || undefined,
     backdropFilter: backdropFilter || undefined,
     animation: animPreset !== 'none' ? animMap[animPreset] : undefined,
+    pointerEvents: props.pointerEvents as string | undefined,
   }
 
   // Estilos de layout (flex, padding, gap)
@@ -308,7 +327,7 @@ function renderContainer(props: Record<string, unknown>, children: string): stri
       background: hasImage ? undefined : (props.background as string),
       ...layoutStyleProps,
     })
-    return `<div${idAttr}${rowClass} style="${singleStyle}">${children}</div>`
+    return `<div${idAttr}${rowClass} style="${singleStyle}">${frameHtml}${children}</div>`
   }
 
   // ── COM overlay: outer + overlay div + inner (espelha React ContainerComponent) ──
@@ -341,7 +360,7 @@ function renderContainer(props: Record<string, unknown>, children: string): stri
     height: '100%',
   })
 
-  return `<div${idAttr} style="${outerStyle}">${overlayHtml}<div${rowClass} style="${innerStyle}">${children}</div></div>`
+  return `<div${idAttr} style="${outerStyle}">${overlayHtml}<div${rowClass} style="${innerStyle}">${frameHtml}${children}</div></div>`
 }
 
 // ── Heading ──

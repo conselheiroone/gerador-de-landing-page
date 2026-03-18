@@ -20,7 +20,6 @@ import { getBuiltinTemplate } from '../utils/default-templates'
 interface LocationState {
   templateJson?: string
   templateNome?: string
-  fromProfile?: boolean
 }
 
 export const EditorPage = () => {
@@ -33,7 +32,6 @@ export const EditorPage = () => {
   const locationState = location.state as LocationState | null
   const initialJson = locationState?.templateJson ?? null
   const initialNome = locationState?.templateNome ?? 'Novo Projeto'
-  const fromProfile = locationState?.fromProfile ?? false
 
   const [savedJson, setSavedJson] = useState<string | null>(initialJson)
   const [loading, setLoading] = useState(!!(projetoId || templateId))
@@ -148,7 +146,7 @@ export const EditorPage = () => {
         projetoId={projetoId ?? null}
         templateId={templateId ?? null}
         usuarioId={session?.user?.id ?? null}
-        allowAutoCreate={!fromProfile}
+        nomeProjeto={projetoNome}
       >
         <EditorViewport pageTitle={projetoNome}>
           {savedJson ? (
