@@ -60,13 +60,16 @@ export const ANIMATION_CSS = `
   animation: lp-countPulse 0.4s ease;
 }
 
-/* ── Hover effects para cards (export) ─────────────────── */
-/* REGRA: primeira section (hero) NAO recebe hover effects */
+/* ── Hover effects para cards ────────────────────────────── */
+/* .lp-card: classe adicionada a containers com shadow+radius (cards reais) */
+/* Fallback: attribute selectors para HTML exportado sem a classe */
+.lp-card,
 section:not(:first-of-type) > div > div[style*="border-radius"][style*="box-shadow"],
 section:not(:first-of-type) > div > div > div[style*="border-radius"][style*="box-shadow"],
 section:not(:first-of-type) div[style*="border-top:"][style*="border-radius"] {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+.lp-card:hover,
 section:not(:first-of-type) > div > div[style*="border-radius"][style*="box-shadow"]:hover,
 section:not(:first-of-type) > div > div > div[style*="border-radius"][style*="box-shadow"]:hover,
 section:not(:first-of-type) div[style*="border-top:"][style*="border-radius"]:hover {

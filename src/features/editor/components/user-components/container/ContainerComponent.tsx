@@ -230,8 +230,8 @@ export const ContainerComponent: UserComponent<Partial<ContainerProps>> = (incom
     marginTop: resolvedMarginTop,
     marginBottom: resolvedMarginBottom,
     height,
-    borderRadius: borderRadiusCustom || `${radius}px`,
-    boxShadow: resolvedShadow,
+    borderRadius: borderRadiusCustom || (radius > 0 ? `${radius}px` : undefined),
+    boxShadow: resolvedShadow !== 'none' ? resolvedShadow : undefined,
     border: border || undefined,
     ...(borderTopStyle ? { borderTop: borderTopStyle } : {}),
     ...(borderLeftStyle ? { borderLeft: borderLeftStyle } : {}),
@@ -252,8 +252,12 @@ export const ContainerComponent: UserComponent<Partial<ContainerProps>> = (incom
     pointerEvents: pointerEvents || undefined,
   }
 
-  // Classes CSS para container queries no editor
-  const cssClasses = flexDirection === 'row' ? 'lp-row' : undefined
+  // Classes CSS para container queries no editor + card hover
+  const isCard = resolvedShadow !== 'none' && (radius > 0 || !!borderRadiusCustom)
+  const cssClasses = [
+    flexDirection === 'row' ? 'lp-row' : '',
+    isCard ? 'lp-card' : '',
+  ].filter(Boolean).join(' ') || undefined
 
   // Elemento de moldura decorativa (renderizado como div HTML puro, fora do Craft.js,
   // garantindo z-index correto — moldura atrás, filhos Craft.js na frente)

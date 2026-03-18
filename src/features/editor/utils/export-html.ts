@@ -283,7 +283,7 @@ function renderContainer(props: Record<string, unknown>, children: string): stri
     marginBottom: marginBottom,
     height,
     borderRadius: borderRadiusCustom || (radius ? `${radius}px` : undefined),
-    boxShadow: resolvedShadow,
+    boxShadow: resolvedShadow !== 'none' ? resolvedShadow : undefined,
     border: border || undefined,
     borderTop: borderTopStyle,
     borderLeft: borderLeftStyle,
@@ -313,8 +313,13 @@ function renderContainer(props: Record<string, unknown>, children: string): stri
     minHeight: isAbsolute ? `${minHeight ?? 0}px` : `${minHeight ?? 60}px`,
   }
 
-  // Classe responsiva: containers com flex-direction row empilham em mobile/tablet
-  const rowClass = flexDirection === 'row' ? ' class="lp-row"' : ''
+  // Classes CSS: responsiva (lp-row) + card hover (lp-card)
+  const isCard = resolvedShadow !== 'none' && !!radius
+  const cssClasses = [
+    flexDirection === 'row' ? 'lp-row' : '',
+    isCard ? 'lp-card' : '',
+  ].filter(Boolean).join(' ')
+  const classAttr = cssClasses ? ` class="${cssClasses}"` : ''
 
   // ── SEM overlay: div único (espelha React ContainerComponent) ──
   if (!hasOverlay) {
@@ -327,7 +332,7 @@ function renderContainer(props: Record<string, unknown>, children: string): stri
       background: hasImage ? undefined : (props.background as string),
       ...layoutStyleProps,
     })
-    return `<div${idAttr}${rowClass} style="${singleStyle}">${frameHtml}${children}</div>`
+    return `<div${idAttr}${classAttr} style="${singleStyle}">${frameHtml}${children}</div>`
   }
 
   // ── COM overlay: outer + overlay div + inner (espelha React ContainerComponent) ──
@@ -360,7 +365,8 @@ function renderContainer(props: Record<string, unknown>, children: string): stri
     height: '100%',
   })
 
-  return `<div${idAttr} style="${outerStyle}">${overlayHtml}<div${rowClass} style="${innerStyle}">${frameHtml}${children}</div></div>`
+  const innerClassAttr = flexDirection === 'row' ? ' class="lp-row"' : ''
+  return `<div${idAttr}${classAttr} style="${outerStyle}">${overlayHtml}<div${innerClassAttr} style="${innerStyle}">${frameHtml}${children}</div></div>`
 }
 
 // ── Heading ──

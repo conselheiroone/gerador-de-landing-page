@@ -74,9 +74,9 @@ function buildSpecialtyBadges(especialidades: string[], palette: ColorPalette, j
     children: especialidades.map((esp, idx) => ({
       type: 'BadgeComponent', displayName: `Tag ${idx + 1}`,
       props: {
-        text: esp, background: palette.primarySoft, color: palette.primary,
-        fontSize: 12, fontWeight: '500', borderRadius: 50, paddingX: 16, paddingY: 6,
-        border: `1px solid ${palette.primaryAlpha15}`,
+        text: esp, background: palette.secondaryTint, color: palette.secondaryDarker,
+        fontSize: 12, fontWeight: '600', borderRadius: 50, paddingX: 16, paddingY: 6,
+        border: `1px solid ${palette.secondaryAlpha30}`,
       },
     })),
   }
