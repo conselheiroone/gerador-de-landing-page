@@ -352,7 +352,7 @@ function renderContainer(props: Record<string, unknown>, children: string): stri
       ? { background: overlayColor }
       : { backgroundColor: overlayColor }),
     opacity: overlayOpacity,
-    borderRadius: radius,
+    borderRadius: borderRadiusCustom || (radius ? `${radius}px` : undefined),
     pointerEvents: 'none',
     zIndex: 0,
   })}"></div>`
@@ -362,7 +362,7 @@ function renderContainer(props: Record<string, unknown>, children: string): stri
     position: 'relative',
     zIndex: 1,
     width: '100%',
-    height: '100%',
+    minHeight: '100%',
   })
 
   const innerClassAttr = flexDirection === 'row' ? ' class="lp-row"' : ''
@@ -596,6 +596,8 @@ function renderImage(props: Record<string, unknown>): string {
     loading: 'lazy',
   })
 
+  const hasBoxShadow = !!boxShadow
+
   if (hasBg) {
     const wrapStyle = styleObj({
       position: 'relative',
@@ -609,21 +611,21 @@ function renderImage(props: Record<string, unknown>): string {
       height: height === 'auto' ? undefined : height,
       padding: '4px',
       boxSizing: 'border-box',
-      overflow: 'hidden',
+      overflow: hasBoxShadow ? 'visible' : 'hidden',
       boxShadow: boxShadow || undefined,
       zIndex: zIndex || undefined,
     })
     return `<div style="${wrapStyle}">${imgTag}</div>`
   }
 
-  // Sempre envolver em div com overflow hidden (espelha o React)
+  // Envolver em div — overflow visible quando há box-shadow (espelha React)
   const wrapStyle = styleObj({
     position: 'relative',
     width,
     maxWidth: maxWidth || undefined,
     height,
     borderRadius: radius,
-    overflow: 'hidden',
+    overflow: hasBoxShadow ? 'visible' : 'hidden',
     boxShadow: boxShadow || undefined,
     zIndex: zIndex || undefined,
   })
@@ -838,6 +840,8 @@ function renderHeroSection(props: Record<string, unknown>, children: string): st
   const resolvedMinHeight = minHeightCalc
     ? minHeightCalc
     : minHeightVh ? `${minHeightVh}vh` : `${minHeightPx}px`
+  // React usa height (fixo) quando calc/vh está definido, minHeight caso contrário
+  const useFixedHeight = !!(minHeightCalc || minHeightVh)
   const parallax = props.parallax as boolean | undefined
 
   // Outer section — espelha o <section> do React
@@ -849,7 +853,9 @@ function renderHeroSection(props: Record<string, unknown>, children: string): st
     backgroundSize: hasImage ? 'cover' : undefined,
     backgroundPosition: hasImage ? 'center' : undefined,
     backgroundAttachment: hasImage && parallax ? 'fixed' : undefined,
-    minHeight: resolvedMinHeight,
+    ...(useFixedHeight
+      ? { height: resolvedMinHeight }
+      : { minHeight: resolvedMinHeight }),
     overflow: 'visible',
     display: 'flex',
     flexDirection: 'column',
@@ -1124,29 +1130,34 @@ function renderTestimonialsGrid(props: Record<string, unknown>): string {
     nomeCliente: string; cargo: string; citacao: string; nota: number; accentColor?: string
   }>) || []
 
+  const sectionDescription = (props.sectionDescription as string) || ''
+
   const headerHtml = `<div style="text-align:center;margin-bottom:48px">
     <p style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${escapeHtml(accent)};margin:0 0 12px">${escapeHtml(sectionTag)}</p>
     <h2 style="font-size:clamp(28px,4vw,40px);font-weight:800;color:${escapeHtml(textColor)};margin:0;letter-spacing:-0.5px;line-height:1.2">${escapeHtml(sectionTitle)}</h2>
+    <div style="width:60px;height:4px;background:${escapeHtml(accent)};border-radius:2px;margin:16px auto"></div>
+    ${sectionDescription ? `<p style="font-size:16px;color:#64748b;max-width:600px;margin:0 auto;line-height:1.6">${escapeHtml(sectionDescription)}</p>` : ''}
   </div>`
 
   const cardsHtml = depoimentos.map((d) => {
+    const cardAccent = d.accentColor || accent
     const stars = showStars
       ? `<div style="display:flex;gap:2px">${Array.from({ length: 5 }, (_, i) =>
-          `<span style="color:${i < d.nota ? escapeHtml(d.accentColor || accent) : '#e2e8f0'};font-size:16px">\u2605</span>`
+          `<span style="color:${i < d.nota ? escapeHtml(cardAccent) : '#e2e8f0'};font-size:16px">\u2605</span>`
         ).join('')}</div>`
       : ''
-    return `<div style="background:${escapeHtml(cardBg)};border-radius:16px;padding:clamp(20px,4vw,32px);display:flex;flex-direction:column;gap:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06);border-top:3px solid ${escapeHtml(d.accentColor || accent)}">
+    return `<div style="background:${escapeHtml(cardBg)};border-radius:16px;padding:clamp(20px,4vw,32px);display:flex;flex-direction:column;gap:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06);border-top:3px solid ${escapeHtml(cardAccent)}">
       ${stars}
       <p style="font-size:15px;font-style:italic;color:#475569;line-height:1.7;margin:0;flex:1">\u201C${escapeHtml(d.citacao)}\u201D</p>
       <div style="border-top:1px solid #f1f5f9;padding-top:16px">
         <p style="font-size:15px;font-weight:700;color:${escapeHtml(textColor)};margin:0 0 2px">${escapeHtml(d.nomeCliente)}</p>
-        <p style="font-size:13px;font-weight:500;color:${escapeHtml(d.accentColor || accent)};margin:0">${escapeHtml(d.cargo)}</p>
+        <p style="font-size:13px;font-weight:500;color:${escapeHtml(cardAccent)};margin:0">${escapeHtml(d.cargo)}</p>
       </div>
     </div>`
   }).join('\n')
 
   return `<section class="lp-animate lp-stagger" style="width:100%;background:${escapeHtml(bg)};padding:${paddingY}px clamp(16px,5vw,80px)">
-  <div style="max-width:1200px;margin:0 auto">
+  <div style="max-width:1080px;margin:0 auto">
     ${headerHtml}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:clamp(16px,3vw,24px)">${cardsHtml}</div>
   </div>
